@@ -1,7 +1,7 @@
 {
-  "name": "Dictionarry Database",
-  "version": "2.0.0",
-  "description": "Official Dictionarry Database",
+  "name": "AV1 Master Database",
+  "version": "1.0.0",
+  "description": "Curated AV1 Custom Formats and Quality Profiles for Radarr and Sonarr with Dumpstarr/TRaSH-grade tiering and audio optimization.",
   "arr_types": [
     "radarr",
     "sonarr"
@@ -11,16 +11,22 @@
   },
   "authors": [
     {
-      "name": "Dictionarry Team"
+      "name": "vazerazer"
     }
   ],
   "license": "MIT",
-  "repository": "https://github.com/dictionarry-hub/db",
+  "repository": "https://github.com/vazerazer/database-AV1",
   "links": {
-    "homepage": "https://dictionarry.dev",
-    "issues": "https://github.com/dictionarry-hub/db/issues"
+    "homepage": "https://github.com/vazerazer/database-AV1"
   },
   "profilarr": {
     "minimum_version": "2.0.0"
-  }
+  },
+  "tags": [
+    "av1",
+    "hdr",
+    "dolby-vision",
+    "opus",
+    "high-efficiency"
+  ]
 }
