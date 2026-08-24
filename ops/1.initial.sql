@@ -23556,7 +23556,7 @@ WHERE m.arr_type = 'sonarr' AND m.api_name = 'WEBRip-720p';
 
 
 -- ============================================================================
--- PURE AV1 MASTER SUITE: RIGOROUS TIERS & FORMAT DEFINITIONS
+-- PURE AV1 MASTER SUITE: AUTHENTIC AV1 ENCODERS & CODEC ENFORCEMENT
 -- ============================================================================
 
 -- Additional Tags
@@ -23564,12 +23564,19 @@ INSERT OR IGNORE INTO tags (name) VALUES ('AV1');
 INSERT OR IGNORE INTO tags (name) VALUES ('Opus');
 INSERT OR IGNORE INTO tags (name) VALUES ('AV1 Quality Tier');
 INSERT OR IGNORE INTO tags (name) VALUES ('AV1 Compact Tier');
+INSERT OR IGNORE INTO tags (name) VALUES ('AV1 Anime Tier');
 INSERT OR IGNORE INTO tags (name) VALUES ('Dual Audio');
 INSERT OR IGNORE INTO tags (name) VALUES ('FGS');
 
 -- Additional Regular Expressions
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('AV1 Codec RegEx', '(?<![a-z0-9])(AV1|AV01|SVT[-._]?AV1|libsvtav1|rav1e|AOM[-._]?AV1)(?![a-z0-9])', 'Matches AV1 encoded video releases');
+
+INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
+VALUES ('Non-AV1 x265 Codec RegEx', '(?<![a-z0-9])(x265|h265|HEVC)(?![a-z0-9])', 'Matches x265/HEVC video releases');
+
+INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
+VALUES ('Non-AV1 x264 Codec RegEx', '(?<![a-z0-9])(x264|h264|AVC)(?![a-z0-9])', 'Matches x264/AVC video releases');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('10bit Depth RegEx', '(?<![a-z0-9])(10[-._]?bit|10b|Hi10P|HDR10\+|HDR10|HDR|DV|DoVi|Dolby[-._]?Vision)(?![a-z0-9])', 'Matches 10-bit color depth or HDR/DV color profiles');
@@ -23580,25 +23587,21 @@ VALUES ('8bit Depth RegEx', '(?<![a-z0-9])(8[-._]?bit|8b)(?![a-z0-9])', 'Matches
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('Film Grain Synthesis RegEx', '(?<![a-z0-9])(FGS|FilmGrain|Film[-._]?Grain)(?![a-z0-9])', 'Matches Film Grain Synthesis metadata');
 
--- Tier 01: Reference Transparent Encoders (PTP/HDB Golden Standard)
+-- Real Active AV1 Quality Encoders (High Bitrate / Reference Quality)
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Quality Tier 01 RegEx', '-(DON|CtrlHD|D-Z0N3|EbP|Geek|HiFi|LoRD|TayTO|VietHD|ZQ|c0kE|SA89|SoLaR|TeamSyndicate|DeciBelle|FraMeSToR|FLUX|playBD|WiHD|SMURF|NBT)\b', 'Tier 1 reference transparent AV1 release groups');
+VALUES ('AV1 Quality Encoders RegEx', '-(CoSMiCSuRFeR|t3nshi|samsepi0l|ZR-|Kitsune|Afm72|FLUX|DeciBelle|Samurai|SAMPA)\b', 'Verified active high-bitrate AV1 release groups');
 
--- Tier 02: High-End Scene & P2P AV1 Encoders
+-- Real Active AV1 Anime Encoders
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Quality Tier 02 RegEx', '-(t3nshi|Kitsune|Afm72|ZR-|samsepi0l|BHDStudio|hallowed|MainFrame|W4NK3R|REBORN)\b', 'Tier 2 high-end AV1 release groups');
+VALUES ('AV1 Anime Encoders RegEx', '-(Judas|AkihitoSubs|SubsPlease|Erai-raws|NanDesuKa|VARYG|Tenrai-Sensei|CTR|Kawa|LostYears|Kaleido|SCY)\b', 'Verified active AV1 Anime release groups');
 
--- Compact Tier 01: Curated Grain-Tuned Mini Encoders
+-- Real Active AV1 Compact Encoders (Curated Mini/Balanced)
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Compact Tier 01 RegEx', '-(edge2020|Vyndros|Ralphy|ToNaTo|YELLO|bluegreeen|Chivaman|R1GY3B|noxxus|KONTRAST|PHOCiS|YAWNiX|iVy)\b', 'Tier 1 curated compact AV1 release groups');
+VALUES ('AV1 Compact Encoders RegEx', '-(dAV1nci|WhiskeyJack|UH|edge2020|Vyndros|UnAV1Chain|R[-._ ]and[-._ ]H)\b', 'Verified active compact/mini AV1 release groups');
 
--- Compact Tier 02: Balanced Storage / P2P Mini Encoders
+-- Real Active AV1 Storage Savers (Micro-Encodes)
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Compact Tier 02 RegEx', '-(dAV1nci|WhiskeyJack|UH|UnAV1Chain|R[-._ ]and[-._ ]H|QxR|TAoE|NAN0|DarQ|HONE|Honeyvera|LSt|MNHD|SARTRE|Vialle|dkore|GRiMM|TimeDistortion)\b', 'Tier 2 balanced compact AV1 release groups');
-
--- Compact Tier 03 / Trash Tier in Quality: Storage Savers
-INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Storage Saver RegEx', '-(MeGusta|GalaxyRG|PSA|VXT|d3g|Ghost|rartv|BONE|ELiTE|LAMA|KaKa|YAWNTIC|GZ|CART)\b', 'Compact storage saver AV1 release groups');
+VALUES ('AV1 Storage Savers RegEx', '-(PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART)\b', 'Verified active micro-encode AV1 release groups');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('Opus Multi RegEx', '(?<![a-z0-9])(Opus|OPUS)[-._ ]?(5\.1|7\.1|6ch|8ch)(?![a-z0-9])', 'Matches Opus 5.1/7.1 multi-channel audio');
@@ -23623,14 +23626,15 @@ VALUES ('BR-DISK RegEx', '\b(BR-DISK|BDMV|ISO|COMPLETE\.BLURAY)\b', 'Matches raw
 
 -- Additional Custom Formats
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Codec', 'Matches genuine AV1 video streams.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Legacy x265 Codec', 'Matches x265/HEVC video streams.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Legacy x264 Codec', 'Matches x264/AVC video streams.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('10-bit Depth', 'Matches 10-bit color depth releases.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('8-bit Depth', 'Matches 8-bit color depth releases.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Film Grain Synthesis', 'Matches releases with Film Grain Synthesis.');
-INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Quality Tier 01', 'Tier 1 reference transparent AV1 release groups.');
-INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Quality Tier 02', 'Tier 2 high-end transparent AV1 release groups.');
-INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Compact Tier 01', 'Tier 1 curated compact AV1 release groups.');
-INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Compact Tier 02', 'Tier 2 balanced compact AV1 release groups.');
-INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Storage Savers', 'Compact storage saver AV1 release groups.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Quality Encoders', 'Verified high-bitrate transparent AV1 release groups.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Anime Encoders', 'Verified active AV1 Anime release groups.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Compact Encoders', 'Verified active compact/mini AV1 release groups.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Storage Savers', 'Verified active micro-encode AV1 release groups.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Opus 5.1 / 7.1', 'Multi-channel Opus surround audio.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Opus Stereo', 'Opus stereo audio.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('DV (No HDR Fallback)', 'Dolby Vision Profile 5 without fallback.');
@@ -23643,19 +23647,19 @@ INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('BR-DISK Struct
 INSERT OR IGNORE INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required)
 VALUES 
   ('AV1 Codec', 'cond_av1', 'release_title', 'all', 0, 1),
+  ('Legacy x265 Codec', 'cond_x265', 'release_title', 'all', 0, 1),
+  ('Legacy x264 Codec', 'cond_x264', 'release_title', 'all', 0, 1),
   ('10-bit Depth', 'cond_10bit', 'release_title', 'all', 0, 1),
   ('8-bit Depth', 'cond_8bit', 'release_title', 'all', 0, 1),
   ('Film Grain Synthesis', 'cond_fgs', 'release_title', 'all', 0, 1),
-  ('AV1 Quality Tier 01', 'cond_av1_req_01', 'release_title', 'all', 0, 1),
-  ('AV1 Quality Tier 01', 'cond_group_01', 'release_title', 'all', 0, 1),
-  ('AV1 Quality Tier 02', 'cond_av1_req_02', 'release_title', 'all', 0, 1),
-  ('AV1 Quality Tier 02', 'cond_group_02', 'release_title', 'all', 0, 1),
-  ('AV1 Compact Tier 01', 'cond_av1_req_c01', 'release_title', 'all', 0, 1),
-  ('AV1 Compact Tier 01', 'cond_group_c01', 'release_title', 'all', 0, 1),
-  ('AV1 Compact Tier 02', 'cond_av1_req_c02', 'release_title', 'all', 0, 1),
-  ('AV1 Compact Tier 02', 'cond_group_c02', 'release_title', 'all', 0, 1),
-  ('AV1 Storage Savers', 'cond_av1_req_s', 'release_title', 'all', 0, 1),
-  ('AV1 Storage Savers', 'cond_group_s', 'release_title', 'all', 0, 1),
+  ('AV1 Quality Encoders', 'cond_av1_q_req', 'release_title', 'all', 0, 1),
+  ('AV1 Quality Encoders', 'cond_av1_q_grp', 'release_title', 'all', 0, 1),
+  ('AV1 Anime Encoders', 'cond_av1_a_req', 'release_title', 'all', 0, 1),
+  ('AV1 Anime Encoders', 'cond_av1_a_grp', 'release_title', 'all', 0, 1),
+  ('AV1 Compact Encoders', 'cond_av1_c_req', 'release_title', 'all', 0, 1),
+  ('AV1 Compact Encoders', 'cond_av1_c_grp', 'release_title', 'all', 0, 1),
+  ('AV1 Storage Savers', 'cond_av1_s_req', 'release_title', 'all', 0, 1),
+  ('AV1 Storage Savers', 'cond_av1_s_grp', 'release_title', 'all', 0, 1),
   ('Opus 5.1 / 7.1', 'cond_opus_multi', 'release_title', 'all', 0, 1),
   ('Opus Stereo', 'cond_opus_stereo', 'release_title', 'all', 0, 1),
   ('DV (No HDR Fallback)', 'cond_dv_no_fallback', 'release_title', 'all', 0, 1),
@@ -23668,19 +23672,19 @@ VALUES
 INSERT OR IGNORE INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)
 VALUES 
   ('AV1 Codec', 'cond_av1', 'AV1 Codec RegEx'),
+  ('Legacy x265 Codec', 'cond_x265', 'Non-AV1 x265 Codec RegEx'),
+  ('Legacy x264 Codec', 'cond_x264', 'Non-AV1 x264 Codec RegEx'),
   ('10-bit Depth', 'cond_10bit', '10bit Depth RegEx'),
   ('8-bit Depth', 'cond_8bit', '8bit Depth RegEx'),
   ('Film Grain Synthesis', 'cond_fgs', 'Film Grain Synthesis RegEx'),
-  ('AV1 Quality Tier 01', 'cond_av1_req_01', 'AV1 Codec RegEx'),
-  ('AV1 Quality Tier 01', 'cond_group_01', 'AV1 Quality Tier 01 RegEx'),
-  ('AV1 Quality Tier 02', 'cond_av1_req_02', 'AV1 Codec RegEx'),
-  ('AV1 Quality Tier 02', 'cond_group_02', 'AV1 Quality Tier 02 RegEx'),
-  ('AV1 Compact Tier 01', 'cond_av1_req_c01', 'AV1 Codec RegEx'),
-  ('AV1 Compact Tier 01', 'cond_group_c01', 'AV1 Compact Tier 01 RegEx'),
-  ('AV1 Compact Tier 02', 'cond_av1_req_c02', 'AV1 Codec RegEx'),
-  ('AV1 Compact Tier 02', 'cond_group_c02', 'AV1 Compact Tier 02 RegEx'),
-  ('AV1 Storage Savers', 'cond_av1_req_s', 'AV1 Codec RegEx'),
-  ('AV1 Storage Savers', 'cond_group_s', 'AV1 Storage Saver RegEx'),
+  ('AV1 Quality Encoders', 'cond_av1_q_req', 'AV1 Codec RegEx'),
+  ('AV1 Quality Encoders', 'cond_av1_q_grp', 'AV1 Quality Encoders RegEx'),
+  ('AV1 Anime Encoders', 'cond_av1_a_req', 'AV1 Codec RegEx'),
+  ('AV1 Anime Encoders', 'cond_av1_a_grp', 'AV1 Anime Encoders RegEx'),
+  ('AV1 Compact Encoders', 'cond_av1_c_req', 'AV1 Codec RegEx'),
+  ('AV1 Compact Encoders', 'cond_av1_c_grp', 'AV1 Compact Encoders RegEx'),
+  ('AV1 Storage Savers', 'cond_av1_s_req', 'AV1 Codec RegEx'),
+  ('AV1 Storage Savers', 'cond_av1_s_grp', 'AV1 Storage Savers RegEx'),
   ('Opus 5.1 / 7.1', 'cond_opus_multi', 'Opus Multi RegEx'),
   ('Opus Stereo', 'cond_opus_stereo', 'Opus Stereo RegEx'),
   ('DV (No HDR Fallback)', 'cond_dv_no_fallback', 'DV No Fallback RegEx'),
@@ -23694,8 +23698,8 @@ VALUES
 -- ============================================================================
 INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES 
-  ('Movies 2160p AV1 HQ', '4K UHD AV1 Movies with HDR10/Dolby Vision, reference transparent encoders, and lossless/Opus audio.', 1, 500, 10000, 1),
-  ('Movies 1080p AV1 HQ', '1080p FHD AV1 Movies with 10-bit precision, reference transparent tiering, and high-fidelity audio.', 1, 500, 10000, 1),
+  ('Movies 2160p AV1 HQ', '4K UHD AV1 Movies with HDR10/Dolby Vision, reference transparent AV1 encoders, and lossless/Opus audio.', 1, 500, 10000, 1),
+  ('Movies 1080p AV1 HQ', '1080p FHD AV1 Movies with 10-bit precision, reference AV1 encoders, and high-fidelity audio.', 1, 500, 10000, 1),
   ('Movies 1080p AV1 Storage', '1080p FHD AV1 space-saving profile for low-priority movie requests (PSA, GalaxyRG, MeGusta).', 1, 200, 10000, 1),
   ('TV 2160p AV1', '4K UHD AV1 TV Series episodes with HDR and multi-channel audio.', 1, 500, 10000, 1),
   ('TV 1080p AV1 HQ', '1080p FHD 10-bit AV1 TV Series episodes with high audio fidelity.', 1, 500, 10000, 1),
@@ -23771,9 +23775,12 @@ VALUES
 
 
 -- Pure AV1 Quality Profile Scoring
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Codec', 'radarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Tier 01', 'radarr', 1000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Tier 02', 'radarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Codec', 'radarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Legacy x265 Codec', 'radarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Legacy x264 Codec', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'radarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Compact Encoders', 'radarr', 0);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Storage Savers', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Dolby Vision', 'radarr', 600);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR10+', 'radarr', 500);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR', 'radarr', 400);
@@ -23793,18 +23800,18 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Remaster', 'radarr', 150);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Special Edition', 'radarr', 100);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'radarr', 150);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Compact Tier 01', 'radarr', 0);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Compact Tier 02', 'radarr', -200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Storage Savers', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', '8-bit Depth', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'DV (No HDR Fallback)', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Banned Groups', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscale', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscaled', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Codec', 'radarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Quality Tier 01', 'radarr', 1000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Quality Tier 02', 'radarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Codec', 'radarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Legacy x265 Codec', 'radarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Legacy x264 Codec', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Quality Encoders', 'radarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Compact Encoders', 'radarr', 0);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Storage Savers', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '10-bit Depth', 'radarr', 300);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Film Grain Synthesis', 'radarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Opus 5.1 / 7.1', 'radarr', 300);
@@ -23817,20 +23824,17 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Criterion Collection', 'radarr', 250);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Remaster', 'radarr', 150);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Special Edition', 'radarr', 100);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Compact Tier 01', 'radarr', 0);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Compact Tier 02', 'radarr', -200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Storage Savers', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '8-bit Depth', 'radarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Banned Groups', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscale', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscaled', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Codec', 'radarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Compact Tier 01', 'radarr', 800);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Compact Tier 02', 'radarr', 600);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Storage Savers', 'radarr', 400);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Quality Tier 01', 'radarr', 200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Quality Tier 02', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Codec', 'radarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Legacy x265 Codec', 'radarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Legacy x264 Codec', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Compact Encoders', 'radarr', 800);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Storage Savers', 'radarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Quality Encoders', 'radarr', 300);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', '10-bit Depth', 'radarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Opus 5.1 / 7.1', 'radarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Opus Stereo', 'radarr', 150);
@@ -23838,9 +23842,12 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Banned Groups', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Upscale', 'radarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'BR-DISK Structure', 'radarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Codec', 'sonarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Quality Tier 01', 'sonarr', 1000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Quality Tier 02', 'sonarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Codec', 'sonarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Legacy x265 Codec', 'sonarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Legacy x264 Codec', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Quality Encoders', 'sonarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Compact Encoders', 'sonarr', 0);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Storage Savers', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '10-bit Depth', 'sonarr', 300);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Film Grain Synthesis', 'sonarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Dolby Vision', 'sonarr', 600);
@@ -23853,18 +23860,18 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'NF', 'sonarr', 100);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Disney+ Enhancement', 'sonarr', 100);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HBO Max Enhancement', 'sonarr', 100);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Compact Tier 01', 'sonarr', 0);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Compact Tier 02', 'sonarr', -200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Storage Savers', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '8-bit Depth', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'DV (No HDR Fallback)', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Banned Groups', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscale', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscaled', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'BR-DISK Structure', 'sonarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Codec', 'sonarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Quality Tier 01', 'sonarr', 1000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Quality Tier 02', 'sonarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Codec', 'sonarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Legacy x265 Codec', 'sonarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Legacy x264 Codec', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Quality Encoders', 'sonarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Compact Encoders', 'sonarr', 0);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Storage Savers', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', '10-bit Depth', 'sonarr', 300);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Film Grain Synthesis', 'sonarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Opus 5.1 / 7.1', 'sonarr', 300);
@@ -23872,20 +23879,17 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Dolby Digital +', 'sonarr', 150);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'ATVP', 'sonarr', 120);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'NF', 'sonarr', 100);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Compact Tier 01', 'sonarr', 0);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Compact Tier 02', 'sonarr', -200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Storage Savers', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', '8-bit Depth', 'sonarr', -1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Banned Groups', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Upscale', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Upscaled', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'BR-DISK Structure', 'sonarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Codec', 'sonarr', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Compact Tier 01', 'sonarr', 800);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Compact Tier 02', 'sonarr', 600);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Storage Savers', 'sonarr', 400);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Quality Tier 01', 'sonarr', 200);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Quality Tier 02', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Codec', 'sonarr', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Legacy x265 Codec', 'sonarr', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Legacy x264 Codec', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Compact Encoders', 'sonarr', 800);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Storage Savers', 'sonarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Quality Encoders', 'sonarr', 300);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', '10-bit Depth', 'sonarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Opus 5.1 / 7.1', 'sonarr', 200);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Opus Stereo', 'sonarr', 150);
@@ -23893,11 +23897,10 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Banned Groups', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Upscale', 'sonarr', -10000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'BR-DISK Structure', 'sonarr', -10000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Codec', 'all', 2000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Anime Bluray Tier 1', 'all', 1000);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Anime Bluray Tier 2', 'all', 600);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Anime WEB-DL Tier 1', 'all', 800);
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Anime WEB-DL Tier 2', 'all', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Codec', 'all', 5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Legacy x265 Codec', 'all', -5000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Legacy x264 Codec', 'all', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Anime Encoders', 'all', 1000);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Dual Audio', 'all', 600);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', '10-bit Depth', 'all', 400);
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Film Grain Synthesis', 'all', 200);
