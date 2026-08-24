@@ -23556,7 +23556,7 @@ WHERE m.arr_type = 'sonarr' AND m.api_name = 'WEBRip-720p';
 
 
 -- ============================================================================
--- PURE AV1 MASTER SUITE: TAGS, REGEXES, CUSTOM FORMATS & QUALITY PROFILES
+-- PURE AV1 MASTER SUITE: REFINED DEFINITIONS & TIERS
 -- ============================================================================
 
 -- Additional Tags
@@ -23570,8 +23570,9 @@ INSERT OR IGNORE INTO tags (name) VALUES ('FGS');
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('AV1 Codec RegEx', '(?<![a-z0-9])(AV1|AV01|SVT[-._]?AV1|libsvtav1|rav1e|AOM[-._]?AV1)(?![a-z0-9])', 'Matches AV1 encoded video releases');
 
+-- Enhanced 10-bit regex: also triggers on HDR/HDR10/DV (which are inherently 10-bit+)
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('10bit Depth RegEx', '(?<![a-z0-9])(10[-._]?bit|10b|Hi10P)(?![a-z0-9])', 'Matches 10-bit color depth releases');
+VALUES ('10bit Depth RegEx', '(?<![a-z0-9])(10[-._]?bit|10b|Hi10P|HDR10\+|HDR10|HDR|DV|DoVi|Dolby[-._]?Vision)(?![a-z0-9])', 'Matches 10-bit color depth or HDR/DV color profiles');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('8bit Depth RegEx', '(?<![a-z0-9])(8[-._]?bit|8b)(?![a-z0-9])', 'Matches 8-bit encoded releases');
@@ -23579,12 +23580,15 @@ VALUES ('8bit Depth RegEx', '(?<![a-z0-9])(8[-._]?bit|8b)(?![a-z0-9])', 'Matches
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('Film Grain Synthesis RegEx', '(?<![a-z0-9])(FGS|FilmGrain|Film[-._]?Grain)(?![a-z0-9])', 'Matches Film Grain Synthesis metadata');
 
+-- Tier 01: Expanded with verified master encoders including CoSMiCSuRFeR & dAV1nci
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Tier 01 Groups RegEx', '-(t3nshi|EDGE2020|ZR-|D-Z0N3|Kitsune|Afm72|Vyndros|samsepi0l|FLUX|CtrlHD|DON|Geek|DeciBelle|NBT|WiHD|playBD|TayTO|SMURF|HiFi)\b', 'Tier 1 high-fidelity transparent AV1 release groups');
+VALUES ('AV1 Tier 01 Groups RegEx', '-(t3nshi|EDGE2020|ZR-|D-Z0N3|Kitsune|Afm72|Vyndros|samsepi0l|FLUX|CtrlHD|DON|Geek|DeciBelle|NBT|WiHD|playBD|TayTO|SMURF|HiFi|CoSMiCSuRFeR|dAV1nci)\b', 'Tier 1 high-fidelity transparent AV1 release groups');
 
+-- Tier 02: Expanded with UH, WhiskeyJack, UnAV1Chain, R and H
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Tier 02 Groups RegEx', '-(AkihitoSubs|Judas|Erai-raws|SubsPlease|NanDesuKa|ASW|Kawa|VARYG|LostYears|Tenrai-Sensei|Kaleido|CTR|SCY)\b', 'Tier 2 quality AV1 anime and TV series encoders');
+VALUES ('AV1 Tier 02 Groups RegEx', '-(AkihitoSubs|Judas|Erai-raws|SubsPlease|NanDesuKa|ASW|Kawa|VARYG|LostYears|Tenrai-Sensei|Kaleido|CTR|SCY|UH|WhiskeyJack|UnAV1Chain|R[-._ ]and[-._ ]H)\b', 'Tier 2 quality AV1 anime and TV series encoders');
 
+-- Tier 03: Compact & Storage Savers
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('AV1 Tier 03 Groups RegEx', '-(MeGusta|GalaxyRG|PSA|VXT|d3g|Ghost|rartv|BONE|ELiTE|LAMA|KaKa|YAWNTIC|GZ|CART)\b', 'Tier 3 compact AV1 release groups for storage efficiency');
 
