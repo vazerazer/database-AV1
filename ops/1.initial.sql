@@ -913,77 +913,66 @@ INSERT INTO custom_formats (name, description) VALUES ('YK', 'Matches ''Youku'' 
 
 -- Quality Profiles
 
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Balanced', '1080p Balanced targets consistent & immutable 1080p **WEB-DLs** using the Streaming Source and Audio Formats to determine the level of Transparency.
 
 - Average Movie Sizes ~ 4 to 8gb per Movie
 - Movie Quality Ranking ~ 6/10
 - Average TV Sizes ~ 2 to 4gb per Episode
 - TV Quality Ranking ~ 7/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Compact', '1080p Compact targets low to medium quality x265 Bluray and WEB Encodes. 
 
 - Average Movie Sizes ~ 3 to 6gb per Movie
 - Movie Quality Ranking ~ 4/10
 - Average TV Sizes ~ 1 to 2gb per Episode
 - TV Quality Ranking ~ 4/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Efficient', '1080p Efficient targets high quality x265 Bluray and WEB Encodes
 
 - Average Movie Sizes ~ 6 to 12gb per Movie
 - Movie Quality Ranking ~ 7/10
 - Average TV Sizes ~ 2 to 3gb per Episode
 - TV Quality Ranking ~ 6/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Quality', '1080p Quality utilizes the [**Golden Popcorn Performance Index**](https://dictionarry.dev/wiki/gppi) to target **Transparent** x264 1080p Encodes. 
 
 - Average Movie Sizes ~ 10 to 15gb per Movie
 - Movie Quality Ranking ~ 8/10
 - Average TV Sizes ~ 4 to 8gb per Episode
 - TV Quality Ranking ~ 8/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Quality HDR', '1080p Quality HDR utilizes the [**Golden Popcorn Performance Index**](https://dictionarry.dev/wiki/gppi) to target **Transparent x265 HDR** 1080p Encodes. 
 
 - Average Movie Sizes ~ 10 to 20gb per Movie
 - Movie Quality Ranking ~ 9/10
 - Average TV Sizes ~ 4 to 10gb per Episode
 - TV Quality Ranking ~ 9/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('1080p Remux', '1080p Remux utilizes **Audio Formats** to prioritise high quality Lossless HD Blurays with a fallback to Transparent Bluray Encodes.
 
 - Average Movie Sizes ~ 20 to 30gb per Movie
 - Movie Quality Ranking ~ 10/10
 - Average TV Sizes ~ 6 to 12gb per Episode
 - TV Quality Ranking ~ 10/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('2160p Balanced', '2160p Balanced targets consistent & immutable 2160p **WEB-DLs w/ Lossy Audio**. 
 
 - Average Movie Sizes ~ 15 to 30gb per Movie
 - Movie Quality Ranking ~ 8/10
 - Average TV Sizes ~ 5 to 15gb per Episode
 - TV Quality Ranking ~ 8/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('2160p Efficient', '2160p Efficient targets consistent & immutable 2160p **WEB-DLs w/ Lossy Audio**. Specialized Fallback to 1080p Efficient
 
 - Average Movie Sizes ~ 15 to 30gb per Movie
 - Movie Quality Ranking ~ 6/10
 - Average TV Sizes ~ 4 to 12gb per Episode
 - TV Ranking ~ 6/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('2160p Quality', '2160p Quality utilizes the [**Encode Efficiency Index**](https://dictionarry.dev/wiki/eei) metric at a 60% target ratio to prioritize **Transparent** x265 4K Encodes
 
 - Average Movie Sizes ~ 30 to 50gb per Movie
 - Movie Quality Ranking ~ 9/10
 - Average TV Sizes ~ 10 to 20gb per Episode
 - TV Quality Ranking ~ 9/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('2160p Remux', '2160p Remux utilizes **Video / Audio Formats** to prioritise high quality lossless copies of UHD Blurays.
 
 - Average Movie Sizes ~ 40 to 60gb per Movie
 - Movie Quality Ranking ~ 10/10
 - Average TV Sizes ~ 15 to 30gb per Episode
 - TV Quality Ranking ~ 10/10', 1, 20000, 888888, 1);
-INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES ('720p Quality', '720p Quality utilizes the [**Golden Popcorn Performance Index**](https://dictionarry.dev/wiki/gppi) to target **Transparent** x264 720p Encodes. 
 
 - Average Movie Sizes ~ 4 to 8gb per Movie
@@ -993,147 +982,111 @@ VALUES ('720p Quality', '720p Quality utilizes the [**Golden Popcorn Performance
 
 -- Quality Groups (Profile-Specific)
 
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Balanced'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Compact'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Compact';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Compact';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Compact';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Efficient'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Quality HDR'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality HDR';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality HDR';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Quality HDR';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Remux'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '1080p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Quality HDR'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '2160p Balanced'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Balanced';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Efficient'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '2160p Efficient'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Efficient';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Quality HDR'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '2160p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '1080p Remux'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '2160p Remux'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '2160p Remux';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '480p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '720p Quality';
-INSERT INTO quality_groups (quality_profile_name, name)
 SELECT qp.name, '720p Quality'
 FROM quality_profiles qp
 WHERE qp.name = '720p Quality';
@@ -13189,6487 +13142,4869 @@ WHERE cf.name = 'YK' AND t.name = 'WEB-DL';
 
 -- Quality Group Members
 
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '1080p Balanced', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '1080p Balanced', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '1080p Compact', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '1080p Compact', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '1080p Compact', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Compact', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '1080p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '1080p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '1080p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Quality HDR', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Remux-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '1080p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '2160p Balanced', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '2160p Balanced', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Balanced', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '1080p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '2160p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '2160p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '2160p Efficient', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Efficient', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '1080p Quality HDR', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '2160p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '2160p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Remux-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '1080p Remux', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-1080p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '2160p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '2160p Remux', q.name
 FROM qualities q
 WHERE q.name = 'Remux-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '2160p Remux', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-2160p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '2160p Remux', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-576p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'DVD';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '480p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-480p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'Bluray-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBDL-720p';
-INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 SELECT '720p Quality', '720p Quality', q.name
 FROM qualities q
 WHERE q.name = 'WEBRip-720p';
 
 -- Quality Profile Tags
 
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Balanced' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Balanced' AND t.name = 'Balanced Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Balanced' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Balanced' AND t.name = 'h264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Balanced' AND t.name = 'x264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Compact' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Compact' AND t.name = 'Compact Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Compact' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Compact' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Compact' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Efficient' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Efficient' AND t.name = 'Efficient Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Efficient' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Efficient' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Efficient' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality' AND t.name = 'Quality Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality' AND t.name = 'h264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality' AND t.name = 'x264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = 'HDR';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = 'Quality Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = 'x264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Quality HDR' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = '1080p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = 'Lossless Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = 'Remux Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = 'h264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = 'x264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '1080p Remux' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = '2160p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = 'Balanced Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = 'HDR';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Balanced' AND t.name = 'x264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Efficient' AND t.name = '2160p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Efficient' AND t.name = 'Efficient Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Efficient' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Efficient' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Efficient' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = '2160p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = 'HDR';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = 'Lossless Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = 'Quality Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Quality' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = '2160p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = 'HDR';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = 'Lossless Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = 'Remux Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = 'h265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '2160p Remux' AND t.name = 'x265';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '720p Quality' AND t.name = '720p';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '720p Quality' AND t.name = 'Lossy Audio';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '720p Quality' AND t.name = 'Quality Focused';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '720p Quality' AND t.name = 'h264';
-INSERT INTO quality_profile_tags (quality_profile_name, tag_name)
 SELECT qp.name, t.name
 FROM quality_profiles qp, tags t
 WHERE qp.name = '720p Quality' AND t.name = 'x264';
 
 -- Quality Profile Languages
 
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Balanced' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Compact' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Efficient' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Quality' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Quality HDR' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '1080p Remux' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '2160p Balanced' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '2160p Efficient' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '2160p Quality' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '2160p Remux' AND l.name = 'Original';
-INSERT INTO quality_profile_languages (quality_profile_name, language_name, type)
 SELECT qp.name, l.name, 'must'
 FROM quality_profiles qp, languages l
 WHERE qp.name = '720p Quality' AND l.name = 'Original';
 
 -- Quality Profile Custom Formats
 
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'x265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 281000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Balanced' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 620000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p WEB-DL (h264)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 580000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 460000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 460000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 340000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p HDTV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p HDTV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 160000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 145000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 144000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 143000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 142000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 141000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 140000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 102000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p HDTV Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p HDTV Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p HDTV Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p HDTV Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p HDTV Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 63000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 62000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 61000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'SDTV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'SDTV Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Banned Groups (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Banned WEBRip (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'h265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Lossless Audio';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'UHD Bluray (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'x265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 703000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 702000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 701000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 701000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 700000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 700000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 700000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 680000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p WEB-DL HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 680000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HONE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Bluray HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'HONE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 643000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 643000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 643000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 643000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 642000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 641000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 640000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact Movie WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 621000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 620000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p HDTV Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 684000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 684000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 684000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 684000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Vialle WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 684000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 683000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 682000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 681000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 680000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV WEB Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 665000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 664000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 663000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 662000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 661000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Bluray Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 660000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 641000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Trash Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 640000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '1080p Compact TV Trash Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = '720p HDTV Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Compact' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 360000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Bluray HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 360000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HONE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 340000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p WEB-DL HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 340000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HONE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p WEB-DL (h264)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DS4K';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Banned Groups (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Banned WEBRip (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'h265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Lossless Audio';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'x265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 321000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 320000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 302000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 301000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 300000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 281000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 321000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 320000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Vialle WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 304000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 302000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 301000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 300000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Efficient' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'x265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 420000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HDR (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'x265 (Bluray)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Banned UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'x265 (WEB)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Quality HDR' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 420000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DTS-X';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DTS-HD MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'TrueHD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HDR (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'PCM';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Atmos (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Remux Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Remux Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Remux Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Remux Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'x265 (Bluray)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Banned Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Banned UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'x265 (Remux)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'x265 (WEB)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '1080p Remux' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '2160p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 420000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DTS-X';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DTS-HD MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'TrueHD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'TrueHD (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Amazon Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HDR (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'PCM';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Atmos (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'x265 (Bluray)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Banned UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'x264 (2160p)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'x265 (WEB)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 442000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 441000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '2160p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '2160p Balanced Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 6000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Disney+ Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Movies Anywhere Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'iTunes Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 444000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'HBO Max Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Balanced' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p WEB-DL (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 360000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Bluray HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 360000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HONE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 340000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p WEB-DL HEVC Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 340000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HONE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p WEB-DL (h264)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Amazon Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DS4K';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Banned Groups (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Banned WEBRip (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'h265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Lossless Audio';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'x264 (2160p)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'x265 (Efficient)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 382000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 381000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Balanced Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 321000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 320000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 302000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 301000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 300000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient Movie WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 281000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 6000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Disney+ Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Movies Anywhere Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'iTunes Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 421000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Efficient TV Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 421000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR Blurays';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 421000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE Blurays';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Efficient TV WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR WEBs';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE WEBs';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 384000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 324000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Vialle Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 323000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 322000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 321000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 320000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'QxR WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TAoE WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Vialle WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 305000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Weasley WEB';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 304000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 303000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 302000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 301000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV Bluray Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 300000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = '1080p Efficient TV WEB Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'HBO Max Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Efficient' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 465000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 464000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 463000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 462000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 460000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 439000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 420000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DTS-X';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DTS-HD MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'TrueHD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'TrueHD (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Amazon Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HDR (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HDR10 (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'PCM';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Atmos (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'x265 (Bluray)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Banned UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'x264 (2160p)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'x265 (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'x265 (WEB)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 442000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 441000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Balanced Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 6000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Disney+ Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Movies Anywhere Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'iTunes Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 444000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'HBO Max Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Quality' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 485000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 484000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 483000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 482000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 480000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 460000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 440000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 420000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 380000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 280000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 279000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 125000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 124000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 123000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 122000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 121000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DTS-X';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DTS-HD MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'TrueHD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'TrueHD (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Amazon Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HDR (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HDR10 (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'PCM';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Atmos (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Remux Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Remux Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Remux Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Remux Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -400000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'x265 (Bluray)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Banned Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Banned UHD Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Dolby Vision (Without Fallback)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'x264 (2160p)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'x265 (Missing)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'x265 (Remux)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'x265 (WEB)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 462000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 461000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 460000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Balanced Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 101000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 100000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '1080p Balanced Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 6000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Disney+ Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Movies Anywhere Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'iTunes Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 464000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = '2160p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'HBO Max Enhancement';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '2160p Remux' AND cf.name = 'Upscaled';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 240000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 180000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 120000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '576p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 85000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 84000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 83000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 82000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 81000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p Bluray';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Quality Tier 6';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p WEB-DL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 43000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '576p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 42000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '576p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 41000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '576p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '576p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 23000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 22000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 21000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p Quality Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '480p Quality Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DVD';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DVD Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 11000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'SD Quality Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 10000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'SD Quality Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'AMZN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 3000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DSNP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'ATVP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HMAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 2000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'MAX';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'iT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'NF';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 800
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'FLAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DTS-HD HRA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 700
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Opus';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 600
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Dolby Digital +';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 500
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DTS-ES';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Dolby Atmos';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 400
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Dolby Digital';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 300
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DTS';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 200
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'AAC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 100
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'WEB-DL Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 80
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'WEB-DL Tier 2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 60
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'WEB-DL Tier 3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 40
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'WEB-DL Tier 4';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 20
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'WEB-DL Tier 5';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 8
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Repack3';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 7
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Repack2';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 6
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Repack1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'CRAV';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'CRIT';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'DRPO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HTSR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HULU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'iP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'MUBI';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'NOW';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'PCOK';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'PLAY';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'PMTP';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'ROKU';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'SHO';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', 0
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'STAN';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'ASL';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'AV1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Banned Groups';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Banned WEBRip';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'BCORE';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Dolby Vision';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Full Disc';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'h265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HDR';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HDR10';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HDR10+';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'HLG';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'PQ';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Remux';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'VP9';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'VVC';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'x265';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'all', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Xvid';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 60000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '720p Balanced Tier 1';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 4000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'MA';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Better Theatricals';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', 1000
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Special Edition';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = '3D';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'B&W';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Full Disc (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Remux (Quality Match)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Sing Along';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'radarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Upscale';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', 10
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Season Pack';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Remux (Source)';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'TV Extras';
-INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score)
 SELECT qp.name, cf.name, 'sonarr', -999999
 FROM quality_profiles qp, custom_formats cf
 WHERE qp.name = '720p Quality' AND cf.name = 'Upscaled';
 
 -- Quality Profile Qualities
 
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Balanced';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Compact' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Compact';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Compact' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_name, position, upgrade_until)
 SELECT qp.name, q.name, 2, 0
 FROM quality_profiles qp, qualities q
 WHERE qp.name = '1080p Compact' AND q.name = 'HDTV-1080p';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_name, position, upgrade_until)
 SELECT qp.name, q.name, 3, 0
 FROM quality_profiles qp, qualities q
 WHERE qp.name = '1080p Compact' AND q.name = 'HDTV-720p';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 4, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Compact' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_name, position, upgrade_until)
 SELECT qp.name, q.name, 5, 0
 FROM quality_profiles qp, qualities q
 WHERE qp.name = '1080p Compact' AND q.name = 'SDTV';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Efficient';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality HDR' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Quality HDR';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality HDR' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Quality HDR' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Remux';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '1080p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '2160p Balanced';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Quality HDR';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 3, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Balanced' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '2160p Efficient';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Efficient';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 3, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Efficient' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '2160p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Quality HDR';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 3, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '2160p Remux';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '1080p Remux';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 2, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 3, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '2160p Remux' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 0, 1
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '720p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '720p Quality';
-INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until)
 SELECT qp.name, qg.name, 1, 0
 FROM quality_profiles qp, quality_groups qg
 WHERE qp.name = '720p Quality' AND qg.quality_profile_name = qp.name AND qg.name = '480p Quality';
@@ -25220,9 +23555,8 @@ FROM quality_api_mappings m
 WHERE m.arr_type = 'sonarr' AND m.api_name = 'WEBRip-720p';
 
 
-
 -- ============================================================================
--- AV1 SPECIALIZED EXTENSIONS & QUALITY PROFILES
+-- PURE AV1 MASTER SUITE: TAGS, REGEXES, CUSTOM FORMATS & QUALITY PROFILES
 -- ============================================================================
 
 -- Additional Tags
@@ -25230,6 +23564,7 @@ INSERT OR IGNORE INTO tags (name) VALUES ('AV1');
 INSERT OR IGNORE INTO tags (name) VALUES ('Opus');
 INSERT OR IGNORE INTO tags (name) VALUES ('AV1 Tier');
 INSERT OR IGNORE INTO tags (name) VALUES ('Dual Audio');
+INSERT OR IGNORE INTO tags (name) VALUES ('FGS');
 
 -- Additional Regular Expressions
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
@@ -25242,13 +23577,16 @@ INSERT OR IGNORE INTO regular_expressions (name, pattern, description)
 VALUES ('8bit Depth RegEx', '(?<![a-z0-9])(8[-._]?bit|8b)(?![a-z0-9])', 'Matches 8-bit encoded releases');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Tier 01 Groups RegEx', '-(t3nshi|EDGE2020|ZR-|D-Z0N3|Kitsune|Afm72|Vyndros|samsepi0l|FLUX|CtrlHD|Geek|DeciBelle)\b', 'Tier 1 high-fidelity transparent AV1 release groups');
+VALUES ('Film Grain Synthesis RegEx', '(?<![a-z0-9])(FGS|FilmGrain|Film[-._]?Grain)(?![a-z0-9])', 'Matches Film Grain Synthesis metadata');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Tier 02 Groups RegEx', '-(AkihitoSubs|Judas|Erai-raws|SubsPlease|NanDesuKa|ASW|Kawa|VARYG|LostYears|Tenrai-Sensei)\b', 'Tier 2 quality AV1 anime and TV series encoders');
+VALUES ('AV1 Tier 01 Groups RegEx', '-(t3nshi|EDGE2020|ZR-|D-Z0N3|Kitsune|Afm72|Vyndros|samsepi0l|FLUX|CtrlHD|DON|Geek|DeciBelle|NBT|WiHD|playBD|TayTO|SMURF|HiFi)\b', 'Tier 1 high-fidelity transparent AV1 release groups');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
-VALUES ('AV1 Tier 03 Groups RegEx', '-(MeGusta|GalaxyRG|PSA|VXT|d3g|Ghost|rartv|BONE|ELiTE|LAMA)\b', 'Tier 3 compact AV1 release groups for storage efficiency');
+VALUES ('AV1 Tier 02 Groups RegEx', '-(AkihitoSubs|Judas|Erai-raws|SubsPlease|NanDesuKa|ASW|Kawa|VARYG|LostYears|Tenrai-Sensei|Kaleido|CTR|SCY)\b', 'Tier 2 quality AV1 anime and TV series encoders');
+
+INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
+VALUES ('AV1 Tier 03 Groups RegEx', '-(MeGusta|GalaxyRG|PSA|VXT|d3g|Ghost|rartv|BONE|ELiTE|LAMA|KaKa|YAWNTIC|GZ|CART)\b', 'Tier 3 compact AV1 release groups for storage efficiency');
 
 INSERT OR IGNORE INTO regular_expressions (name, pattern, description) 
 VALUES ('Opus Multi RegEx', '(?<![a-z0-9])(Opus|OPUS)[-._ ]?(5\.1|7\.1|6ch|8ch)(?![a-z0-9])', 'Matches Opus 5.1/7.1 multi-channel audio');
@@ -25275,6 +23613,7 @@ VALUES ('BR-DISK RegEx', '\b(BR-DISK|BDMV|ISO|COMPLETE\.BLURAY)\b', 'Matches raw
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Codec', 'Matches genuine AV1 video streams.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('10-bit Depth', 'Matches 10-bit color depth releases.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('8-bit Depth', 'Matches 8-bit color depth releases.');
+INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('Film Grain Synthesis', 'Matches releases with Film Grain Synthesis.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Tier 01', 'Tier 1 high-fidelity transparent AV1 release groups.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Tier 02', 'Tier 2 quality AV1 anime and TV series encoders.');
 INSERT OR IGNORE INTO custom_formats (name, description) VALUES ('AV1 Tier 03', 'Tier 3 compact AV1 release groups for storage efficiency.');
@@ -25292,6 +23631,7 @@ VALUES
   ('AV1 Codec', 'cond_av1', 'release_title', 'all', 0, 1),
   ('10-bit Depth', 'cond_10bit', 'release_title', 'all', 0, 1),
   ('8-bit Depth', 'cond_8bit', 'release_title', 'all', 0, 1),
+  ('Film Grain Synthesis', 'cond_fgs', 'release_title', 'all', 0, 1),
   ('AV1 Tier 01', 'cond_av1_req_01', 'release_title', 'all', 0, 1),
   ('AV1 Tier 01', 'cond_group_01', 'release_title', 'all', 0, 1),
   ('AV1 Tier 02', 'cond_av1_req_02', 'release_title', 'all', 0, 1),
@@ -25312,6 +23652,7 @@ VALUES
   ('AV1 Codec', 'cond_av1', 'AV1 Codec RegEx'),
   ('10-bit Depth', 'cond_10bit', '10bit Depth RegEx'),
   ('8-bit Depth', 'cond_8bit', '8bit Depth RegEx'),
+  ('Film Grain Synthesis', 'cond_fgs', 'Film Grain Synthesis RegEx'),
   ('AV1 Tier 01', 'cond_av1_req_01', 'AV1 Codec RegEx'),
   ('AV1 Tier 01', 'cond_group_01', 'AV1 Tier 01 Groups RegEx'),
   ('AV1 Tier 02', 'cond_av1_req_02', 'AV1 Codec RegEx'),
@@ -25326,26 +23667,32 @@ VALUES
   ('Remaster', 'cond_remaster', 'Remaster RegEx'),
   ('BR-DISK Structure', 'cond_br_disk', 'BR-DISK RegEx');
 
--- AV1 Quality Profiles
-INSERT OR IGNORE INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
+-- ============================================================================
+-- PURE AV1 QUALITY PROFILES (7 Dedicated Profiles)
+-- ============================================================================
+INSERT INTO quality_profiles (name, description, upgrades_allowed, minimum_custom_format_score, upgrade_until_score, upgrade_score_increment)
 VALUES 
-  ('Movies 2160p AV1 HQ', '4K UHD AV1 Movies with HDR10/Dolby Vision, high video bitrate, and transparent/Opus audio.', 1, 500, 10000, 1),
-  ('Movies 1080p AV1 HQ', '1080p FHD AV1 Movies with 10-bit precision, transparent tiering, and high-fidelity audio.', 1, 500, 10000, 1),
+  ('Movies 2160p AV1 HQ', '4K UHD AV1 Movies with HDR10/Dolby Vision, high video bitrate, transparent encoders, and premium audio.', 1, 500, 10000, 1),
+  ('Movies 1080p AV1 HQ', '1080p FHD AV1 Movies with 10-bit precision, transparent tiering, and high-fidelity Opus/lossless audio.', 1, 500, 10000, 1),
+  ('Movies 1080p AV1 Storage', '1080p FHD AV1 space-saving profile for low-priority movie requests (PSA, GalaxyRG, MeGusta).', 1, 200, 10000, 1),
   ('TV 2160p AV1', '4K UHD AV1 TV Series episodes with HDR and multi-channel audio.', 1, 500, 10000, 1),
-  ('TV 1080p AV1', '1080p FHD 10-bit AV1 TV Series (space-saving high-efficiency profile).', 1, 500, 10000, 1),
-  ('Anime 1080p AV1', '1080p 10-bit AV1 Anime with Dual Audio (Japanese + English) prioritization.', 1, 500, 10000, 1);
+  ('TV 1080p AV1 HQ', '1080p FHD 10-bit AV1 TV Series episodes with high audio fidelity.', 1, 500, 10000, 1),
+  ('TV 1080p AV1 Storage', '1080p FHD AV1 space-saving episodic profile for massive library savings.', 1, 200, 10000, 1),
+  ('Anime 1080p AV1', '1080p 10-bit AV1 Anime with Dual Audio (Japanese + English) & multi-sub prioritization.', 1, 500, 10000, 1);
 
--- Quality Groups
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('Movies 2160p AV1 HQ', '2160p Group');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('Movies 2160p AV1 HQ', '1080p Fallback');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('Movies 1080p AV1 HQ', '1080p Group');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('TV 2160p AV1', '2160p TV Group');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('TV 2160p AV1', '1080p TV Fallback');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('TV 1080p AV1', '1080p TV Group');
-INSERT OR IGNORE INTO quality_groups (quality_profile_name, name) VALUES ('Anime 1080p AV1', 'Anime 1080p Group');
+-- Quality Groups (Profile-Specific)
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('Movies 2160p AV1 HQ', '2160p Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('Movies 2160p AV1 HQ', '1080p Fallback');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('Movies 1080p AV1 HQ', '1080p Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('Movies 1080p AV1 Storage', '1080p Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('TV 2160p AV1', '2160p TV Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('TV 2160p AV1', '1080p TV Fallback');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('TV 1080p AV1 HQ', '1080p TV Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('TV 1080p AV1 Storage', '1080p TV Group');
+INSERT INTO quality_groups (quality_profile_name, name) VALUES ('Anime 1080p AV1', 'Anime 1080p Group');
 
 -- Quality Group Members
-INSERT OR IGNORE INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
+INSERT INTO quality_group_members (quality_profile_name, quality_group_name, quality_name)
 VALUES 
   ('Movies 2160p AV1 HQ', '2160p Group', 'WEBDL-2160p'),
   ('Movies 2160p AV1 HQ', '2160p Group', 'WEBRip-2160p'),
@@ -25354,10 +23701,16 @@ VALUES
   ('Movies 2160p AV1 HQ', '1080p Fallback', 'WEBDL-1080p'),
   ('Movies 2160p AV1 HQ', '1080p Fallback', 'WEBRip-1080p'),
   ('Movies 2160p AV1 HQ', '1080p Fallback', 'Bluray-1080p'),
+
   ('Movies 1080p AV1 HQ', '1080p Group', 'WEBDL-1080p'),
   ('Movies 1080p AV1 HQ', '1080p Group', 'WEBRip-1080p'),
   ('Movies 1080p AV1 HQ', '1080p Group', 'Bluray-1080p'),
   ('Movies 1080p AV1 HQ', '1080p Group', 'Remux-1080p'),
+
+  ('Movies 1080p AV1 Storage', '1080p Group', 'WEBDL-1080p'),
+  ('Movies 1080p AV1 Storage', '1080p Group', 'WEBRip-1080p'),
+  ('Movies 1080p AV1 Storage', '1080p Group', 'Bluray-1080p'),
+
   ('TV 2160p AV1', '2160p TV Group', 'WEBDL-2160p'),
   ('TV 2160p AV1', '2160p TV Group', 'WEBRip-2160p'),
   ('TV 2160p AV1', '2160p TV Group', 'Bluray-2160p'),
@@ -25365,124 +23718,160 @@ VALUES
   ('TV 2160p AV1', '1080p TV Fallback', 'WEBDL-1080p'),
   ('TV 2160p AV1', '1080p TV Fallback', 'WEBRip-1080p'),
   ('TV 2160p AV1', '1080p TV Fallback', 'Bluray-1080p'),
-  ('TV 1080p AV1', '1080p TV Group', 'WEBDL-1080p'),
-  ('TV 1080p AV1', '1080p TV Group', 'WEBRip-1080p'),
-  ('TV 1080p AV1', '1080p TV Group', 'Bluray-1080p'),
-  ('TV 1080p AV1', '1080p TV Group', 'HDTV-1080p'),
+
+  ('TV 1080p AV1 HQ', '1080p TV Group', 'WEBDL-1080p'),
+  ('TV 1080p AV1 HQ', '1080p TV Group', 'WEBRip-1080p'),
+  ('TV 1080p AV1 HQ', '1080p TV Group', 'Bluray-1080p'),
+  ('TV 1080p AV1 HQ', '1080p TV Group', 'HDTV-1080p'),
+
+  ('TV 1080p AV1 Storage', '1080p TV Group', 'WEBDL-1080p'),
+  ('TV 1080p AV1 Storage', '1080p TV Group', 'WEBRip-1080p'),
+  ('TV 1080p AV1 Storage', '1080p TV Group', 'Bluray-1080p'),
+  ('TV 1080p AV1 Storage', '1080p TV Group', 'HDTV-1080p'),
+
   ('Anime 1080p AV1', 'Anime 1080p Group', 'WEBDL-1080p'),
   ('Anime 1080p AV1', 'Anime 1080p Group', 'WEBRip-1080p'),
   ('Anime 1080p AV1', 'Anime 1080p Group', 'Bluray-1080p');
 
 -- Quality Profile Qualities
-INSERT OR IGNORE INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until, enabled)
+INSERT INTO quality_profile_qualities (quality_profile_name, quality_group_name, position, upgrade_until, enabled)
 VALUES 
   ('Movies 2160p AV1 HQ', '2160p Group', 0, 1, 1),
   ('Movies 2160p AV1 HQ', '1080p Fallback', 1, 0, 1),
   ('Movies 1080p AV1 HQ', '1080p Group', 0, 1, 1),
+  ('Movies 1080p AV1 Storage', '1080p Group', 0, 1, 1),
   ('TV 2160p AV1', '2160p TV Group', 0, 1, 1),
   ('TV 2160p AV1', '1080p TV Fallback', 1, 0, 1),
-  ('TV 1080p AV1', '1080p TV Group', 0, 1, 1),
+  ('TV 1080p AV1 HQ', '1080p TV Group', 0, 1, 1),
+  ('TV 1080p AV1 Storage', '1080p TV Group', 0, 1, 1),
   ('Anime 1080p AV1', 'Anime 1080p Group', 0, 1, 1);
 
 
 
--- Quality Profile Scoring
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Codec', 'radarr', 1500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', '10-bit Depth', 'radarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 01', 'radarr', 800);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 02', 'radarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 03', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Dolby Vision', 'radarr', 500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR10+', 'radarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR', 'radarr', 300);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Atmos', 'radarr', 300);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'TrueHD', 'radarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'DTS-HD MA', 'radarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Opus 5.1 / 7.1', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Dolby Digital +', 'radarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'ATVP', 'radarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Amazon Enhancement', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'NF', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Disney+ Enhancement', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HBO Max Enhancement', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Criterion Collection', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Remaster', 'radarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Special Edition', 'radarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'radarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', '8-bit Depth', 'radarr', -500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'DV (No HDR Fallback)', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Banned Groups', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscale', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscaled', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Codec', 'radarr', 1500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '10-bit Depth', 'radarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 01', 'radarr', 800);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 02', 'radarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 03', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Opus 5.1 / 7.1', 'radarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Opus Stereo', 'radarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Dolby Digital +', 'radarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'FLAC', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'ATVP', 'radarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Amazon Enhancement', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'NF', 'radarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Criterion Collection', 'radarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Remaster', 'radarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Special Edition', 'radarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '8-bit Depth', 'radarr', -500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Banned Groups', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscale', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscaled', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Codec', 'sonarr', 1500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '10-bit Depth', 'sonarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 01', 'sonarr', 800);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 02', 'sonarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 03', 'sonarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Dolby Vision', 'sonarr', 500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HDR10+', 'sonarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HDR', 'sonarr', 300);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Atmos', 'sonarr', 300);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Opus 5.1 / 7.1', 'sonarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Dolby Digital +', 'sonarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'ATVP', 'sonarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'NF', 'sonarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Disney+ Enhancement', 'sonarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HBO Max Enhancement', 'sonarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '8-bit Depth', 'sonarr', -500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'DV (No HDR Fallback)', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Banned Groups', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscale', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscaled', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'BR-DISK Structure', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'AV1 Codec', 'sonarr', 1500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', '10-bit Depth', 'sonarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'AV1 Tier 01', 'sonarr', 800);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'AV1 Tier 02', 'sonarr', 400);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'AV1 Tier 03', 'sonarr', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Opus 5.1 / 7.1', 'sonarr', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Opus Stereo', 'sonarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Dolby Digital +', 'sonarr', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'ATVP', 'sonarr', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'NF', 'sonarr', 80);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', '8-bit Depth', 'sonarr', -500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Banned Groups', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Upscale', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'Upscaled', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1', 'BR-DISK Structure', 'sonarr', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Codec', 'all', 1500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', '10-bit Depth', 'all', 300);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 02', 'all', 800);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 01', 'all', 600);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 03', 'all', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Dual Audio', 'all', 500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Opus 5.1 / 7.1', 'all', 200);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Opus Stereo', 'all', 150);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'FLAC', 'all', 250);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AAC', 'all', 100);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', '8-bit Depth', 'all', -500);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Banned Groups', 'all', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Upscale', 'all', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Upscaled', 'all', -10000);
-INSERT OR IGNORE INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'BR-DISK Structure', 'all', -10000);
+-- Pure AV1 Quality Profile Scoring
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Codec', 'radarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', '10-bit Depth', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Film Grain Synthesis', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 01', 'radarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 02', 'radarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'AV1 Tier 03', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Dolby Vision', 'radarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR10+', 'radarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HDR', 'radarr', 400);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Atmos', 'radarr', 350);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'TrueHD', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'DTS-HD MA', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Opus 5.1 / 7.1', 'radarr', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Dolby Digital +', 'radarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'ATVP', 'radarr', 120);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Amazon Enhancement', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'NF', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Disney+ Enhancement', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'HBO Max Enhancement', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Criterion Collection', 'radarr', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Remaster', 'radarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Special Edition', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'radarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', '8-bit Depth', 'radarr', -1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'DV (No HDR Fallback)', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Banned Groups', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscale', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'Upscaled', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Codec', 'radarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '10-bit Depth', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Film Grain Synthesis', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 01', 'radarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 02', 'radarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'AV1 Tier 03', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Opus 5.1 / 7.1', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Opus Stereo', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Dolby Digital +', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'FLAC', 'radarr', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'ATVP', 'radarr', 120);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Amazon Enhancement', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'NF', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Criterion Collection', 'radarr', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Remaster', 'radarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Special Edition', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', '8-bit Depth', 'radarr', -1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Banned Groups', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscale', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'Upscaled', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 HQ', 'BR-DISK Structure', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Codec', 'radarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Tier 03', 'radarr', 800);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Tier 02', 'radarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AV1 Tier 01', 'radarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', '10-bit Depth', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Opus 5.1 / 7.1', 'radarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Opus Stereo', 'radarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'AAC', 'radarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Banned Groups', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'Upscale', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 1080p AV1 Storage', 'BR-DISK Structure', 'radarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Codec', 'sonarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '10-bit Depth', 'sonarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Film Grain Synthesis', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 01', 'sonarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 02', 'sonarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'AV1 Tier 03', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Dolby Vision', 'sonarr', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HDR10+', 'sonarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HDR', 'sonarr', 400);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Atmos', 'sonarr', 350);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Opus 5.1 / 7.1', 'sonarr', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Dolby Digital +', 'sonarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'ATVP', 'sonarr', 120);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'NF', 'sonarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Disney+ Enhancement', 'sonarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'HBO Max Enhancement', 'sonarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', '8-bit Depth', 'sonarr', -1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'DV (No HDR Fallback)', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Banned Groups', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscale', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'Upscaled', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 2160p AV1', 'BR-DISK Structure', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Codec', 'sonarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', '10-bit Depth', 'sonarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Film Grain Synthesis', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Tier 01', 'sonarr', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Tier 02', 'sonarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'AV1 Tier 03', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Opus 5.1 / 7.1', 'sonarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Opus Stereo', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Dolby Digital +', 'sonarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'ATVP', 'sonarr', 120);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'NF', 'sonarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', '8-bit Depth', 'sonarr', -1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Banned Groups', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Upscale', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'Upscaled', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 HQ', 'BR-DISK Structure', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Codec', 'sonarr', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Tier 03', 'sonarr', 800);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Tier 02', 'sonarr', 500);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AV1 Tier 01', 'sonarr', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', '10-bit Depth', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Opus 5.1 / 7.1', 'sonarr', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Opus Stereo', 'sonarr', 150);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'AAC', 'sonarr', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Banned Groups', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'Upscale', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('TV 1080p AV1 Storage', 'BR-DISK Structure', 'sonarr', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Codec', 'all', 2000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', '10-bit Depth', 'all', 400);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Film Grain Synthesis', 'all', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 02', 'all', 1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 01', 'all', 700);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AV1 Tier 03', 'all', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Dual Audio', 'all', 600);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Opus 5.1 / 7.1', 'all', 250);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Opus Stereo', 'all', 200);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'FLAC', 'all', 300);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'AAC', 'all', 100);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', '8-bit Depth', 'all', -1000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Banned Groups', 'all', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Upscale', 'all', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'Upscaled', 'all', -10000);
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Anime 1080p AV1', 'BR-DISK Structure', 'all', -10000);
