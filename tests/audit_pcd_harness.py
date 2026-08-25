@@ -155,13 +155,18 @@ def run_audit(pcd_dir, schema_dir=None):
     # -------------------------------------------------------------------------
     # Resolve schema files
     if not schema_dir:
-        # Check local deps/schema/ops first
-        candidate_deps = os.path.join(pcd_dir, "deps", "schema", "ops")
-        candidate_src = "/home/user/desktop-streamer/scratch/profilarr-src/docs/backend"
+        schema_dir = os.environ.get("PCD_SCHEMA_PATH")
+    if not schema_dir:
+        # Check local deps/schema/ops or deps/schema first
+        candidate_deps_ops = os.path.join(pcd_dir, "deps", "schema", "ops")
+        candidate_deps_root = os.path.join(pcd_dir, "deps", "schema")
         candidate_db_deps = "/home/user/desktop-streamer/config/profilarr/data/databases/707ac052-713c-47dc-a438-a9a8d0fd8c7e/deps/schema/ops"
+        candidate_src = "/home/user/desktop-streamer/scratch/profilarr-src/docs/backend"
         
-        if os.path.exists(candidate_deps) and os.path.isdir(candidate_deps):
-            schema_dir = candidate_deps
+        if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
+            schema_dir = candidate_deps_ops
+        elif os.path.exists(candidate_deps_root) and os.path.isdir(candidate_deps_root) and any(f.endswith(".sql") for f in os.listdir(candidate_deps_root)):
+            schema_dir = candidate_deps_root
         elif os.path.exists(candidate_db_deps) and os.path.isdir(candidate_db_deps):
             schema_dir = candidate_db_deps
         else:
@@ -395,5 +400,10 @@ def run_audit(pcd_dir, schema_dir=None):
     return findings, table_counts
 
 if __name__ == "__main__":
-    pcd_dir = sys.argv[1] if len(sys.argv) > 1 else "/home/user/desktop-streamer/database-AV1"
-    run_audit(pcd_dir)
+    import argparse
+    parser = argparse.ArgumentParser(description="PCD Validation Harness")
+    parser.add_argument("pcd_dir", nargs="?", default=".", help="Path to PCD repository root")
+    parser.add_argument("--schema-dir", default=os.environ.get("PCD_SCHEMA_PATH"), help="Path to Dictionarry schema ops directory")
+    args = parser.parse_args()
+    findings, _ = run_audit(args.pcd_dir, args.schema_dir)
+    sys.exit(0 if not findings else 1)

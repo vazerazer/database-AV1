@@ -39,8 +39,8 @@ def send_profilarr_post(endpoint, body):
 def sync_entities():
     cfs = [
         "AV1", "Not AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
-        "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers",
-        "Legacy x265 Codec", "Legacy x264 Codec"
+        "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers", "AV1 Quality Encoders",
+        "Legacy x265 Codec", "Legacy x264 Codec", "CAM"
     ]
     
     profiles_radarr = [
@@ -94,7 +94,7 @@ def verify_byte_for_byte_parity():
     
     cfs_to_check = [
         "AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
-        "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers",
+        "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers", "AV1 Quality Encoders",
         "Legacy x265 Codec", "Legacy x264 Codec"
     ]
     

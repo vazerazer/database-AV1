@@ -17,7 +17,22 @@ import sys
 import subprocess
 
 def build_compiled_db():
-    schema_dir = "/home/user/desktop-streamer/config/profilarr/data/databases/707ac052-713c-47dc-a438-a9a8d0fd8c7e/deps/schema/ops"
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    schema_dir = os.environ.get("PCD_SCHEMA_PATH")
+    if not schema_dir:
+        candidate_deps_ops = os.path.join(repo_root, "deps", "schema", "ops")
+        candidate_deps_root = os.path.join(repo_root, "deps", "schema")
+        candidate_db_deps = "/home/user/desktop-streamer/config/profilarr/data/databases/707ac052-713c-47dc-a438-a9a8d0fd8c7e/deps/schema/ops"
+        candidate_src = "/home/user/desktop-streamer/scratch/profilarr-src/docs/backend"
+        if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
+            schema_dir = candidate_deps_ops
+        elif os.path.exists(candidate_deps_root) and os.path.isdir(candidate_deps_root) and any(f.endswith(".sql") for f in os.listdir(candidate_deps_root)):
+            schema_dir = candidate_deps_root
+        elif os.path.exists(candidate_db_deps) and os.path.isdir(candidate_db_deps):
+            schema_dir = candidate_db_deps
+        else:
+            schema_dir = candidate_src
+
     conn = sqlite3.connect(":memory:")
     conn.execute("PRAGMA foreign_keys = ON;")
     
@@ -35,7 +50,7 @@ def build_compiled_db():
             with open(os.path.join(schema_dir, f), "r") as sf:
                 conn.executescript(sf.read())
 
-    ops_dir = "/home/user/desktop-streamer/database-AV1/ops"
+    ops_dir = os.path.join(repo_root, "ops")
     for f in sorted(os.listdir(ops_dir), key=get_order):
         if f.endswith(".sql"):
             with open(os.path.join(ops_dir, f), "r") as opf:
@@ -209,6 +224,30 @@ def run_simulation_battery():
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Quality Encoder - Beats Compact Tier)",
+            "title": "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR10+.AV1-CoSMiCSuRFeR",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 6000
+        },
+        {
+            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR site-tagged [rarbg])",
+            "title": "Dune.Part.Two.2024.2160p.HDR.AV1-CoSMiCSuRFeR[rarbg]",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 4500
+        },
+        {
+            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR no extension)",
+            "title": "Dune.Part.Two.2024.2160p.HDR.AV1-CoSMiCSuRFeR",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 4500
         },
         {
             "category": "Pure AV1 2160p HQ (bracketed -[dAV1nci])",
@@ -486,6 +525,14 @@ def run_simulation_battery():
             "profile": "TV 1080p AV1 HQ",
             "arr_type": "sonarr",
             "expect_pass": True
+        },
+        {
+            "category": "Quality Encoder in Storage Profile (Penalized -1000, Ranks Below Storage Savers)",
+            "title": "Fallout.S01E01.1080p.AV1-CoSMiCSuRFeR.mkv",
+            "profile": "TV 1080p AV1 Storage",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "max_band": 3000
         }
     ]
     
