@@ -4,7 +4,7 @@ Phase 4 + Fallback Ladder Unified Scoring Simulation Battery
 Evaluates:
 - Band 1: Pure AV1 Releases (>= 2300) -> Highest priority within quality group
 - Band 2: Tiered x265 Fallbacks (1000 - 1400) -> Accepted above min cutoff, auto-upgrades to AV1
-- Band 3: Random Untiered x265 / Codec-less Releases (< 1000) -> Rejected
+- Band 3: Random Untiered x265 / Codec-less Releases (< 1000 for 2160p, < 500 for 1080p) -> Rejected
 - Band 4: Codec-less AV1-unnamed Releases -> Rejected (documented trade-off)
 - Band 5: Legacy x264 Releases (< 0) -> Hard rejected
 - Band 6: Universal Hygiene (CAM, Screener, Upscale, 3D, Full Disc, Banned Groups) -> Hard rejected (-10000)
@@ -108,9 +108,9 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
         if not conds: continue
             
         has_required_conds = any(c[3] == 1 for c in conds)
-        has_optional_conds = any(c[3] == 0 for c in conds)
+        optional_types = set(c[1] for c in conds if c[3] == 0)
         all_required_met = True
-        has_optional_match = False
+        matched_optional_types = set()
         
         for cond_name, cond_type, negate, required in conds:
             cond_matched = False
@@ -123,6 +123,7 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
             elif cond_type == "release_group":
                 patterns = conn.execute("SELECT re.pattern FROM condition_patterns cp JOIN regular_expressions re ON cp.regular_expression_name = re.name WHERE cp.custom_format_name = ? AND cp.condition_name = ?", (cf_name, cond_name)).fetchall()
                 for (pat_str,) in patterns:
+                    # In Radarr, ReleaseGroupSpecification matches group or title
                     if (tokens["group"] and regex_match(pat_str, tokens["group"])) or regex_match(pat_str, release_title):
                         cond_matched = True
                         break
@@ -141,10 +142,11 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
             if required:
                 if not cond_matched: all_required_met = False
             else:
-                if cond_matched: has_optional_match = True
+                if cond_matched: matched_optional_types.add(cond_type)
                 
-        if has_optional_conds:
-            cf_matched = all_required_met and has_optional_match
+        # Radarr requirement: all required specs must match AND every present optional specification type must have at least one match
+        if optional_types:
+            cf_matched = all_required_met and (matched_optional_types == optional_types)
         else:
             cf_matched = all_required_met
             
@@ -243,7 +245,7 @@ def run_simulation_battery():
             "min_band": 2300
         },
 
-        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 1400) ---
+        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 1400 for 2160p, 500 - 1400 for 1080p) ---
         {
             "category": "Tiered x265 Fallback (FLUX WEB-DL Tier 1)",
             "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX",
@@ -271,15 +273,32 @@ def run_simulation_battery():
             "min_band": 1000,
             "max_band": 1400
         },
-
-        # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000) ---
         {
-            "category": "Random Untiered x265 (Rejected)",
+            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1)",
+            "title": "Oppenheimer.2023.1080p.BluRay.x265.DTS-HD.MA.7.1.CRIT-DON",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 500,
+            "max_band": 1400
+        },
+
+        # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000 for 2160p, < 500 for 1080p) ---
+        {
+            "category": "Random Untiered 2160p x265 (Rejected)",
             "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR-RandomGroup",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": 999
+        },
+        {
+            "category": "Random Untiered 1080p x265 (Point 2 Test - Must Fail < 500)",
+            "title": "Gladiator.2000.1080p.BluRay.x265.TrueHD.Atmos.7.1-RandomGroup",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 499
         },
         {
             "category": "Codec-less Release (No Codec Token -> Rejected)",
