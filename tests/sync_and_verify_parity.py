@@ -2,37 +2,71 @@
 """
 Sync all AV1 Custom Formats and Quality Profiles from Profilarr to Radarr4k / Sonarr4k
 with cooldown handling, and verify byte-for-byte pattern parity between repository and Arr API.
+
+Requires the following environment variables:
+  RADARR_API_KEY  - API key for Radarr instance
+  SONARR_API_KEY  - API key for Sonarr instance
+Optional environment variables:
+  PROFILARR_URL   - Base URL for Profilarr (default: http://127.0.0.1:5656)
+  RADARR_URL      - Base URL for Radarr (default: http://127.0.0.1:7879)
+  SONARR_URL      - Base URL for Sonarr (default: http://127.0.0.1:8990)
+  PROFILARR_COOKIE - Optional session cookie for Profilarr if auth is required
 """
 
-import urllib.request
 import json
-import time
+import os
 import sys
-import os, sys
+import time
+import urllib.error
+import urllib.request
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from simulate_scoring import build_compiled_db
 
-PROFILARR_URL = "http://127.0.0.1:5656"
-SESSION_COOKIE = "session=868c6ac4-d0c2-43a2-bde2-bd8bda1a5d68"
+PROFILARR_URL = os.environ.get("PROFILARR_URL", "http://127.0.0.1:5656")
+PROFILARR_COOKIE = os.environ.get("PROFILARR_COOKIE", "")
+RADARR_URL = os.environ.get("RADARR_URL", "http://127.0.0.1:7879")
+SONARR_URL = os.environ.get("SONARR_URL", "http://127.0.0.1:8990")
+RADARR_API_KEY = os.environ.get("RADARR_API_KEY")
+SONARR_API_KEY = os.environ.get("SONARR_API_KEY")
+
+def get_required_api_keys():
+    errors = []
+    if not RADARR_API_KEY:
+        errors.append("RADARR_API_KEY environment variable is required but not set.")
+    if not SONARR_API_KEY:
+        errors.append("SONARR_API_KEY environment variable is required but not set.")
+    if errors:
+        for err in errors:
+            print(f"Error: {err}", file=sys.stderr)
+        print("\nUsage example:", file=sys.stderr)
+        print("  RADARR_API_KEY='your_radarr_key' SONARR_API_KEY='your_sonarr_key' python3 tests/sync_and_verify_parity.py", file=sys.stderr)
+        sys.exit(1)
 
 def send_profilarr_post(endpoint, body):
+    headers = {"Content-Type": "application/json"}
+    if PROFILARR_COOKIE:
+        headers["Cookie"] = PROFILARR_COOKIE
+        
     for attempt in range(5):
         try:
             req = urllib.request.Request(
                 f"{PROFILARR_URL}{endpoint}",
                 data=json.dumps(body).encode("utf-8"),
-                headers={
-                    "Cookie": SESSION_COOKIE,
-                    "Content-Type": "application/json"
-                },
+                headers=headers,
                 method="POST"
             )
             with urllib.request.urlopen(req) as resp:
-                return json.loads(resp.read().decode("utf-8"))
+                raw = resp.read().decode("utf-8")
+                try:
+                    return json.loads(raw)
+                except json.JSONDecodeError:
+                    return {"auth_required": True, "raw": raw[:100]}
         except urllib.error.HTTPError as e:
             if e.code == 409:
-                # Cooldown active, wait 5.5s
                 time.sleep(5.5)
+            elif e.code == 401 or e.code == 403:
+                return {"auth_required": True}
             else:
                 raise
 
@@ -56,6 +90,11 @@ def sync_entities():
         res = send_profilarr_post("/arr/2/resync", {
             "databaseId": 9, "entityType": "customFormat", "entityName": cf
         })
+        if isinstance(res, dict) and res.get("auth_required"):
+            print("  [INFO] Profilarr web authentication is required to trigger sync via HTTP.")
+            print("         (Provide PROFILARR_COOKIE if automated remote resync is needed).")
+            print("         Skipping HTTP resync step and proceeding to live API byte parity check.")
+            return
         print(f"  CF '{cf}': {res}")
         time.sleep(5.5)
         
@@ -82,13 +121,13 @@ def sync_entities():
         time.sleep(5.5)
 
 def verify_byte_for_byte_parity():
+    get_required_api_keys()
     conn = build_compiled_db()
     all_match = True
     
     # 1. RADARR4K
     print("\n=== VERIFYING BYTE-FOR-BYTE PATTERN PARITY (RADARR4K API vs PCD DB) ===")
-    radarr_key = "***REMOVED***"
-    req = urllib.request.Request("http://127.0.0.1:7879/api/v3/customformat", headers={"X-Api-Key": radarr_key})
+    req = urllib.request.Request(f"{RADARR_URL}/api/v3/customformat", headers={"X-Api-Key": RADARR_API_KEY})
     with urllib.request.urlopen(req) as resp:
         radarr_cfs = json.loads(resp.read().decode("utf-8"))
     radarr_cfs_by_name = {cf["name"]: cf for cf in radarr_cfs}
@@ -146,8 +185,7 @@ def verify_byte_for_byte_parity():
 
     # 2. SONARR4K
     print("\n=== VERIFYING BYTE-FOR-BYTE PATTERN PARITY (SONARR4K API vs PCD DB) ===")
-    sonarr_key = "***REMOVED***"
-    req_sonarr = urllib.request.Request("http://127.0.0.1:8990/api/v3/customformat", headers={"X-Api-Key": sonarr_key})
+    req_sonarr = urllib.request.Request(f"{SONARR_URL}/api/v3/customformat", headers={"X-Api-Key": SONARR_API_KEY})
     with urllib.request.urlopen(req_sonarr) as resp:
         sonarr_cfs = json.loads(resp.read().decode("utf-8"))
     sonarr_cfs_by_name = {cf["name"]: cf for cf in sonarr_cfs}
@@ -199,6 +237,7 @@ def verify_byte_for_byte_parity():
     return all_match
 
 if __name__ == "__main__":
+    get_required_api_keys()
     sync_entities()
     parity = verify_byte_for_byte_parity()
     if not parity:

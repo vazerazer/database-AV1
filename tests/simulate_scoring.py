@@ -22,16 +22,25 @@ def build_compiled_db():
     if not schema_dir:
         candidate_deps_ops = os.path.join(repo_root, "deps", "schema", "ops")
         candidate_deps_root = os.path.join(repo_root, "deps", "schema")
-        candidate_db_deps = "/home/user/desktop-streamer/config/profilarr/data/databases/707ac052-713c-47dc-a438-a9a8d0fd8c7e/deps/schema/ops"
-        candidate_src = "/home/user/desktop-streamer/scratch/profilarr-src/docs/backend"
+        
+        # Check standard sibling/parent deployment paths relative to repo root
+        parent_dir = os.path.dirname(repo_root)
+        candidate_sibling_deps = os.path.join(parent_dir, "deps", "schema", "ops")
+        candidate_profilarr_deps = os.path.join(parent_dir, "config", "profilarr", "data", "databases", "707ac052-713c-47dc-a438-a9a8d0fd8c7e", "deps", "schema", "ops")
+        
         if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
             schema_dir = candidate_deps_ops
         elif os.path.exists(candidate_deps_root) and os.path.isdir(candidate_deps_root) and any(f.endswith(".sql") for f in os.listdir(candidate_deps_root)):
             schema_dir = candidate_deps_root
-        elif os.path.exists(candidate_db_deps) and os.path.isdir(candidate_db_deps):
-            schema_dir = candidate_db_deps
+        elif os.path.exists(candidate_sibling_deps) and os.path.isdir(candidate_sibling_deps):
+            schema_dir = candidate_sibling_deps
+        elif os.path.exists(candidate_profilarr_deps) and os.path.isdir(candidate_profilarr_deps):
+            schema_dir = candidate_profilarr_deps
         else:
-            schema_dir = candidate_src
+            raise FileNotFoundError(
+                "Could not automatically locate Dictionarry schema ops directory. "
+                "Please set the PCD_SCHEMA_PATH environment variable."
+            )
 
     conn = sqlite3.connect(":memory:")
     conn.execute("PRAGMA foreign_keys = ON;")

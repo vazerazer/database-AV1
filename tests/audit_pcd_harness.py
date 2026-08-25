@@ -157,20 +157,28 @@ def run_audit(pcd_dir, schema_dir=None):
     if not schema_dir:
         schema_dir = os.environ.get("PCD_SCHEMA_PATH")
     if not schema_dir:
-        # Check local deps/schema/ops or deps/schema first
+        # Check repo-relative paths
         candidate_deps_ops = os.path.join(pcd_dir, "deps", "schema", "ops")
         candidate_deps_root = os.path.join(pcd_dir, "deps", "schema")
-        candidate_db_deps = "/home/user/desktop-streamer/config/profilarr/data/databases/707ac052-713c-47dc-a438-a9a8d0fd8c7e/deps/schema/ops"
-        candidate_src = "/home/user/desktop-streamer/scratch/profilarr-src/docs/backend"
         
+        # Check standard sibling/parent deployment paths relative to repo root
+        parent_dir = os.path.dirname(os.path.abspath(pcd_dir))
+        candidate_sibling_deps = os.path.join(parent_dir, "deps", "schema", "ops")
+        candidate_profilarr_deps = os.path.join(parent_dir, "config", "profilarr", "data", "databases", "707ac052-713c-47dc-a438-a9a8d0fd8c7e", "deps", "schema", "ops")
+
         if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
             schema_dir = candidate_deps_ops
         elif os.path.exists(candidate_deps_root) and os.path.isdir(candidate_deps_root) and any(f.endswith(".sql") for f in os.listdir(candidate_deps_root)):
             schema_dir = candidate_deps_root
-        elif os.path.exists(candidate_db_deps) and os.path.isdir(candidate_db_deps):
-            schema_dir = candidate_db_deps
+        elif os.path.exists(candidate_sibling_deps) and os.path.isdir(candidate_sibling_deps):
+            schema_dir = candidate_sibling_deps
+        elif os.path.exists(candidate_profilarr_deps) and os.path.isdir(candidate_profilarr_deps):
+            schema_dir = candidate_profilarr_deps
         else:
-            schema_dir = candidate_src
+            raise FileNotFoundError(
+                "Could not automatically locate Dictionarry schema ops directory. "
+                "Please specify --schema-dir <path> or set the PCD_SCHEMA_PATH environment variable."
+            )
 
     print(f"Loading PCD Schema from: {schema_dir}")
     conn = sqlite3.connect(":memory:")

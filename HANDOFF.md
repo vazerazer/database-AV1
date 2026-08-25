@@ -3,7 +3,7 @@
 **Repository:** `vazerazer/database-AV1`  
 **Branch:** `v2`  
 **Schema Specification:** PCD v2 (Schema `1.1.0`)  
-**Status:** **Ops 900–909 Fully Implemented, Tested, Synced & Deployed**
+**Status:** **Ops 900–910 Fully Implemented, Tested, Synced & Deployed**
 
 ---
 
@@ -12,12 +12,12 @@
 All 6 development phases from architecture extraction through E2E live synchronization and GitHub Actions CI have been fully implemented, tested, and verified against real-world media release datasets and live Arr daemon APIs.
 
 ### Test Harnesses & Evidence Artifacts Location
-* [`tests/audit_pcd_harness.py`](file:///home/user/desktop-streamer/database-AV1/tests/audit_pcd_harness.py): Standalone Python validation engine verifying SQLite integrity, schema loading, foreign keys, and referential integrity (0 findings, 0 FK violations across 35 tables and 301 ops).
-* [`tests/simulate_scoring.py`](file:///home/user/desktop-streamer/database-AV1/tests/simulate_scoring.py): 54-case scoring simulation battery evaluating pure AV1, fallback ladders, max-stacked x265/x264 releases, dotted variations (`H.265`, `x.265`, `H.264`), site-tagged variants (`-UH[TGx]`, `-dAV1nci[rarbg]`), adversarial group checks (`-edge2020HD`), anime encoders, upgrade increments, and universal hygiene (54/54 passed).
-* [`tests/test_refined_regex_battery.py`](file:///home/user/desktop-streamer/database-AV1/tests/test_refined_regex_battery.py): 45-case regex pattern suite testing positive site-tags and dictionary false-positive immunity (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
-* [`tests/test_final_anime.py`](file:///home/user/desktop-streamer/database-AV1/tests/test_final_anime.py): 17-case anime encoder regex suite with leading bracket verification (`[Trix]`, `[Ironclad]`, `[Valenciano]`) and unbracketed title false-positive rejection.
-* [`tests/sync_and_verify_parity.py`](file:///home/user/desktop-streamer/database-AV1/tests/sync_and_verify_parity.py): Live synchronization engine that pulls compiled patterns from Radarr/Sonarr `/api/v3/customformat` and verifies **100% byte-for-byte pattern parity** against the underlying PCD SQLite database.
-* [`.github/workflows/ci.yml`](file:///home/user/desktop-streamer/database-AV1/.github/workflows/ci.yml): GitHub Actions CI workflow running `audit_pcd_harness.py`, `test_refined_regex_battery.py`, `test_final_anime.py`, and `simulate_scoring.py` against the Dictionarry-Hub schema on all pushes and PRs.
+* [`tests/audit_pcd_harness.py`](tests/audit_pcd_harness.py): Standalone Python validation engine verifying SQLite integrity, schema loading, foreign keys, and referential integrity (0 findings, 0 FK violations across 35 tables and 302 ops).
+* [`tests/simulate_scoring.py`](tests/simulate_scoring.py): 55-case scoring simulation battery evaluating pure AV1, fallback ladders, max-stacked x265/x264 releases, dotted variations (`H.265`, `x.265`, `H.264`), site-tagged variants (`-UH[TGx]`, `-dAV1nci[rarbg]`), adversarial group checks (`-edge2020HD`), anime encoders, upgrade increments, and universal hygiene (55/55 passed).
+* [`tests/test_refined_regex_battery.py`](tests/test_refined_regex_battery.py): 83-case regex pattern suite testing positive site-tags and dictionary false-positive immunity (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`, `ENTROPY`).
+* [`tests/test_final_anime.py`](tests/test_final_anime.py): 17-case anime encoder regex suite with leading bracket verification (`[Trix]`, `[Ironclad]`, `[Valenciano]`) and unbracketed title false-positive rejection.
+* [`tests/sync_and_verify_parity.py`](tests/sync_and_verify_parity.py): Live synchronization engine that pulls compiled patterns from Radarr/Sonarr `/api/v3/customformat` via environment variables and verifies **100% byte-for-byte pattern parity** against the underlying PCD SQLite database.
+* [`.github/workflows/ci.yml`](.github/workflows/ci.yml): GitHub Actions CI workflow running `audit_pcd_harness.py`, `test_refined_regex_battery.py`, `test_final_anime.py`, and `simulate_scoring.py` against the Dictionarry-Hub schema on all pushes and PRs.
 
 ---
 
@@ -26,18 +26,19 @@ All 6 development phases from architecture extraction through E2E live synchroni
 ### A. 900-Series Isolation & Migration Immutability
 * Preserved upstream Dictionarry migration history from `0.rosettarr.sql` through `290.add-arin-to-1080-720p-quality-tier-5.sql` (291 upstream base ops).
 * Isolated the custom AV1 layer in the high-range `900` namespace:
-  * [`ops/900.create-av1-master-regexes.sql`](file:///home/user/desktop-streamer/database-AV1/ops/900.create-av1-master-regexes.sql): Regular expressions and value-guarded upgrade of canonical `AV1`.
-  * [`ops/901.add-av1-master-custom-formats.sql`](file:///home/user/desktop-streamer/database-AV1/ops/901.add-av1-master-custom-formats.sql): Custom Formats, conditions, pattern links, and tags.
-  * [`ops/902.create-av1-master-quality-profiles.sql`](file:///home/user/desktop-streamer/database-AV1/ops/902.create-av1-master-quality-profiles.sql): 7 Pure AV1 Quality Profiles, quality groups with schema 1.1.0 `position`, quality order cutoff, and baseline scoring.
-  * [`ops/903.add-not-av1-custom-format.sql`](file:///home/user/desktop-streamer/database-AV1/ops/903.add-not-av1-custom-format.sql): `Not AV1` CF (negated release_title condition on canonical AV1 regex).
-  * [`ops/904.add-fallback-ladder-scoring.sql`](file:///home/user/desktop-streamer/database-AV1/ops/904.add-fallback-ladder-scoring.sql): Initial fallback ladder migration (published & byte-immutable).
-  * [`ops/905.add-new-av1-encoders.sql`](file:///home/user/desktop-streamer/database-AV1/ops/905.add-new-av1-encoders.sql): R&H ampersand fix (`R[-._ ]?(?:and|&)[-._ ]?H`), Smokindevil, UserHEVC, RAV1NE, Ironclad.
-  * [`ops/906.recalibrate-fallback-ladder.sql`](file:///home/user/desktop-streamer/database-AV1/ops/906.recalibrate-fallback-ladder.sql): Fallback ladder recalibration (SDR WEB-DL pass, hallowed HDR10+ top of fallback, Dolby Digital + wiring, canonical AV1 elevated to `+3500`, profile `upgrade_until_score` elevated to `6000`/`5000`).
-  * [`ops/907.set-profile-upgrade-increment.sql`](file:///home/user/desktop-streamer/database-AV1/ops/907.set-profile-upgrade-increment.sql): Enforced `upgrade_score_increment = 300` across all 7 profiles to eliminate service/audio churn.
-  * [`ops/908.add-av1-quality-encoders.sql`](file:///home/user/desktop-streamer/database-AV1/ops/908.add-av1-quality-encoders.sql): Created `AV1 Quality Encoders` (+1000 in HQ / -1000 in Storage) starting with `CoSMiCSuRFeR`, and set `CAM` condition `arr_type = 'all'` for Sonarr sync.
-  * [`ops/909.expand-av1-encoder-tiers.sql`](file:///home/user/desktop-streamer/database-AV1/ops/909.expand-av1-encoder-tiers.sql): Expanded all 4 encoder tiers with telemetry data (~500 AV1 entries), hardened `CAM` regex against word boundaries, and added `ENTROPY` to `Banned Groups`.
+  * [`ops/900.create-av1-master-regexes.sql`](ops/900.create-av1-master-regexes.sql): Regular expressions and value-guarded upgrade of canonical `AV1`.
+  * [`ops/901.add-av1-master-custom-formats.sql`](ops/901.add-av1-master-custom-formats.sql): Custom Formats, conditions, pattern links, and tags.
+  * [`ops/902.create-av1-master-quality-profiles.sql`](ops/902.create-av1-master-quality-profiles.sql): 7 Pure AV1 Quality Profiles, quality groups with schema 1.1.0 `position`, quality order cutoff, and baseline scoring.
+  * [`ops/903.add-not-av1-custom-format.sql`](ops/903.add-not-av1-custom-format.sql): `Not AV1` CF (negated release_title condition on canonical AV1 regex).
+  * [`ops/904.add-fallback-ladder-scoring.sql`](ops/904.add-fallback-ladder-scoring.sql): Initial fallback ladder migration (published & byte-immutable).
+  * [`ops/905.add-new-av1-encoders.sql`](ops/905.add-new-av1-encoders.sql): R&H ampersand fix (`R[-._ ]?(?:and|&)[-._ ]?H`), Smokindevil, UserHEVC, RAV1NE, Ironclad.
+  * [`ops/906.recalibrate-fallback-ladder.sql`](ops/906.recalibrate-fallback-ladder.sql): Fallback ladder recalibration (SDR WEB-DL pass, hallowed HDR10+ top of fallback, Dolby Digital + wiring, canonical AV1 elevated to `+3500`, profile `upgrade_until_score` elevated to `6000`/`5000`).
+  * [`ops/907.set-profile-upgrade-increment.sql`](ops/907.set-profile-upgrade-increment.sql): Enforced `upgrade_score_increment = 300` across all 7 profiles to eliminate service/audio churn.
+  * [`ops/908.add-av1-quality-encoders.sql`](ops/908.add-av1-quality-encoders.sql): Created `AV1 Quality Encoders` (+1000 in HQ / -1000 in Storage) starting with `CoSMiCSuRFeR`, and set `CAM` condition `arr_type = 'all'` for Sonarr sync.
+  * [`ops/909.expand-av1-encoder-tiers.sql`](ops/909.expand-av1-encoder-tiers.sql): Expanded all 4 encoder tiers with telemetry data (~500 AV1 entries), hardened `CAM` regex against word boundaries, and added `ENTROPY` to `Banned Groups`.
+  * [`ops/910.op-909-followups.sql`](ops/910.op-909-followups.sql): Hardened `ENTROPY` regex with explicit `(?i)` case-insensitivity prefix.
 
-### B. Encoder Tier Evaluations & Decisions (Op 909)
+### B. Encoder Tier Evaluations & Decisions
 1. **`UH` Placement Evaluation:**
    * `UH` produces both 1080p compact mini-encodes (sub-5GB) and 2160p transparent encodes (15–23 GB).
    * **Decision:** Kept in `AV1 Compact Encoders` (`+500` in HQ). This ensures its 1080p releases are correctly treated as compact (not penalized in storage profiles) while still receiving +500 in 2160p HQ.
@@ -91,4 +92,3 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Usenet Obfuscation / Poster Tags:**
    * Releases with non-standard poster suffixes appended after the group name (e.g. `Movie.Title.1080p.AV1-dAV1nci mkv-[N-Z-B]`) fail strict end-of-string anchors.
    * **Rationale:** Anchors are intentionally maintained to guarantee 100% false-positive immunity against dictionary words (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
-

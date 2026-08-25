@@ -1,15 +1,31 @@
+# Environment & Secret files
+.env
+*.env
+*.local
+.env.*
+
 # OS files
 .DS_Store
 Thumbs.db
 
-# Profilarr local data
+# Profilarr local databases & journals
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
+*.sqlite
+*.sqlite3
 *.bak
 
 # Temporary / Cache
 .cache/
 __pycache__/
 *.pyc
+.pytest_cache/
+scratch/
+deps/
+
+# Logs, Telemetry & Exports
+*.log
+telemetry/
+export/

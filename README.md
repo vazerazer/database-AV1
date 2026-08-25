@@ -71,14 +71,14 @@ python3 tests/test_refined_regex_battery.py
 # 3. Final Anime Encoders Regex Suite
 python3 tests/test_final_anime.py
 
-# 4. Full Scoring & Boundary Simulation Battery (46 test cases)
+# 4. Full Scoring & Boundary Simulation Battery (55 test cases)
 python3 tests/simulate_scoring.py
 ```
 
 ### 🔒 Manual Pre-Push Verification Gate
 `tests/sync_and_verify_parity.py` stays **out of CI** because it communicates directly with live local Radarr/Sonarr daemons. Run it manually before pushing to verify pattern parity:
 ```bash
-python3 tests/sync_and_verify_parity.py
+RADARR_API_KEY="your_radarr_key" SONARR_API_KEY="your_sonarr_key" python3 tests/sync_and_verify_parity.py
 ```
 
 ### ⚙️ Regular Expression (.NET) Specification
