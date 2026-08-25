@@ -36,20 +36,24 @@ This database is designed exclusively for **authentic, active AV1 video encoders
 ## 🏆 Verified Active AV1 Encoder Tiers
 
 ### 🥇 `AV1 Quality Encoders` (`+1000` in HQ / `-1000` in Storage)
-High-bitrate, transparent 4K/1080p AV1 encodes (~20–40 GB) prioritizing maximum fidelity and lossless/surround audio:
-* `CoSMiCSuRFeR` (e.g. verified 2160p DV/HDR10+ BluRay rips).
+High-bitrate, transparent 4K/1080p AV1 encodes (~15–40 GB) prioritizing maximum fidelity and lossless/surround audio:
+* `CoSMiCSuRFeR`, `Waldek`, `PRL`, `CHD`, `CHOPPERHITLER`, `TAoE`.
 
 ### 🥈 `AV1 Compact Encoders` (`+500` in HQ / `0` in Storage)
 Curated transparent mini-encodes balancing compression with grain retention:
-* `dAV1nci`, `WhiskeyJack`, `UH`, `edge2020`, `UnAV1Chain`, `Smokindevil`, `UserHEVC`, `RAV1NE`, `R&H` / `R and H`.
+* `dAV1nci`, `WhiskeyJack`, `UH`, `edge2020`, `UnAV1Chain`, `Smokindevil`, `UserHEVC`, `RAV1NE`, `R&H` / `R and H`, `LAZARUS`, `DKV`, `TiZU`, `Saon`, `onlyfaffs`, `KIMJI`, `heTOrico`, `Rosy`, `anomoomin`, `CMCT`, `GRiMM`, `Dust`, `DIN`, `GanG`.
 
 ### 🎌 `AV1 Anime Encoders` (`+1000` in Anime Profile)
-Verified active encoders releasing 10-bit AV1 anime with multi-subs and dual audio (anchored prefix `^\[(?:Trix|Breeze|INDEX|Sav1or|AV1ARY|Sokudo|RigAV1|Ironclad)\]`):
-* `Trix`, `Breeze`, `INDEX`, `Sav1or`, `AV1ARY`, `Sokudo`, `RigAV1`, `Ironclad`.
+Verified active encoders releasing 10-bit AV1 anime with multi-subs and dual audio (anchored prefix `^\[(?:Trix|Breeze|INDEX|Sav1or|AV1ARY|Sokudo|RigAV1|Ironclad|Valenciano)\]`):
+* `Trix`, `Breeze`, `INDEX`, `Sav1or`, `AV1ARY`, `Sokudo`, `RigAV1`, `Ironclad`, `Valenciano`.
 
 ### 📦 `AV1 Storage Savers` (`-1000` in HQ / `+600` in Storage)
 Ultra-compressed micro-encodes for maximum disk space savings:
-* `PSA`, `GalaxyRG`, `MeGusta`, `VXT`, `d3g`, `Ghost`, `rartv`, `ELiTE`, `LAMA`, `KaKa`, `YAWNTIC`, `BONE`, `GZ`, `CART`.
+* `PSA`, `GalaxyRG`, `MeGusta`, `VXT`, `d3g`, `Ghost`, `rartv`, `ELiTE`, `LAMA`, `KaKa`, `YAWNTIC`, `BONE`, `GZ`, `CART`, `LUCY`, `DKong`, `Rapta`, `GubrakZ`, `Retr0`, `SWAXXON`, `FELIX12345`.
+
+### 🚫 `Banned Groups` (`-10000` across all profiles)
+Fake, corrupted, or malware/bloat releases strictly banned from grabbing:
+* `ENTROPY` (ships fake/16MB corrupt files and CAM content), `YIFY`, `YTS`, `4K4U`, and upstream banned groups.
 
 ---
 

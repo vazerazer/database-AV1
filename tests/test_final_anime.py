@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 Verify Final Anime Regex with Confirmed AV1 Encoders
-Trix, Breeze, INDEX, Sav1or, AV1ARY, Sokudo, RigAV1
+Trix, Breeze, INDEX, Sav1or, AV1ARY, Sokudo, RigAV1, Ironclad, Valenciano
 """
 
 import re
 import sys
 
-ANIME_REGEX = r"^\[(?:Trix|Breeze|INDEX|Sav1or|AV1ARY|Sokudo|RigAV1)\]"
+ANIME_REGEX = r"(?i)^\[(?:Trix|Breeze|INDEX|Sav1or|AV1ARY|Sokudo|RigAV1|Ironclad|Valenciano)\]"
 
 POS_CASES = [
     "[Trix] Frieren - Beyond Journey's End (01-28) [AV1 10bit 1080p Opus].mkv",
@@ -16,10 +16,13 @@ POS_CASES = [
     "[Sav1or] Oshi no Ko [1080p AV1 10bit Opus].mkv",
     "[AV1ARY] Dungeon Meshi [1080p AV1 10bit Dual-Audio].mkv",
     "[Sokudo] Bleach Sennen Kessen-hen [1080p AV1 10bit].mkv",
-    "[RigAV1] Solo Leveling [1080p AV1 10bit Opus].mkv"
+    "[RigAV1] Solo Leveling [1080p AV1 10bit Opus].mkv",
+    "[Ironclad] Sousou no Frieren - 01 [AV1 1080p].mkv",
+    "[Valenciano] One Piece - 1060 [1080p][AV1 10bit][AAC][Multi-Sub].mkv"
 ]
 
 NEG_CASES = [
+    "Trix the Girl Who Leapt Through Time 2006 BD 1080p Av1 Fc875ba4.mkv", # Real release on indexer: title contains Trix
     "The.Breeze.Of.Summer.2024.1080p.AV1-PSA.mkv",
     "[AkihitoSubs] Gate [HEVC][x265][10Bit][Opus].mkv",
     "[NanDesuKa] Dungeon Meshi - 01 [1080p].mkv",

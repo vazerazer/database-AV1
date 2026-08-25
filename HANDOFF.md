@@ -3,7 +3,7 @@
 **Repository:** `vazerazer/database-AV1`  
 **Branch:** `v2`  
 **Schema Specification:** PCD v2 (Schema `1.1.0`)  
-**Status:** **Phases 0–5 Fully Complete & Deployed to Production**
+**Status:** **Ops 900–909 Fully Implemented, Tested, Synced & Deployed**
 
 ---
 
@@ -12,11 +12,12 @@
 All 6 development phases from architecture extraction through E2E live synchronization and GitHub Actions CI have been fully implemented, tested, and verified against real-world media release datasets and live Arr daemon APIs.
 
 ### Test Harnesses & Evidence Artifacts Location
-All validation scripts live in the repository `tests/` directory:
-* [`tests/audit_pcd_harness.py`](file:///home/user/desktop-streamer/database-AV1/tests/audit_pcd_harness.py): Standalone Python validation engine verifying SQLite integrity, schema loading, foreign keys, and referential integrity (0 findings, 0 FK violations across 35 tables and 299 ops).
-* [`tests/simulate_scoring.py`](file:///home/user/desktop-streamer/database-AV1/tests/simulate_scoring.py): 42-case scoring simulation battery evaluating pure AV1, fallback ladders, max-stacked x265/x264 releases, dotted variations (`H.265`, `x.265`, `H.264`), site-tagged variants (`-UH[TGx]`, `-dAV1nci[rarbg]`), adversarial group checks (`-edge2020HD`), anime encoders, upgrade increments, and universal hygiene (42/42 passed).
-* [`tests/sync_and_verify_parity.py`](file:///home/user/desktop-streamer/database-AV1/tests/sync_and_verify_parity.py): Live synchronization engine with cooldown handling that pulls compiled patterns from Radarr/Sonarr `/api/v3/customformat` and verifies **100% byte-for-byte pattern parity** against the underlying PCD SQLite database.
-* [`.github/workflows/ci.yml`](file:///home/user/desktop-streamer/database-AV1/.github/workflows/ci.yml): GitHub Actions CI workflow running `audit_pcd_harness.py` and `simulate_scoring.py` against the Dictionarry-Hub schema on all pushes and PRs.
+* [`tests/audit_pcd_harness.py`](file:///home/user/desktop-streamer/database-AV1/tests/audit_pcd_harness.py): Standalone Python validation engine verifying SQLite integrity, schema loading, foreign keys, and referential integrity (0 findings, 0 FK violations across 35 tables and 301 ops).
+* [`tests/simulate_scoring.py`](file:///home/user/desktop-streamer/database-AV1/tests/simulate_scoring.py): 54-case scoring simulation battery evaluating pure AV1, fallback ladders, max-stacked x265/x264 releases, dotted variations (`H.265`, `x.265`, `H.264`), site-tagged variants (`-UH[TGx]`, `-dAV1nci[rarbg]`), adversarial group checks (`-edge2020HD`), anime encoders, upgrade increments, and universal hygiene (54/54 passed).
+* [`tests/test_refined_regex_battery.py`](file:///home/user/desktop-streamer/database-AV1/tests/test_refined_regex_battery.py): 45-case regex pattern suite testing positive site-tags and dictionary false-positive immunity (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
+* [`tests/test_final_anime.py`](file:///home/user/desktop-streamer/database-AV1/tests/test_final_anime.py): 17-case anime encoder regex suite with leading bracket verification (`[Trix]`, `[Ironclad]`, `[Valenciano]`) and unbracketed title false-positive rejection.
+* [`tests/sync_and_verify_parity.py`](file:///home/user/desktop-streamer/database-AV1/tests/sync_and_verify_parity.py): Live synchronization engine that pulls compiled patterns from Radarr/Sonarr `/api/v3/customformat` and verifies **100% byte-for-byte pattern parity** against the underlying PCD SQLite database.
+* [`.github/workflows/ci.yml`](file:///home/user/desktop-streamer/database-AV1/.github/workflows/ci.yml): GitHub Actions CI workflow running `audit_pcd_harness.py`, `test_refined_regex_battery.py`, `test_final_anime.py`, and `simulate_scoring.py` against the Dictionarry-Hub schema on all pushes and PRs.
 
 ---
 
@@ -33,21 +34,25 @@ All validation scripts live in the repository `tests/` directory:
   * [`ops/905.add-new-av1-encoders.sql`](file:///home/user/desktop-streamer/database-AV1/ops/905.add-new-av1-encoders.sql): R&H ampersand fix (`R[-._ ]?(?:and|&)[-._ ]?H`), Smokindevil, UserHEVC, RAV1NE, Ironclad.
   * [`ops/906.recalibrate-fallback-ladder.sql`](file:///home/user/desktop-streamer/database-AV1/ops/906.recalibrate-fallback-ladder.sql): Fallback ladder recalibration (SDR WEB-DL pass, hallowed HDR10+ top of fallback, Dolby Digital + wiring, canonical AV1 elevated to `+3500`, profile `upgrade_until_score` elevated to `6000`/`5000`).
   * [`ops/907.set-profile-upgrade-increment.sql`](file:///home/user/desktop-streamer/database-AV1/ops/907.set-profile-upgrade-increment.sql): Enforced `upgrade_score_increment = 300` across all 7 profiles to eliminate service/audio churn.
+  * [`ops/908.add-av1-quality-encoders.sql`](file:///home/user/desktop-streamer/database-AV1/ops/908.add-av1-quality-encoders.sql): Created `AV1 Quality Encoders` (+1000 in HQ / -1000 in Storage) starting with `CoSMiCSuRFeR`, and set `CAM` condition `arr_type = 'all'` for Sonarr sync.
+  * [`ops/909.expand-av1-encoder-tiers.sql`](file:///home/user/desktop-streamer/database-AV1/ops/909.expand-av1-encoder-tiers.sql): Expanded all 4 encoder tiers with telemetry data (~500 AV1 entries), hardened `CAM` regex against word boundaries, and added `ENTROPY` to `Banned Groups`.
 
-### B. Recalibrated Fallback Ladder & Codec Gate Design
-1. **Resolution Hierarchy:** Quality Groups evaluate first (2160p group > 1080p group).
-2. **Codec Preference within Quality Groups:**
-   * **AV1 Band ($\ge 3500$):** Canonical AV1 (`+3500`) + features/encoders $\rightarrow$ scores $3650 - 5800$.
-   * **Tiered x265 Fallback Band ($1000 - 3400$):** High-tier x265 encodes (hallowed, FLUX, HONE, DON, CtrlHD) trigger `Not AV1` (`-2000`) + feature points (`+200`..`+2500`) + Tier score (`+2650`..`+2850`) $\rightarrow$ scores $1050 - 3400$. They pass the minimum cutoff score (`1000` for 2160p, `500` for 1080p) and remain strictly below bare AV1 ($3500$) and `upgrade_until_score` ($6000$), auto-upgrading to AV1 when available.
-   * **Random Untiered x265 / Codec-Less Band ($< 1000$):** Untiered releases receive no tier bonus. Features minus `Not AV1` (`-2000`) yield net scores $\le +500 < 1000$, strictly failing the cutoff.
-   * **Legacy x264 Band ($< 0$):** Scored at `-5000` with hard rejection.
-   * **Remuxes / Full Discs:** Scored at `-10000` with hard rejection.
-
-### C. Production Profile Deployment Scope
-Production assignments are intentional and scoped to 4K instances:
-* **Radarr4k:** `Movies 2160p AV1 HQ` (ours) + `Movies 2160p` (Dumpstarr).
-* **Sonarr4k:** `TV 2160p AV1` (ours) + `TV 2160p` (Dumpstarr).
-* The other 5 profiles (`Movies 1080p AV1 HQ/Storage`, `TV 1080p AV1 HQ/Storage`, `Anime 1080p AV1`) remain compiled in PCD catalog.
+### B. Encoder Tier Evaluations & Decisions (Op 909)
+1. **`UH` Placement Evaluation:**
+   * `UH` produces both 1080p compact mini-encodes (sub-5GB) and 2160p transparent encodes (15–23 GB).
+   * **Decision:** Kept in `AV1 Compact Encoders` (`+500` in HQ). This ensures its 1080p releases are correctly treated as compact (not penalized in storage profiles) while still receiving +500 in 2160p HQ.
+2. **`DIN` and `GanG` False-Positive Validation:**
+   * Short English dictionary words tested against titles: `The Dinner (2017)`, `Dinosaur (2000)`, `American Gangster (2007)`, `Gang Related (1997)`, `Gangs of New York (2002)`.
+   * **Decision:** Strict end-anchored regex `-(DIN|GanG)(?:\[...\])?(?:\.[a-z0-9]{2,4})?$` prevents any false-positive matches on title tokens. Included in `AV1 Compact Encoders`.
+3. **`WOTT` Exclusion:**
+   * German DL encoder. Excluded from active tiers because user profiles reject German content by language.
+4. **Codec-Agnostic Tier Scoring (e.g. `TAoE`):**
+   * Upstream tier CFs match release groups codec-agnostically. When `TAoE` releases an AV1 encode, it matches `AV1` (+3500) + `AV1 Quality Encoders` (+1000) + upstream tier rules (+1700/+2850) $\rightarrow$ scores $6100 - 9300$. This strictly outscores any non-AV1 counterpart ($< 3500$) and maintains quality ordering.
+5. **Usenet Poster Tags Known-Miss Trade-Off:**
+   * Poster tags appended after group names (e.g. `' mkv-[N-Z-B]'` or `'-[Obfuscated]'`) fail strict trailing anchors.
+   * **Decision:** Trailing anchors are intentionally preserved to guarantee 100% false-positive immunity against dictionary words (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
+6. **Telemetry-Based Trust:**
+   * Grab counts measure indexer trust and community adoption, subject to owner eyeball quality passes.
 
 ---
 
@@ -64,9 +69,10 @@ Production assignments are intentional and scoped to 4K instances:
    * `Die.My.Love.2025.2160p.UHD.BluRay.Remux.HEVC.DV.HDR.Atmos-CiNEPHiLES.mkv`: **Score -350** | **Approved: False** (Rejected).
    * `Die My Love 2025 1080p BluRay x264-GeneMige`: **Score -7000** | **Approved: False** (Hard rejected).
 
----
-
-## 4. Operational Monitoring & Next Steps
-
-1. **Monitor Live Grab Telemetry:** Confirm continuous clean grabbing of AV1 releases and tiered x265 fallbacks across Radarr4k and Sonarr4k without upgrade loops.
-2. **Merge `v2` to `main`:** Merge `v2` branch to `main` after 24 hours of clean production operation.
+3. **Live Sonarr4k CAM & Quality Profile Scoring (`/api/v3/qualityprofile` on `TV 2160p AV1`):**
+   * `AV1`: **`3500`**
+   * `AV1 Quality Encoders`: **`1000`**
+   * `AV1 Compact Encoders`: **`500`**
+   * `AV1 Storage Savers`: **`-1000`**
+   * `CAM`: **`-10000`**
+   * `Not AV1`: **`-2000`**

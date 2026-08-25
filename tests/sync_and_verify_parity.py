@@ -40,7 +40,7 @@ def sync_entities():
     cfs = [
         "AV1", "Not AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
         "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers", "AV1 Quality Encoders",
-        "Legacy x265 Codec", "Legacy x264 Codec", "CAM"
+        "Legacy x265 Codec", "Legacy x264 Codec", "CAM", "Banned Groups"
     ]
     
     profiles_radarr = [

@@ -503,6 +503,54 @@ def run_simulation_battery():
             "arr_type": "radarr",
             "expect_pass": False
         },
+        {
+            "category": "Hygiene Rejection (Banned ENTROPY Fake/Corrupted)",
+            "title": "Movie.Title.2024.1080p.WEBRip.AV1-ENTROPY.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Junk-Line Separation (R&H Upscale Rejected Despite Bonus)",
+            "title": "The.Shawshank.Redemption.1994.1080p.Upscale.AV1-R and H.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Junk-Line Separation (LUCY TC Rejected Despite Bonus)",
+            "title": "Deadpool.and.Wolverine.2024.TC.AV1-LUCY.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Junk-Line Separation (LUCY Ts Rejected Despite Bonus)",
+            "title": "Deadpool.and.Wolverine.2024.Ts.AV1-LUCY.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Junk-Line Separation (LUCY Telesync Rejected Despite Bonus)",
+            "title": "Deadpool.and.Wolverine.2024.Telesync.AV1-LUCY.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Junk-Line Separation (LUCY SCREENER Rejected Despite Bonus)",
+            "title": "Deadpool.and.Wolverine.2024.SCREENER.AV1-LUCY.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
         
         # --- 8. STORAGE SAVER PROFILE TESTS ---
         {
@@ -515,6 +563,13 @@ def run_simulation_battery():
         {
             "category": "Storage Saver In Storage Profile (-GalaxyRG[TGx])",
             "title": "Fallout.S01E01.1080p.AV1-GalaxyRG[TGx].mkv",
+            "profile": "TV 1080p AV1 Storage",
+            "arr_type": "sonarr",
+            "expect_pass": True
+        },
+        {
+            "category": "Storage Saver In Storage Profile (-LUCY[TGx])",
+            "title": "Fallout.S01E01.1080p.AV1-LUCY[TGx].mkv",
             "profile": "TV 1080p AV1 Storage",
             "arr_type": "sonarr",
             "expect_pass": True
@@ -533,6 +588,16 @@ def run_simulation_battery():
             "arr_type": "sonarr",
             "expect_pass": True,
             "max_band": 3000
+        },
+
+        # --- 9. CODEC-AGNOSTIC TIER SCORING (TAoE AV1 + Tier 1 Quality) ---
+        {
+            "category": "Codec-Agnostic Tier Scoring (TAoE AV1 + Tier 1 Quality)",
+            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 6000
         }
     ]
     
