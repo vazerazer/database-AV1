@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Phase 4 Scoring Simulation Battery
-Simulates Radarr / Sonarr custom format evaluation against a 50+ release corpus.
+Phase 4 + Fallback Ladder Unified Scoring Simulation Battery
 Evaluates:
-- Max-stacked x265 releases with dotted variants (H.265, x.265) -> must score negative / fail cutoff
-- Pure AV1 releases with bracketed, site-tagged variants -> must clear minimum scores
-- Adversarial false positive rejections (-edge2020HD, mid-title group substrings)
-- Hygiene test cases (CAM, Screener, Upscale, Full Disc, Banned Groups -> hard reject)
-- Storage saver vs HQ profile divergence
+- Band 1: Pure AV1 Releases (>= 2300) -> Highest priority within quality group
+- Band 2: Tiered x265 Fallbacks (1000 - 1400) -> Accepted above min cutoff, auto-upgrades to AV1
+- Band 3: Random Untiered x265 / Codec-less Releases (< 1000) -> Rejected
+- Band 4: Codec-less AV1-unnamed Releases -> Rejected (documented trade-off)
+- Band 5: Legacy x264 Releases (< 0) -> Hard rejected
+- Band 6: Universal Hygiene (CAM, Screener, Upscale, 3D, Full Disc, Banned Groups) -> Hard rejected (-10000)
 """
 
 import sqlite3
@@ -107,9 +107,10 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
         
         if not conds: continue
             
-        all_required_met = True
-        has_any_match = False
         has_required_conds = any(c[3] == 1 for c in conds)
+        has_optional_conds = any(c[3] == 0 for c in conds)
+        all_required_met = True
+        has_optional_match = False
         
         for cond_name, cond_type, negate, required in conds:
             cond_matched = False
@@ -126,22 +127,26 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
                         cond_matched = True
                         break
             elif cond_type == "source":
-                cond_sources = [r[0].lower() for r in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
+                cond_sources = [r[0].lower().replace("_", "").replace("-", "") for r in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
                 if "bluray" in cond_sources and tokens["is_bluray"]: cond_matched = True
-                if "webdl" in cond_sources and tokens["is_webdl"]: cond_matched = True
+                if ("webdl" in cond_sources or "web_dl" in cond_sources) and tokens["is_webdl"]: cond_matched = True
                 if "webrip" in cond_sources and tokens["is_webrip"]: cond_matched = True
                 if "hdtv" in cond_sources and tokens["is_hdtv"]: cond_matched = True
             elif cond_type == "resolution":
-                cond_res = [r[0].lower() for r in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
+                cond_res = [r[0].lower().replace("_", "").replace("-", "") for r in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
                 if "2160p" in cond_res and tokens["is_2160p"]: cond_matched = True
                 if "1080p" in cond_res and tokens["is_1080p"]: cond_matched = True
                 
             if negate: cond_matched = not cond_matched
-            if required and not cond_matched: all_required_met = False
-            if cond_matched: has_any_match = True
+            if required:
+                if not cond_matched: all_required_met = False
+            else:
+                if cond_matched: has_optional_match = True
                 
-        if has_required_conds: cf_matched = all_required_met and has_any_match
-        else: cf_matched = has_any_match
+        if has_optional_conds:
+            cf_matched = all_required_met and has_optional_match
+        else:
+            cf_matched = all_required_met
             
         if cf_matched:
             total_score += score
@@ -154,152 +159,202 @@ def run_simulation_battery():
     conn = build_compiled_db()
     
     test_corpus = [
-        # --- 1. MAX-STACKED X265 RELEASES INCLUDING DOTTED SPELLINGS (LEAK TESTS) ---
-        {
-            "category": "Max-Stacked x265 (x265 raw)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR.CRIT.Theatrical-FraMeSToR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Max-Stacked x265 (H.265 dotted leak test)",
-            "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX",
-            "profile": "TV 2160p AV1",
-            "arr_type": "sonarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Max-Stacked x265 (x.265 dotted leak test)",
-            "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR-FLUX",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Max-Stacked x264 (H.264 dotted leak test)",
-            "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1.CRIT-DON",
-            "profile": "Movies 1080p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        
-        # --- 2. PURE AV1 2160p RELEASES (WITH SITE TAGS & BRACKETS) ---
+        # --- 1. PURE AV1 2160p RELEASES (BAND >= 2300) ---
         {
             "category": "Pure AV1 2160p HQ (standard suffix)",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
         },
         {
             "category": "Pure AV1 2160p HQ (site-tagged [rarbg])",
             "title": "The.Matrix.1999.2160p.HDR.UHD.BluRay.AV1.DDP5.1-dAV1nci[rarbg]",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
         },
         {
             "category": "Pure AV1 2160p HQ (site-tagged [TGx])",
             "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.OPUS.7.1-UH[TGx]",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
         },
         {
             "category": "Pure AV1 2160p HQ (bracketed -[dAV1nci])",
             "title": "Dune.Part.Two.2024.2160p.HDR.AV1-[dAV1nci].mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 2160p TV (WEB-DL edge2020)",
+            "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.AV1.DDP5.1.Atmos.DV.HDR.AMZN.DSNP-edge2020",
+            "profile": "TV 2160p AV1",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "min_band": 2300
         },
         
-        # --- 3. PURE AV1 1080p HQ RELEASES ---
+        # --- 2. PURE AV1 1080p HQ & ANIME RELEASES (BAND >= 2300) ---
         {
             "category": "Pure AV1 1080p HQ",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.1080p.Bluray.OPUS.7.1.AV1-WhiskeyJack",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
         },
         {
             "category": "Pure AV1 1080p HQ (edge2020 valid)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 Anime (Trix)",
+            "title": "[Trix] Frieren - Beyond Journey's End (01-28) [AV1 10bit 1080p Opus].mkv",
+            "profile": "Anime 1080p AV1",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 Anime (Breeze)",
+            "title": "[Breeze] Jujutsu Kaisen - S02 [1080p AV1 10bit Opus].mkv",
+            "profile": "Anime 1080p AV1",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 Anime (AV1ARY)",
+            "title": "[AV1ARY] Dungeon Meshi [1080p AV1 10bit Dual-Audio].mkv",
+            "profile": "Anime 1080p AV1",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+
+        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 1400) ---
+        {
+            "category": "Tiered x265 Fallback (FLUX WEB-DL Tier 1)",
+            "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX",
+            "profile": "TV 2160p AV1",
+            "arr_type": "sonarr",
+            "expect_pass": True,
+            "min_band": 1000,
+            "max_band": 1400
+        },
+        {
+            "category": "Tiered x265 Fallback (HONE WEB-DL Tier 2)",
+            "title": "Dune.Part.Two.2024.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.x265-HONE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1000,
+            "max_band": 1400
+        },
+        {
+            "category": "Tiered x265 Fallback (DON BluRay 2160p Quality Tier 1)",
+            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR.CRIT-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1000,
+            "max_band": 1400
+        },
+
+        # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000) ---
+        {
+            "category": "Random Untiered x265 (Rejected)",
+            "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR-RandomGroup",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 999
+        },
+        {
+            "category": "Codec-less Release (No Codec Token -> Rejected)",
+            "title": "Gladiator.2000.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR-UntieredGroup",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 999
+        },
+        {
+            "category": "Codec-less AV1-unnamed Release (Documented Trade-off -> Rejected)",
+            "title": "Top.Gun.Maverick.2022.1080p.10bit.DDP5.1-edge2020",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 499
         },
         
-        # --- 4. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
+        # --- 5. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
         {
             "category": "Adversarial Check (-edge2020HD must NOT match compact encoder)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020HD",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True # Still passes min score 500 via AV1 (2000), but does NOT get compact +500 boost
-        },
-        
-        # --- 5. PURE AV1 ANIME RELEASES ---
-        {
-            "category": "Pure AV1 Anime",
-            "title": "[Trix] Frieren - Beyond Journey's End (01-28) [AV1 10bit 1080p Opus].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Pure AV1 Anime",
-            "title": "[Breeze] Jujutsu Kaisen - S02 [1080p AV1 10bit Opus].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Pure AV1 Anime",
-            "title": "[AV1ARY] Dungeon Meshi [1080p AV1 10bit Dual-Audio].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
             "expect_pass": True
         },
         
-        # --- 6. HYGIENE & ANTI-TRASH REJECTIONS ---
+        # --- 6. X264 ANYTHING (HARD REJECT < 0) ---
         {
-            "category": "Hygiene Rejection",
+            "category": "x264 Release (Hard Reject)",
+            "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1.CRIT-DON",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+
+        # --- 7. HYGIENE & ANTI-TRASH REJECTIONS (-10000) ---
+        {
+            "category": "Hygiene Rejection (CAM)",
             "title": "Dune.Part.Two.2024.CAM.AV1-TestGroup.mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
-            "category": "Hygiene Rejection",
+            "category": "Hygiene Rejection (Upscale)",
             "title": "Gladiator.II.2024.1080p.Upscale.AV1-Test.mkv",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
-            "category": "Hygiene Rejection",
+            "category": "Hygiene Rejection (3D)",
             "title": "Avatar.The.Way.of.Water.2022.3D.1080p.AV1.mkv",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
-            "category": "Hygiene Rejection",
+            "category": "Hygiene Rejection (Full Disc)",
             "title": "Gladiator.2000.2160p.UHD.COMPLETE.BLURAY.AV1.iso",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
-            "category": "Hygiene Rejection",
+            "category": "Hygiene Rejection (Banned YTS)",
             "title": "Top.Gun.2022.1080p.AV1-YTS.mp4",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         
-        # --- 7. STORAGE SAVER VS HQ PROFILES (WITH SITE TAGS) ---
+        # --- 8. STORAGE SAVER PROFILE TESTS ---
         {
             "category": "Storage Saver In Storage Profile (-PSA[ettv])",
             "title": "Fallout.S01E01.1080p.AV1-PSA[ettv].mkv",
@@ -324,7 +379,7 @@ def run_simulation_battery():
     ]
     
     print("================================================================================")
-    print("PHASE 4 HARDENED SCORING SIMULATION BATTERY REPORT")
+    print("UNIFIED PHASE 4 & FALLBACK LADDER SIMULATION BATTERY REPORT")
     print("================================================================================")
     
     passed_tests = 0
@@ -340,7 +395,11 @@ def run_simulation_battery():
         score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(conn, title, profile, arr_type)
         
         test_success = (passed_cutoff == expect_pass)
-        
+        if "min_band" in case and score < case["min_band"]:
+            test_success = False
+        if "max_band" in case and score > case["max_band"]:
+            test_success = False
+            
         # Extra assertion for adversarial edge2020HD
         if "edge2020HD" in title:
             matched_cf_names = [m[0] for m in matched]

@@ -8,7 +8,8 @@ import urllib.request
 import json
 import time
 import sys
-import sqlite3
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from simulate_scoring import build_compiled_db
 
 PROFILARR_URL = "http://127.0.0.1:5656"
@@ -37,7 +38,7 @@ def send_profilarr_post(endpoint, body):
 
 def sync_entities():
     cfs = [
-        "AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
+        "AV1", "Not AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
         "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers",
         "Legacy x265 Codec", "Legacy x264 Codec"
     ]
