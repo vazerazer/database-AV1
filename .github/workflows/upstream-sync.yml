@@ -1,0 +1,78 @@
+name: Upstream Sync (Patch-Based)
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync-upstream:
+    name: Sync Upstream Dictionarry Ops
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Execute Patch-Based Upstream Sync
+        run: ./scripts/sync_upstream.sh
+
+      - name: Check for Upstream Changes
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes_detected=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes_detected=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python 3.12
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js 20
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Extract Schema Tag from pcd.json
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        id: schema_tag
+        run: |
+          TAG=$(python3 -c "import json; f=open('pcd.json'); data=json.load(f); print(data['dependencies']['https://github.com/Dictionarry-Hub/schema'])")
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout Dictionarry Schema Dependency
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          git clone --depth 1 --branch ${{ steps.schema_tag.outputs.tag }} https://github.com/Dictionarry-Hub/schema.git deps/schema
+
+      - name: Validate Synced Ops with PCD Test Suite
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/audit_pcd_harness.py .
+          python3 tests/test_refined_regex_battery.py
+          python3 tests/test_final_anime.py
+          python3 tests/simulate_scoring.py
+          rm -rf deps/schema
+
+      - name: Commit and Push Upstream Sync
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          LAST_SHA=$(cat .github/last-upstream-sha)
+          git add -A
+          git commit -m "chore(upstream): sync upstream changes (${LAST_SHA:0:7})"
+          git push origin v2

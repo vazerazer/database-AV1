@@ -92,3 +92,15 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Usenet Obfuscation / Poster Tags:**
    * Releases with non-standard poster suffixes appended after the group name (e.g. `Movie.Title.1080p.AV1-dAV1nci mkv-[N-Z-B]`) fail strict end-of-string anchors.
    * **Rationale:** Anchors are intentionally maintained to guarantee 100% false-positive immunity against dictionary words (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
+
+---
+
+## 5. Post-Rewrite Upstream Sync Architecture (Patch-Based)
+
+1. **Severed Git Ancestry:**
+   * The repository git history was rewritten using `git filter-repo` to eliminate historical credential artifacts. Consequently, this fork shares no commit SHAs with `Dictionarry-Hub/database`, rendering GitHub's native **"Sync fork"** button unusable (git rejects merges of unrelated histories).
+2. **Patch-Based Sync Mechanism:**
+   * **State Pointer ([`.github/last-upstream-sha`](.github/last-upstream-sha)):** Stores the exact upstream commit SHA of the last successful sync.
+   * **Sync Helper ([`scripts/sync_upstream.sh`](scripts/sync_upstream.sh)):** Fetches `upstream/v2`, diffs the commit range `${LAST_SHA}..${UPSTREAM_HEAD}`, applies the diff cleanly to our tree, and updates the pointer.
+   * **Automated CI Workflow ([`.github/workflows/upstream-sync.yml`](.github/workflows/upstream-sync.yml)):** Runs on a daily schedule (`0 6 * * *`) and `workflow_dispatch`. When upstream commits are detected, it applies the patch, runs the full PCD test battery (audit harness, regex suites, scoring simulator), and commits/pushes cleanly.
+
