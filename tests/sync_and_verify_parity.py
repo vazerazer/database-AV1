@@ -44,41 +44,41 @@ def sync_entities():
     ]
     
     profiles_radarr = [
-        "Movies 2160p AV1 HQ", "Movies 1080p AV1 HQ", "Movies 1080p AV1 Storage"
+        "Movies 2160p AV1 HQ"
     ]
     
     profiles_sonarr = [
-        "TV 2160p AV1", "TV 1080p AV1 HQ", "TV 1080p AV1 Storage", "Anime 1080p AV1"
+        "TV 2160p AV1"
     ]
     
     print("=== SYNCING TO RADARR4K (Instance 2) ===")
     for cf in cfs:
         res = send_profilarr_post("/arr/2/resync", {
-            "databaseId": 8, "entityType": "customFormat", "entityName": cf
+            "databaseId": 9, "entityType": "customFormat", "entityName": cf
         })
         print(f"  CF '{cf}': {res}")
         time.sleep(5.5)
         
-    for qp in profiles_radarr:
+    for p in profiles_radarr:
         res = send_profilarr_post("/arr/2/resync", {
-            "databaseId": 8, "entityType": "qualityProfile", "entityName": qp
+            "databaseId": 9, "entityType": "qualityProfile", "entityName": p
         })
-        print(f"  Profile '{qp}': {res}")
+        print(f"  Profile '{p}': {res}")
         time.sleep(5.5)
 
     print("\n=== SYNCING TO SONARR4K (Instance 4) ===")
     for cf in cfs:
         res = send_profilarr_post("/arr/4/resync", {
-            "databaseId": 8, "entityType": "customFormat", "entityName": cf
+            "databaseId": 9, "entityType": "customFormat", "entityName": cf
         })
         print(f"  CF '{cf}': {res}")
         time.sleep(5.5)
         
-    for qp in profiles_sonarr:
+    for p in profiles_sonarr:
         res = send_profilarr_post("/arr/4/resync", {
-            "databaseId": 8, "entityType": "qualityProfile", "entityName": qp
+            "databaseId": 9, "entityType": "qualityProfile", "entityName": p
         })
-        print(f"  Profile '{qp}': {res}")
+        print(f"  Profile '{p}': {res}")
         time.sleep(5.5)
 
 def verify_byte_for_byte_parity():

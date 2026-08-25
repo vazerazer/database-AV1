@@ -171,6 +171,30 @@ def run_simulation_battery():
             "min_band": 2300
         },
         {
+            "category": "Pure AV1 2160p HQ (R&H ampersand variant - Task 4 Top Priority)",
+            "title": "The.Shawshank.Redemption.1994.2160p.BluRay.DV.HDR10.AV1.DTS.5.1-R&H",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 2160p HQ (R and H spaced variant)",
+            "title": "The.Shawshank.Redemption.1994.2160p.BluRay.DV.HDR10.AV1.DTS.5.1-R and H",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 2160p HQ (Smokindevil - Task 4 Item 2)",
+            "title": "The.Shawshank.Redemption.1994.2160p.UHD.BluRay.DD+5.1.HDR.AV1-Smokindevil",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
             "category": "Pure AV1 2160p HQ (site-tagged [rarbg])",
             "title": "The.Matrix.1999.2160p.HDR.UHD.BluRay.AV1.DDP5.1-dAV1nci[rarbg]",
             "profile": "Movies 2160p AV1 HQ",
@@ -213,10 +237,34 @@ def run_simulation_battery():
             "min_band": 2300
         },
         {
+            "category": "Pure AV1 1080p HQ (UserHEVC - Task 4 Item 4)",
+            "title": "The.Matrix.1999.1080p.AV1.Opus-UserHEVC.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 1080p HQ (RAV1NE prefix - Task 4 Item 4)",
+            "title": "[RAV1NE] Interstellar 2014 1080p AV1 10bit.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
             "category": "Pure AV1 1080p HQ (edge2020 valid)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2300
+        },
+        {
+            "category": "Pure AV1 Anime (Ironclad - Task 4 Item 4)",
+            "title": "[Ironclad] Sousou no Frieren - 01 [AV1 1080p 10bit Opus].mkv",
+            "profile": "Anime 1080p AV1",
+            "arr_type": "sonarr",
             "expect_pass": True,
             "min_band": 2300
         },
@@ -245,15 +293,33 @@ def run_simulation_battery():
             "min_band": 2300
         },
 
-        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 1400 for 2160p, 500 - 1400 for 1080p) ---
+        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 3400 for 2160p, 1000 - 3400 for 1080p fallback) ---
         {
-            "category": "Tiered x265 Fallback (FLUX WEB-DL Tier 1)",
-            "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX",
-            "profile": "TV 2160p AV1",
-            "arr_type": "sonarr",
+            "category": "SDR 2160p WEB-DL Tier 1 (FLUX - Constraint 1 Test)",
+            "title": "Die.My.Love.2025.2160p.AMZN.WEB-DL.DDP5.1.H.265-FLUX",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 1000,
-            "max_band": 1400
+            "max_band": 3400
+        },
+        {
+            "category": "hallowed-class 2160p BluRay HDR10+ (Constraint 2 Test - Top of Fallback)",
+            "title": "Die.My.Love.2025.UHD.BluRay.2160p.DDP.5.1.HDR10+.x265-hallowed",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1500,
+            "max_band": 3400
+        },
+        {
+            "category": "Stacked Tiered 2160p x265 (Constraint 3 Test - Must be < Bare AV1 3500)",
+            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR.HDR10+.CRIT-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1000,
+            "max_band": 3400
         },
         {
             "category": "Tiered x265 Fallback (HONE WEB-DL Tier 2)",
@@ -262,31 +328,31 @@ def run_simulation_battery():
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 1000,
-            "max_band": 1400
+            "max_band": 3400
         },
         {
-            "category": "Tiered x265 Fallback (DON BluRay 2160p Quality Tier 1)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR.CRIT-DON",
+            "category": "1080p Tiered Fallback in 2160p Profile (Constraint 7 Test - DON)",
+            "title": "Oppenheimer.2023.1080p.BluRay.x265.TrueHD.7.1.CRIT-DON",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 1000,
-            "max_band": 1400
+            "max_band": 3400
         },
         {
-            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1)",
+            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1 in 1080p Profile)",
             "title": "Oppenheimer.2023.1080p.BluRay.x265.DTS-HD.MA.7.1.CRIT-DON",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 500,
-            "max_band": 1400
+            "max_band": 3400
         },
 
         # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000 for 2160p, < 500 for 1080p) ---
         {
-            "category": "Random Untiered 2160p x265 (Rejected)",
-            "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR-RandomGroup",
+            "category": "Random Untiered 2160p x265 (Constraint 4 Test - Max Features Untiered Must Fail < 1000)",
+            "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR.HDR10+-RandomGroup",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
@@ -317,7 +383,25 @@ def run_simulation_battery():
             "max_band": 499
         },
         
-        # --- 5. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
+        # --- 5. BARE AV1 RELEASES (Constraint 5 Test - Minimal features must beat all non-AV1) ---
+        {
+            "category": "Bare SDR AV1 2160p (Constraint 5 Test - Must Score >= 3500)",
+            "title": "Die.My.Love.2025.2160p.AV1.DD5.1-BareGroup.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3500
+        },
+        {
+            "category": "Bare SDR AV1 1080p (Constraint 8 Test - Must Beat Stacked 1080p x265)",
+            "title": "Die.My.Love.2025.1080p.AV1.DD5.1-BareGroup.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3500
+        },
+        
+        # --- 6. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
         {
             "category": "Adversarial Check (-edge2020HD must NOT match compact encoder)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020HD",
@@ -326,17 +410,25 @@ def run_simulation_battery():
             "expect_pass": True
         },
         
-        # --- 6. X264 ANYTHING (HARD REJECT < 0) ---
+        # --- 7. X264 & REMUX REJECTIONS (Constraint 6 Test) ---
         {
-            "category": "x264 Release (Hard Reject)",
+            "category": "x264 Release (Hard Reject - Constraint 6 Test)",
             "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1.CRIT-DON",
             "profile": "Movies 1080p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": -1
         },
+        {
+            "category": "Remux Release (Hard Reject - Constraint 6 Test)",
+            "title": "Die.My.Love.2025.2160p.UHD.BluRay.Remux.HEVC.DV.HDR.Atmos-CiNEPHiLES.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
 
-        # --- 7. HYGIENE & ANTI-TRASH REJECTIONS (-10000) ---
+        # --- 8. HYGIENE & ANTI-TRASH REJECTIONS (-10000) ---
         {
             "category": "Hygiene Rejection (CAM)",
             "title": "Dune.Part.Two.2024.CAM.AV1-TestGroup.mkv",
@@ -439,6 +531,24 @@ def run_simulation_battery():
         print(f"  Matched Formats:")
         for cf, s in matched:
             print(f"    - {cf:<30}: {s:>+6}")
+
+    # --- 9. UPGRADE SCORE INCREMENT BATTERY (op 907: increment = 300) ---
+    increment_cases = [
+        {"name": "Minor service swap (1350 HMAX vs 1400 AMZN)", "existing": 1350, "new": 1400, "expect_upgrade": False},
+        {"name": "Major AV1 upgrade (1400 x265 vs 2300 AV1)", "existing": 1400, "new": 2300, "expect_upgrade": True},
+        {"name": "Tier upgrade (1400 vs 1700)", "existing": 1400, "new": 1700, "expect_upgrade": True},
+    ]
+    inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'TV 2160p AV1'").fetchone()[0]
+    print(f"\n=== UPGRADE SCORE INCREMENT BATTERY (op 907: increment = {inc_val}) ===")
+    for c in increment_cases:
+        delta = c["new"] - c["existing"]
+        fires = delta >= inc_val
+        passed = (fires == c["expect_upgrade"])
+        print(f"[{'PASS' if passed else 'FAIL'}] {c['name']} (Delta: +{delta}) -> Upgrade: {fires} (Expected: {c['expect_upgrade']})")
+        if not passed:
+            failed_tests += 1
+        else:
+            passed_tests += 1
             
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed (Total: {passed_tests + failed_tests})")
