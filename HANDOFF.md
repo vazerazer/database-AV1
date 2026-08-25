@@ -76,3 +76,19 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * `AV1 Storage Savers`: **`-1000`**
    * `CAM`: **`-10000`**
    * `Not AV1`: **`-2000`**
+
+---
+
+## 4. Known Limitations & Design Trade-offs
+
+1. **CAM Regex Year-Lookbehind:**
+   * The hardened `CAM` regex `(?i)(?<=\b[12]\d{3}\b).*?\b(?:(AC3)?(LD|MD)|CAM[ ._-]?(?:Rip)?|DCP(?:RIP)?|DVD[ ._-]?(?:SCR(?:EENER)?)|HD[ ._-]?(?:CAM|SCR|TC|TS)|(?:LINE|MIC)[ ._-]?DUBBED|SCREENER|(?:TC|TS)(?:Rip)?|TELE(?:CINE|SYNC)|WORKPRINT)\b` requires a 4-digit release year `[12]\d{3}` preceding the telecine/CAM token.
+   * **Trade-off Implications:**
+     * *(a) Yearless Movie Releases:* A movie release naming convention that completely omits the 4-digit release year would evade this CAM regex.
+     * *(b) TV Episode Releases:* Episodic TV releases standardly omit release years in favor of season/episode markers (e.g. `S01E01`), meaning episodic TV telecine releases would not match this pattern.
+   * **Rationale:** Telecined TV episodic releases are effectively non-existent on modern Usenet indexers and trackers. Requiring the year lookbehind is strictly mandatory to prevent catastrophic false-positive CAM penalties on legitimate release tokens (e.g. `DTS-HD`, `MA`, `LD`, `MD`, `LINE`, `TC`, `TS`).
+
+2. **Usenet Obfuscation / Poster Tags:**
+   * Releases with non-standard poster suffixes appended after the group name (e.g. `Movie.Title.1080p.AV1-dAV1nci mkv-[N-Z-B]`) fail strict end-of-string anchors.
+   * **Rationale:** Anchors are intentionally maintained to guarantee 100% false-positive immunity against dictionary words (`Dust`, `Rosy`, `Saon`, `DIN`, `GanG`).
+

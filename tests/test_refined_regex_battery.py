@@ -130,7 +130,9 @@ TEST_CASES = {
     "Banned ENTROPY": {
         "positive": [
             "Movie.Title.2024.1080p.WEBRip.AV1-ENTROPY.mkv",
-            "Movie.Title.2024.CAM.AV1-ENTROPY.mkv"
+            "Movie.Title.2024.CAM.AV1-ENTROPY.mkv",
+            "Movie.Title.2024.1080p.WEBRip.AV1-entropy.mkv",
+            "Movie.Title.2024.1080p.WEBRip.AV1-Entropy.mkv"
         ],
         "adversarial_negatives": [
             "Movie.Title.2024.1080p.AV1-dAV1nci.mkv"

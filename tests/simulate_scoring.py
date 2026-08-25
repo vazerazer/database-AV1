@@ -512,6 +512,14 @@ def run_simulation_battery():
             "max_band": -1
         },
         {
+            "category": "Hygiene Rejection (Banned ENTROPY Lowercase -entropy)",
+            "title": "Movie.Title.2024.1080p.WEBRip.AV1-entropy.mkv",
+            "profile": "Movies 1080p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
             "category": "Junk-Line Separation (R&H Upscale Rejected Despite Bonus)",
             "title": "The.Shawshank.Redemption.1994.1080p.Upscale.AV1-R and H.mkv",
             "profile": "Movies 1080p AV1 HQ",
@@ -639,7 +647,7 @@ def run_simulation_battery():
         print(f"\n{status_str} Category: {category}")
         print(f"  Title:   {title}")
         print(f"  Profile: {profile} (Min Cutoff: {min_score}, Upgrade Until: {upgrade_until})")
-        print(f"  Score:   {score} -> Accepted: {passed_cutoff} (Expected: {expect_pass})")
+        print(f"  Score:   {score} -> Clears Profile Minimum: {passed_cutoff} (Expected: {expect_pass})")
         print(f"  Matched Formats:")
         for cf, s in matched:
             print(f"    - {cf:<30}: {s:>+6}")
