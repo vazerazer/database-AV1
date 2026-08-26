@@ -61,3 +61,29 @@ jobs:
           PCD_SCHEMA_PATH: deps/schema/ops
         run: |
           python3 tests/simulate_scoring.py
+
+      - name: Step 5 - Run Library Audit Unit Test Suite
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/test_library_audit.py
+
+      - name: Step 6 - CI Tripwire - Security & Path Leak Verification
+        run: |
+          echo "Executing CI Tripwire: Checking for hardcoded 32-character hex keys..."
+          HEX_LEAKS=$(git grep -nEi '\b[0-9a-f]{32}\b' -- ':!.github/last-upstream-sha' || true)
+          if [ -n "$HEX_LEAKS" ]; then
+            echo "::error::TRIPWIRE FAILED: Potential API key or 32-character hex secret detected in tracked files:"
+            echo "$HEX_LEAKS"
+            exit 1
+          fi
+
+          echo "Executing CI Tripwire: Checking for personal home directory paths..."
+          HOME_LEAKS=$(git grep -n '/home/' || true)
+          if [ -n "$HOME_LEAKS" ]; then
+            echo "::error::TRIPWIRE FAILED: Personal /home/ directory path detected in tracked files:"
+            echo "$HOME_LEAKS"
+            exit 1
+          fi
+
+          echo "CI Tripwire check passed: Zero credentials and zero personal paths found."

@@ -104,3 +104,19 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Sync Helper ([`scripts/sync_upstream.sh`](scripts/sync_upstream.sh)):** Fetches `upstream/v2`, diffs the commit range `${LAST_SHA}..${UPSTREAM_HEAD}`, applies the diff cleanly to our tree, and updates the pointer.
    * **Automated CI Workflow ([`.github/workflows/upstream-sync.yml`](.github/workflows/upstream-sync.yml)):** Runs on a daily schedule (`0 6 * * *`) and `workflow_dispatch`. When upstream commits are detected, it applies the patch, runs the full PCD test battery (audit harness, regex suites, scoring simulator), and commits/pushes cleanly.
 
+---
+
+## 6. Library Quality Audit & Measured-File Telemetry (Op 911)
+
+1. **Telemetry & Measured Quality Fingerprints:**
+   * [`tests/library_audit.py`](tests/library_audit.py): Audits live Radarr4k (`:7879`) and Sonarr4k (`:8990`) instances using read-only GET requests, extracting actual file size, media info (video codec, bit depth, dynamic range, audio codec/channels), runtime, and grab history.
+   * Derives per-group fingerprints: median/mean size, bitrate proxy ($\text{MB/min} = \frac{\text{Size}}{\text{Runtime}}$), resolution distribution, % HDR10/DV, % lossless audio (TrueHD/DTS-HD MA/FLAC), % Atmos, and bit depth.
+2. **Selection-Bias Caveat:**
+   * Active library files only represent what current quality profiles admitted. To mitigate selection bias, grab history (`/api/v3/history`) is ingested to capture releases that were initially grabbed but later upgraded or replaced, compiling head-to-head comparisons for identical titles.
+3. **Contradiction Flags as Review Inputs:**
+   * Flags (`QUALITY_UNDERSIZED`, `STORAGE_OVERSIZED`, `COMPACT_OVERSIZED_QUALITY_CANDIDATE`, `UNTIERED_TIERING_CANDIDATE`, `METADATA_MISMATCH`) serve as diagnostic evidence for human review, never as automatic tier overrides.
+4. **Privacy & CI Tripwires:**
+   * Audit markdown reports containing user library titles are written to `telemetry/` (gitignored).
+   * CI enforces automated tripwires in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) failing any build containing 32-character hex API keys or `/home/` paths in tracked files.
+
+
