@@ -803,6 +803,77 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 1000,
             "max_band": 1250
+        },
+        # --- OP 917 GRADUATED OVERSIZED SCORING BATTERY ---
+        {
+            "category": "Op 917: 20GB non-AV1 2160p (Tolerated, 0 Penalty -> Score 2450)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 20.0,
+            "expect_pass": True,
+            "min_band": 2000,
+            "max_band": 2600
+        },
+        {
+            "category": "Op 917: 27GB non-AV1 2160p (Heavy Band: -400 Penalty -> Score 2050)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 27.0,
+            "expect_pass": True,
+            "min_band": 1800,
+            "max_band": 2200
+        },
+        {
+            "category": "Op 917: 33GB non-AV1 2160p (Oversized Band: -1500 Penalty -> Score 950 < 1000 Cutoff)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 33.0,
+            "expect_pass": False,
+            "min_band": 800,
+            "max_band": 999
+        },
+        {
+            "category": "Op 917: 35GB AV1 2160p (AV1 Exempt, Zero Penalty -> Score 6100)",
+            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-CoSMiCSuRFeR",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 35.0,
+            "expect_pass": True,
+            "min_band": 6000,
+            "max_band": 6200
+        },
+        {
+            "category": "Op 917 Boundary: 24.9GB non-AV1 2160p (No Penalty -> Score 2450)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 24.9,
+            "expect_pass": True,
+            "min_band": 2000,
+            "max_band": 2600
+        },
+        {
+            "category": "Op 917 Boundary: 25.1GB non-AV1 2160p (-400 Penalty -> Score 2050)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 25.1,
+            "expect_pass": True,
+            "min_band": 1800,
+            "max_band": 2200
+        },
+        {
+            "category": "Op 917 Boundary: 30.1GB non-AV1 2160p (-1500 Penalty -> Score 950 < 1000 Cutoff)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 30.1,
+            "expect_pass": False,
+            "min_band": 800,
+            "max_band": 999
         }
     ]
     

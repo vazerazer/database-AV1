@@ -183,6 +183,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
 4. **Scope & Application:**
    * Exclusively applied to `Movies 2160p AV1 HQ` (ID: `64`) in Radarr4k. Sonarr4k remains untouched (where compact/anime 1080p files are intentional).
 
+---
+
+## 11. Graduated Oversized-Fallback Recalibration (Op 917)
+
+1. **Context & Motivation:**
+   * Recalibrated the Op 916 binary 16–200 GB oversized cliff into graduated size bands to avoid penalizing legitimate 18–25 GB non-AV1 2160p releases while maintaining protection for long ($\ge 150\text{ min}$) films.
+2. **Graduated Size Custom Formats ([`ops/917.add-graduated-oversized-scoring.sql`](ops/917.add-graduated-oversized-scoring.sql)):**
+   * **`Tolerated non-AV1 2160p (< 25 GB)`**: **0 penalty** (Clean transparent $1080\text{p}$ and $2160\text{p}$ x265 releases score normally).
+   * **`Heavy 2160p Fallback (25 - 30 GB)`**: **`-400` penalty** (Mild nudge preferring leaner options when available).
+   * **`Oversized 2160p Fallback (30 - 200 GB)`**: **`-1500` penalty** (Strong demotion for true bloat >250 MB/min).
+   * **`AV1 2160p (Any Size)`**: **0 penalty** (Exempt via required negated `(?i)\b(AV1|AV01)\b` title condition).
+3. **Long Movie Grace:**
+   * Long movies ($\ge 150\text{ min}$) in AV1 (e.g. *LOTR* 30–41 GB) remain 100% immune. Non-AV1 long movies in the heavy/oversized band are penalized, not banned, ensuring they remain grab-able if no alternative exists.
+
+
 
 
 
