@@ -197,6 +197,28 @@ All 6 development phases from architecture extraction through E2E live synchroni
 3. **Long Movie Grace:**
    * Long movies ($\ge 150\text{ min}$) in AV1 (e.g. *LOTR* 30–41 GB) remain 100% immune. Non-AV1 long movies in the heavy/oversized band are penalized, not banned, ensuring they remain grab-able if no alternative exists.
 
+---
+
+## 12. User Preference Map & Profile Honing (Op 918)
+
+1. **User Preference Map (Profile `Movies 2160p AV1 HQ` - Policy Record):**
+   * **Display:** Dolby Vision capable — keep DV boosts intact (+600).
+   * **Audio Chain (Yamaha RX-V673 3.1):** Plays DD+/DTS core; TrueHD/Atmos provides no real-world acoustic benefit (decoded as core/transcoded). EAC3 (Dolby Digital +) 5.1 is the sweet spot (+150). Halved TrueHD/Atmos bonuses (150) so high-tier audio does not artificially distort release tier rankings.
+   * **Fallback Ladder:**
+     ```text
+     2160p AV1 (>6GB) ──> Lean 2160p x265 (10-15GB) ──> [Bloated 2160p Rejected] ──> Good 1080p AV1 ──> Good 1080p x265 (DarQ) ──> Micro-AV1
+     ```
+   * **AV1 2160p Floor:** Any 2160p AV1 release worse than a hallowed-sized x265 must lose to it ($\sim 6\text{GB}/2\text{h}$ AV1 $\approx$ hallowed parity; below 6GB, x265 wins).
+   * **Non-4K-Master Films:** Retained in Radarr4k as best-available 1080p.
+   * **Placeholder Philosophy:** Grab lean x265 immediately as a placeholder, upgrade to AV1 later.
+   * **Binding Bitrate Constraint (~33 Mbps Playability Cap):** Bitrates $> 30\text{--}40\text{ Mbps}$ buffer under remote Altmount/Rclone streaming. The 25–30GB graduated bands frame a $\sim 33\text{ Mbps}$ bitrate cap. ROTK AV1 ($\sim 27\text{ Mbps}$, 41.3 GB) remains playable and immune.
+
+2. **Custom Format & Scoring Updates ([`ops/918.hone-profile-from-user-preferences.sql`](ops/918.hone-profile-from-user-preferences.sql)):**
+   * **`AV1 Micro 2160p` (ID: 6645):** Expanded size window to `1.0 - 6.0 GB` (penalty `-2800`).
+   * **`Extreme 2160p` (ID: 6648):** Added `45.0 - 200.0 GB` all-codec insurance penalty (`-1500`) to reject massive uncompressed remuxes.
+   * **Audio Retune:** TrueHD, Atmos, DTS-X set to `+150`; Lossless & Dolby Digital to `+100`; Dolby Digital + (EAC3) at `+150`.
+
+
 
 
 
