@@ -74,7 +74,13 @@ jobs:
         run: |
           python3 tests/test_supply_audit.py
 
-      - name: Step 7 - CI Tripwire - Security & Path Leak Verification
+      - name: Step 7 - Run Release Group Divergence Study Unit Test Suite
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/test_divergence_study.py
+
+      - name: Step 8 - CI Tripwire - Security & Path Leak Verification
         run: |
           echo "Executing CI Tripwire: Checking for hardcoded 32-character hex keys..."
           HEX_LEAKS=$(git grep -nEi '\b[0-9a-f]{32}\b' -- ':!.github/last-upstream-sha' || true)

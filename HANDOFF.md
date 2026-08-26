@@ -135,5 +135,23 @@ All 6 development phases from architecture extraction through E2E live synchroni
 5. **Supply Diagnostic Flags:**
    * Flags `TIERED_ZERO_SUPPLY` (rewarded groups absent from indexers), `PROFILE_BLIND_SPOT` (releases consistently scoring below cutoff), `ABSURDITY_BAN_CANDIDATE` (fake/corrupt stubs <50MB claiming HD/UHD), and `UPGRADE_OPPORTUNITY` (candidate AV1 release outscoring current non-AV1 library file by $\ge 300$).
 
+---
+
+## 8. Release_Group Divergence Study & Recommendation (Op 913)
+
+1. **Objective & Hypothesis:**
+   * Investigated whether migrating AV1 tier custom formats from end-anchored `release_title` regexes to Dumpstarr-style parsed `release_group` matching (`^(?i)(GroupA|GroupB|...)$`) maintains parity across all test batteries and real-world releases.
+2. **Oracle & Empirical Methodology ([`tests/divergence_study.py`](tests/divergence_study.py)):**
+   * Queried live Radarr4k (`:7879`) and Sonarr4k (`:8990`) parse endpoints (`GET /api/v3/parse?title=...`) across 88 battery test titles (positives, adversarial negatives, anime, and obfuscated formats).
+   * Compared production `release_title` match results against candidate `release_group` regexes applied to the parsed `releaseGroup`.
+3. **Key Divergence Findings & Failure Modes:**
+   * **Compound Name Truncation (`R&H`, `R and H`):** Radarr's built-in parser standardly truncates on `&` and spaces, emitting `releaseGroup='R'`. Candidate `^(?i)(R&H|R and H)$` fails completely, causing total tier scoring dropouts on R&H releases.
+   * **Usenet Poster / Obfuscation Suffixes (`-[N-Z-B]`, `mkv-`):** Appended poster suffixes corrupt the parser's token boundary (e.g. emitting `releaseGroup='Z-B'`), causing candidate regexes to miss legitimate encoders (e.g. `dAV1nci`).
+   * **Unseasoned Anime Media (`[AV1ARY]`):** Episode and batch titles lacking standard `SxxExx` numbering return `releaseGroup=None` in Sonarr/Radarr parsers. Title-anchored `^[\[(Group)\]` matches 100% reliably.
+   * **Negative Case Parity:** Both mechanisms achieve 100% false-positive rejection on dictionary collisions (e.g., `Trix the Girl Who Leapt Through Time...`).
+4. **Architectural Decision & Recommendation:**
+   * **RETAIN `release_title` MATCHING:** Migration to pure `release_group` is rejected. Our hardened end-anchored and bracket-prefixed `release_title` regexes provide identical false-positive protection while remaining fully immune to *arr parser truncation and obfuscation corruption bugs.
+
+
 
 

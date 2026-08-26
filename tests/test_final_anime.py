@@ -32,27 +32,28 @@ NEG_CASES = [
     "[HorribleSubs] Bleach - 01 [720p].mkv"
 ]
 
-compiled = re.compile(ANIME_REGEX, re.IGNORECASE)
-failed = 0
+if __name__ == "__main__":
+    compiled = re.compile(ANIME_REGEX, re.IGNORECASE)
+    failed = 0
 
-print("--- Testing Final Confirmed Anime Encoders Regex ---")
-print(f"Pattern: {ANIME_REGEX}\n")
+    print("--- Testing Final Confirmed Anime Encoders Regex ---")
+    print(f"Pattern: {ANIME_REGEX}\n")
 
-for p in POS_CASES:
-    m = compiled.search(p)
-    if m:
-        print(f"  [PASS] (+) '{p}' -> matched '{m.group(0)}'")
-    else:
-        print(f"  [FAIL] (+) '{p}' -> NOT MATCHED!")
-        failed += 1
+    for p in POS_CASES:
+        m = compiled.search(p)
+        if m:
+            print(f"  [PASS] (+) '{p}' -> matched '{m.group(0)}'")
+        else:
+            print(f"  [FAIL] (+) '{p}' -> NOT MATCHED!")
+            failed += 1
 
-for n in NEG_CASES:
-    m = compiled.search(n)
-    if not m:
-        print(f"  [PASS] (-) '{n}' -> correctly rejected")
-    else:
-        print(f"  [FAIL] (-) '{n}' -> FALSE POSITIVE: '{m.group(0)}'!")
-        failed += 1
+    for n in NEG_CASES:
+        m = compiled.search(n)
+        if not m:
+            print(f"  [PASS] (-) '{n}' -> correctly rejected")
+        else:
+            print(f"  [FAIL] (-) '{n}' -> FALSE POSITIVE: '{m.group(0)}'!")
+            failed += 1
 
-print(f"\nTotal: {len(POS_CASES) + len(NEG_CASES)}, Failed: {failed}")
-sys.exit(0 if failed == 0 else 1)
+    print(f"\nTotal: {len(POS_CASES) + len(NEG_CASES)}, Failed: {failed}")
+    sys.exit(0 if failed == 0 else 1)
