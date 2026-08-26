@@ -117,6 +117,23 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Flags (`QUALITY_UNDERSIZED`, `STORAGE_OVERSIZED`, `COMPACT_OVERSIZED_QUALITY_CANDIDATE`, `UNTIERED_TIERING_CANDIDATE`, `METADATA_MISMATCH`) serve as diagnostic evidence for human review, never as automatic tier overrides.
 4. **Privacy & CI Tripwires:**
    * Audit markdown reports containing user library titles are written to `telemetry/` (gitignored).
-   * CI enforces automated tripwires in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) failing any build containing 32-character hex API keys or `/home/` paths in tracked files.
+   * CI enforces automated tripwires in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) failing any build containing 32-character hex API keys or `/home/[A-Za-z0-9._-]+` user home directory paths in tracked files.
+
+---
+
+## 7. Supply-Side Search Audit & Prospective Telemetry (Op 912)
+
+1. **Prospective Indexer Supply Telemetry:**
+   * [`tests/supply_audit.py`](tests/supply_audit.py): Evaluates candidate release supply across live Usenet indexers by querying Radarr4k (`GET /api/v3/release?movieId={id}`) and Sonarr4k (`GET /api/v3/release?episodeId={id}`) across a stratified sample of movie and TV titles.
+   * Scores all candidates locally in-memory using the PCD SQLite simulation harness ([`tests/simulate_scoring.py`](tests/simulate_scoring.py)) without mutating profile assignments or issuing automatic grab commands.
+2. **Per-Group Supply Fingerprints & Win-Rates:**
+   * Tracks candidate volume, % AV1 vs x265/x264, size distribution, MB/min bitrate proxy, title-claimed feature tokens (HDR/DV/Atmos/TrueHD), median simulated profile scores, win-rate (% of titles where the group produces the top-scoring candidate), and multi-indexer availability.
+3. **Title-Claimed-Flags Caveat:**
+   * Prospective search data relies on release title tokens (self-reported naming). Ground-truth media verification (actual streams and bitrates) is provided by the retrospective library audit ([`tests/library_audit.py`](tests/library_audit.py)).
+4. **Safety & Indexer Quota Protection:**
+   * Strictly read-only GET operations. `POST /api/v3/command` (which triggers automatic downloading) is strictly forbidden. Rate limiting and sample size caps (`SAMPLE_SIZE`, `SEARCH_DELAY`) prevent indexer rate-limit exhaustion.
+5. **Supply Diagnostic Flags:**
+   * Flags `TIERED_ZERO_SUPPLY` (rewarded groups absent from indexers), `PROFILE_BLIND_SPOT` (releases consistently scoring below cutoff), `ABSURDITY_BAN_CANDIDATE` (fake/corrupt stubs <50MB claiming HD/UHD), and `UPGRADE_OPPORTUNITY` (candidate AV1 release outscoring current non-AV1 library file by $\ge 300$).
+
 
 

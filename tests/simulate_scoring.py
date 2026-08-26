@@ -105,70 +105,183 @@ def regex_match(pattern_str, text):
         )
         return res.returncode == 0
 
+def make_python_re_compatible(pat):
+    p = pat.replace('(?i)', '').replace('(?-i)', '')
+    # Convert (?<=^|...) and (?<=...|^)
+    p = re.sub(r'\(\?<=\^\|([^)]+)\)', r'(?:^|(?<=\1))', p)
+    p = re.sub(r'\(\?<=([^)]+)\|\^\)', r'(?:(?<=\1)|^)', p)
+    p = p.replace(r'(?<=\b[12]\d{3}\b).*?', r'(?:[12]\d{3}.*?)')
+    
+    # Specific upstream variable-width lookbehinds
+    p = p.replace(r'(?<!e-?)', r'(?:(?<!e)(?<!e-))')
+    p = p.replace(r'(?<!NON.?)', r'(?:(?<!NON)(?<!NON.))')
+    p = p.replace(r'(?<!HD[._ -]|HD)', r'(?:(?<!HD[._ -])(?<!HD))')
+    p = p.replace(r'(?<!DTS[ .-]?HD[ .-]?)(MA|YKW)', r'(?:(?<!DTS-HD )(?<!DTS-HD.)(?<!DTS HD.)(?<!DTS.HD.)(?<!DTSHD.))\b(MA|YKW)')
+    p = p.replace(r'(?<=\bS\d+\b).*(\b(AI)\b)', r'\bS\d+\b.*?\bAI\b')
+    p = p.replace(r'(?<=\bS\d+\b).*\b(Extra(s)?|Bonus|Deleted[ ._-]Scene(s)?|Extended[ ._-]Clip)\b', r'\bS\d+\b.*?\b(Extra(s)?|Bonus|Deleted[ ._-]Scene(s)?|Extended[ ._-]Clip)\b')
+    p = p.replace(r'(?<=\bS\d+(E\d+)?\b).*\bDUB(BED)?\b', r'\bS\d+(?:E\d+)?\b.*?\bDUB(?:BED)?\b')
+    p = p.replace(r'(?<=^(?!.*(HDR|HULU|REMUX|BLU[-]?RAY)).*?)\b(DV|Dovi|Dolby[ .]?Vision)\b', r'^(?!.*(HDR|HULU|REMUX|BLU[-]?RAY)).*?\b(DV|Dovi|Dolby[ .]?Vision)\b')
+    p = p.replace(r'(?<=^(?!.*\b(HLG|PQ|SDR)(\b|\d)).*?)', r'^(?!.*\b(HLG|PQ|SDR)(\b|\d)).*?')
+    return p
+
+class ScoringContext:
+    def __init__(self, conn):
+        self.profiles = {}
+        # Pre-cache profiles and their rules
+        prof_rows = conn.execute("SELECT name, minimum_custom_format_score, upgrade_until_score FROM quality_profiles").fetchall()
+        for p_name, min_s, upg_s in prof_rows:
+            self.profiles[p_name] = {"min_score": min_s, "upgrade_until": upg_s, "rules": {}}
+            
+        # Pre-compile regular expressions
+        pat_cache = {}
+        for r_name, p_str in conn.execute("SELECT name, pattern FROM regular_expressions").fetchall():
+            clean_pat = make_python_re_compatible(p_str)
+            try:
+                pat_cache[r_name] = (re.compile(clean_pat, re.IGNORECASE), None)
+            except re.error:
+                pat_cache[r_name] = (None, clean_pat)
+
+        # Pre-cache rules per profile and arr_type
+        for p_name in self.profiles:
+            for arr in ("radarr", "sonarr"):
+                rules = conn.execute("""
+                    SELECT qpcf.custom_format_name, qpcf.score
+                    FROM quality_profile_custom_formats qpcf
+                    WHERE qpcf.quality_profile_name = ?
+                      AND (qpcf.arr_type = 'all' OR qpcf.arr_type = ?)
+                """, (p_name, arr)).fetchall()
+                
+                compiled_rules = []
+                for cf_name, score in rules:
+                    cond_rows = conn.execute("""
+                        SELECT cfc.name, cfc.type, cfc.negate, cfc.required
+                        FROM custom_format_conditions cfc
+                        WHERE cfc.custom_format_name = ?
+                          AND (cfc.arr_type = 'all' OR cfc.arr_type = ?)
+                    """, (cf_name, arr)).fetchall()
+                    
+                    if not cond_rows:
+                        continue
+                        
+                    optional_types = set(c[1] for c in cond_rows if c[3] == 0)
+                    compiled_conds = []
+                    
+                    for c_name, c_type, negate, required in cond_rows:
+                        pats = []
+                        if c_type in ("release_title", "release_group"):
+                            p_rows = conn.execute("""
+                                SELECT cp.regular_expression_name FROM condition_patterns cp
+                                WHERE cp.custom_format_name = ? AND cp.condition_name = ?
+                            """, (cf_name, c_name)).fetchall()
+                            for (rn,) in p_rows:
+                                if rn in pat_cache:
+                                    pats.append(pat_cache[rn])
+                                    
+                        sources = set()
+                        if c_type == "source":
+                            for (s_val,) in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
+                                sources.add(s_val.lower().replace("_", "").replace("-", ""))
+                                
+                        res_set = set()
+                        if c_type == "resolution":
+                            for (r_val,) in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
+                                res_set.add(r_val.lower().replace("_", "").replace("-", ""))
+                                
+                        compiled_conds.append({
+                            "name": c_name,
+                            "type": c_type,
+                            "negate": bool(negate),
+                            "required": bool(required),
+                            "pats": pats,
+                            "sources": sources,
+                            "res_set": res_set
+                        })
+                        
+                    compiled_rules.append({
+                        "cf_name": cf_name,
+                        "score": score,
+                        "optional_types": optional_types,
+                        "conds": compiled_conds
+                    })
+                    
+                self.profiles[p_name]["rules"][arr] = compiled_rules
+
+_GLOBAL_SCORING_CONTEXT = None
+
+def get_scoring_context(conn):
+    global _GLOBAL_SCORING_CONTEXT
+    if _GLOBAL_SCORING_CONTEXT is None:
+        _GLOBAL_SCORING_CONTEXT = ScoringContext(conn)
+    return _GLOBAL_SCORING_CONTEXT
+
 def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
-    prof = conn.execute("SELECT minimum_custom_format_score, upgrade_until_score FROM quality_profiles WHERE name = ?", (profile_name,)).fetchone()
-    if not prof: raise ValueError(f"Unknown profile: {profile_name}")
-    min_score, upgrade_until = prof
+    ctx = get_scoring_context(conn)
+    if profile_name not in ctx.profiles:
+        raise ValueError(f"Unknown profile: {profile_name}")
+        
+    p_data = ctx.profiles[profile_name]
+    min_score = p_data["min_score"]
+    upgrade_until = p_data["upgrade_until"]
+    rules = p_data["rules"].get(arr_type, [])
+    
     tokens = parse_release_tokens(release_title)
-    
-    rules = conn.execute("""
-        SELECT qpcf.custom_format_name, qpcf.score
-        FROM quality_profile_custom_formats qpcf
-        WHERE qpcf.quality_profile_name = ?
-          AND (qpcf.arr_type = 'all' OR qpcf.arr_type = ?)
-    """, (profile_name, arr_type)).fetchall()
-    
     total_score = 0
     matched_cfs = []
     
-    for cf_name, score in rules:
-        conds = conn.execute("""
-            SELECT cfc.name, cfc.type, cfc.negate, cfc.required
-            FROM custom_format_conditions cfc
-            WHERE cfc.custom_format_name = ?
-              AND (cfc.arr_type = 'all' OR cfc.arr_type = ?)
-        """, (cf_name, arr_type)).fetchall()
+    for rule in rules:
+        cf_name = rule["cf_name"]
+        score = rule["score"]
+        optional_types = rule["optional_types"]
+        conds = rule["conds"]
         
-        if not conds: continue
-            
-        has_required_conds = any(c[3] == 1 for c in conds)
-        optional_types = set(c[1] for c in conds if c[3] == 0)
         all_required_met = True
         matched_optional_types = set()
         
-        for cond_name, cond_type, negate, required in conds:
+        for cond in conds:
+            c_type = cond["type"]
+            negate = cond["negate"]
+            required = cond["required"]
             cond_matched = False
-            if cond_type == "release_title":
-                patterns = conn.execute("SELECT re.pattern FROM condition_patterns cp JOIN regular_expressions re ON cp.regular_expression_name = re.name WHERE cp.custom_format_name = ? AND cp.condition_name = ?", (cf_name, cond_name)).fetchall()
-                for (pat_str,) in patterns:
-                    if regex_match(pat_str, release_title):
+            
+            if c_type == "release_title":
+                for compiled_re, raw_pat in cond["pats"]:
+                    if compiled_re:
+                        if compiled_re.search(release_title):
+                            cond_matched = True
+                            break
+                    elif raw_pat and regex_match(raw_pat, release_title):
                         cond_matched = True
                         break
-            elif cond_type == "release_group":
-                patterns = conn.execute("SELECT re.pattern FROM condition_patterns cp JOIN regular_expressions re ON cp.regular_expression_name = re.name WHERE cp.custom_format_name = ? AND cp.condition_name = ?", (cf_name, cond_name)).fetchall()
-                for (pat_str,) in patterns:
-                    # In Radarr, ReleaseGroupSpecification matches group or title
-                    if (tokens["group"] and regex_match(pat_str, tokens["group"])) or regex_match(pat_str, release_title):
+            elif c_type == "release_group":
+                for compiled_re, raw_pat in cond["pats"]:
+                    if compiled_re:
+                        if (tokens["group"] and compiled_re.search(tokens["group"])) or compiled_re.search(release_title):
+                            cond_matched = True
+                            break
+                    elif raw_pat and ((tokens["group"] and regex_match(raw_pat, tokens["group"])) or regex_match(raw_pat, release_title)):
                         cond_matched = True
                         break
-            elif cond_type == "source":
-                cond_sources = [r[0].lower().replace("_", "").replace("-", "") for r in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
-                if "bluray" in cond_sources and tokens["is_bluray"]: cond_matched = True
-                if ("webdl" in cond_sources or "web_dl" in cond_sources) and tokens["is_webdl"]: cond_matched = True
-                if "webrip" in cond_sources and tokens["is_webrip"]: cond_matched = True
-                if "hdtv" in cond_sources and tokens["is_hdtv"]: cond_matched = True
-            elif cond_type == "resolution":
-                cond_res = [r[0].lower().replace("_", "").replace("-", "") for r in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, cond_name)).fetchall()]
-                if "2160p" in cond_res and tokens["is_2160p"]: cond_matched = True
-                if "1080p" in cond_res and tokens["is_1080p"]: cond_matched = True
+            elif c_type == "source":
+                s_set = cond["sources"]
+                if "bluray" in s_set and tokens["is_bluray"]: cond_matched = True
+                if ("webdl" in s_set or "web_dl" in s_set) and tokens["is_webdl"]: cond_matched = True
+                if "webrip" in s_set and tokens["is_webrip"]: cond_matched = True
+                if "hdtv" in s_set and tokens["is_hdtv"]: cond_matched = True
+            elif c_type == "resolution":
+                r_set = cond["res_set"]
+                if "2160p" in r_set and tokens["is_2160p"]: cond_matched = True
+                if "1080p" in r_set and tokens["is_1080p"]: cond_matched = True
                 
-            if negate: cond_matched = not cond_matched
+            if negate:
+                cond_matched = not cond_matched
+                
             if required:
-                if not cond_matched: all_required_met = False
+                if not cond_matched:
+                    all_required_met = False
             else:
-                if cond_matched: matched_optional_types.add(cond_type)
-                
-        # Radarr requirement: all required specs must match AND every present optional specification type must have at least one match
+                if cond_matched:
+                    matched_optional_types.add(c_type)
+                    
         if optional_types:
             cf_matched = all_required_met and (matched_optional_types == optional_types)
         else:
