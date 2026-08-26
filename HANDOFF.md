@@ -152,6 +152,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
 4. **Architectural Decision & Recommendation:**
    * **RETAIN `release_title` MATCHING:** Migration to pure `release_group` is rejected. Our hardened end-anchored and bracket-prefixed `release_title` regexes provide identical false-positive protection while remaining fully immune to *arr parser truncation and obfuscation corruption bugs.
 
+---
+
+## 9. Local Housekeeping, Resource Audit & Sync Hardening (Op 914)
+
+1. **Host Footprint & Media Stack Priority:**
+   * Audited system RAM and process tree: 0 endeavor-attributable background processes or hung scripts remain on the host. Media stack services remain untouched and prioritized.
+2. **Artifact & Temporary File Purge:**
+   * Purged transient test outputs, proof-loop scratch directories, `__pycache__` artifacts, and early root scratch scripts. The repository operates as a self-contained Git entity with `telemetry/` initialized via `.gitkeep`.
+3. **Arr Instance Hygiene:**
+   * Audited Radarr4k (`:7879`) and Sonarr4k (`:8990`): 0 duplicate or unreferenced AV1 custom formats exist. Every canonical tier CF is referenced with single-cardinality in the active AV1 quality profile.
+4. **Upstream Sync Concurrency Protection:**
+   * Enhanced [`scripts/sync_upstream.sh`](scripts/sync_upstream.sh) with non-blocking kernel file locking (`flock -n /tmp/pcd_upstream_sync.lock`) to eliminate potential race conditions or concurrent execution overlaps.
+
+
+
 
 
 

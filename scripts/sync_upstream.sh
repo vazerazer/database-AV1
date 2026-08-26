@@ -7,6 +7,13 @@
 # ==============================================================================
 set -euo pipefail
 
+LOCK_FILE="/tmp/pcd_upstream_sync.lock"
+exec 200>"$LOCK_FILE"
+if ! flock -n 200; then
+    echo "Notice: Upstream sync is already in progress. Exiting cleanly."
+    exit 0
+fi
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
