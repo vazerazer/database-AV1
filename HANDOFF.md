@@ -218,6 +218,39 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`Extreme 2160p` (ID: 6648):** Added `45.0 - 200.0 GB` all-codec insurance penalty (`-1500`) to reject massive uncompressed remuxes.
    * **Audio Retune:** TrueHD, Atmos, DTS-X set to `+150`; Lossless & Dolby Digital to `+100`; Dolby Digital + (EAC3) at `+150`.
 
+---
+
+## 13. End-of-Day Closeout: Bitrate Audit, Residue Sweep & Profile Research (Op 919)
+
+1. **Bitrate Audit & Empirical Tier Validation:**
+   * Audited all 73 active movie files in Radarr4k against true Mbps ($\text{size} \times 8 / (\text{runtime} \times 60)$).
+   * **Zone Distribution:**
+     * `MICRO-AV1`: 8 files (11.0%)
+     * `EFFICIENT` (AV1 5–15 Mbps): 22 files (30.1%)
+     * `TRANSPARENT-LEAN` (x265 10–20 Mbps): 33 files (45.2%)
+     * `HEAVY` (20–33 Mbps): 8 files (11.0%)
+     * `OVER-CAP` (>33 Mbps): 2 files (2.7%)
+   * **Empirical Tier Validation:**
+     * `AV1 Quality Encoders`: avg **26.2 Mbps** (min 14.9, max 37.7)
+     * `AV1 Compact Encoders`: avg **9.5 Mbps** (min 1.6, max 17.6)
+     * `x265 Balanced / Lean (hallowed/DarQ)`: avg **18.5 Mbps** (min 16.1, max 22.4)
+     * `x265 High Quality (DON/FLUX)`: avg **18.7 Mbps** (min 16.4, max 33.5)
+
+2. **Residue Sweep Actions & Convergence:**
+   * **`City of God` (2002):** Replaced 1.41 GB Rosy micro encode with 8.49 GB `DarQ` x265 encode (Score: 900, ~8.8 Mbps).
+   * **`The Hunt` (2012):** Upgraded 3.37 GB to 3.59 GB `KIMJI` AV1 (Score: 4250, 4.42 Mbps).
+   * **`X-Men Origins: Wolverine` (2009):** Upgraded 3.44 GB to 3.91 GB 10-bit AV1 `ChopperHitler` (Score: 4900, 5.23 Mbps).
+   * **`Sisu` (2022) & `Cast Away` (2000):** Verified clean import completion.
+
+3. **Logging Hygiene:**
+   * Verified and enforced `logLevel: info` across all 4 *arr instances (`Radarr4k`, `Sonarr4k`, `Radarr HD`, `Sonarr HD`).
+
+4. **Profile Research Verdict (Dumpstarr vs AV1 PCD):**
+   * **Verdict: KEEP / ADAPT.**
+   * Rejected automated Dumpstarr sync in Profilarr (6-digit $900,000$-scale would collide and destroy AV1 4-digit priority).
+   * Retained hand-rolled PCD database as primary authority while consuming upstream group intelligence via `scripts/sync_upstream.sh`.
+
+
 
 
 
