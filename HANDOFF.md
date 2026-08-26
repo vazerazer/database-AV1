@@ -165,6 +165,25 @@ All 6 development phases from architecture extraction through E2E live synchroni
 4. **Upstream Sync Concurrency Protection:**
    * Enhanced [`scripts/sync_upstream.sh`](scripts/sync_upstream.sh) with non-blocking kernel file locking (`flock -n /tmp/pcd_upstream_sync.lock`) to eliminate potential race conditions or concurrent execution overlaps.
 
+---
+
+## 10. Profile-Level Size-Aware Scoring (Op 916)
+
+1. **Motivation & Architecture (Dictionarry Sliders Philosophy):**
+   * Avoided hard cutoff limits in `Settings -> Quality` min/max sliders. Instead, implemented dynamic Custom Format scoring using Radarr's `SizeSpecification` condition (absolute GB windows with `min >= 1.0 GB`).
+2. **Custom Format Specifications ([`ops/916.add-size-aware-scoring.sql`](ops/916.add-size-aware-scoring.sql)):**
+   * **`AV1 Micro 1080p`**: `Resolution: 1080p` AND `AV1 Title Marker` AND `Size: 1.0 - 3.5 GB` (Score: **-2800** in `Movies 2160p AV1 HQ`).
+   * **`AV1 Micro 2160p`**: `Resolution: 2160p` AND `AV1 Title Marker` AND `Size: 1.0 - 4.0 GB` (Score: **-2800** in `Movies 2160p AV1 HQ`).
+   * **`Oversized 2160p Fallback`**: `Resolution: 2160p` AND `Size: 16.0 - 200.0 GB` AND `NOT AV1 Title Marker` (Score: **-1500** in `Movies 2160p AV1 HQ`).
+3. **Core Invariant Guarantees:**
+   * **Invariant A (Micro-AV1 vs High-Tier x265):** Micro-AV1 1080p (e.g. Rosy 1.4GB, penalized to 700) loses to standard 1080p/2160p x265 transparent encodes (e.g. DarQ/DON at 1400–1700).
+   * **Invariant B (Placeholder Grace):** Micro-AV1 from compact tiers (e.g. onlyfaffs 2.8GB at score 1450) remains grab-able when no better release exists ($\ge 1000$ min cutoff).
+   * **Invariant C (2160p AV1 Immunity):** Standard $\ge 4.0\text{GB}$ 2160p AV1 releases experience zero score changes (score intact at 5300–6100).
+   * **Invariant D (Non-AV1 Fallback Demotion):** Bloated 20–50GB x265 non-AV1 fallbacks are penalized by -1500, prioritizing transparent 8–14GB x265 encodes.
+4. **Scope & Application:**
+   * Exclusively applied to `Movies 2160p AV1 HQ` (ID: `64`) in Radarr4k. Sonarr4k remains untouched (where compact/anime 1080p files are intentional).
+
+
 
 
 

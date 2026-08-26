@@ -187,6 +187,12 @@ class ScoringContext:
                             for (r_val,) in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
                                 res_set.add(r_val.lower().replace("_", "").replace("-", ""))
                                 
+                        size_bounds = None
+                        if c_type == "size":
+                            s_row = conn.execute("SELECT min_bytes, max_bytes FROM condition_sizes WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchone()
+                            if s_row:
+                                size_bounds = (s_row[0], s_row[1])
+                                
                         compiled_conds.append({
                             "name": c_name,
                             "type": c_type,
@@ -194,7 +200,8 @@ class ScoringContext:
                             "required": bool(required),
                             "pats": pats,
                             "sources": sources,
-                            "res_set": res_set
+                            "res_set": res_set,
+                            "size_bounds": size_bounds
                         })
                         
                     compiled_rules.append({
@@ -214,7 +221,7 @@ def get_scoring_context(conn):
         _GLOBAL_SCORING_CONTEXT = ScoringContext(conn)
     return _GLOBAL_SCORING_CONTEXT
 
-def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
+def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_gb=None):
     ctx = get_scoring_context(conn)
     if profile_name not in ctx.profiles:
         raise ValueError(f"Unknown profile: {profile_name}")
@@ -271,6 +278,13 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr"):
                 r_set = cond["res_set"]
                 if "2160p" in r_set and tokens["is_2160p"]: cond_matched = True
                 if "1080p" in r_set and tokens["is_1080p"]: cond_matched = True
+            elif c_type == "size":
+                if size_gb is not None and cond.get("size_bounds"):
+                    min_b, max_b = cond["size_bounds"]
+                    min_gb = (min_b / (1024**3)) if (min_b and min_b > 10000) else (min_b or 0.0)
+                    max_gb = (max_b / (1024**3)) if (max_b and max_b > 10000) else (max_b or float('inf'))
+                    if min_gb <= size_gb <= max_gb:
+                        cond_matched = True
                 
             if negate:
                 cond_matched = not cond_matched
@@ -728,6 +742,67 @@ def run_simulation_battery():
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 6000
+        },
+        # --- OP 916 SIZE-AWARE SCORING BATTERY ---
+        {
+            "category": "Size-Aware: City of God Micro-AV1 Rosy (1.4GB Penalized to 700 < 1000 Cutoff)",
+            "title": "City.of.God.2002.bluray.sdr.portuguese.1080p.av1.1500mb-Rosy-xpost",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 1.41,
+            "expect_pass": False,
+            "min_band": 600,
+            "max_band": 800
+        },
+        {
+            "category": "Size-Aware: City of God Tier 1 1080p x265 (8.1GB Scores 1700 -> Beats Rosy 700)",
+            "title": "City.of.God.2002.1080p.BluRay.x265.DDP.5.1.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 8.1,
+            "expect_pass": True,
+            "min_band": 1600,
+            "max_band": 1800
+        },
+        {
+            "category": "Size-Aware: Easy A onlyfaffs 1080p AV1 (2.8GB Micro Penalized but Passes Cutoff)",
+            "title": "Easy.A.2010.1080p.BluRay.AV1.Opus.5.1-onlyfaffs",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 2.83,
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 1500
+        },
+        {
+            "category": "Size-Aware: Normal 2160p AV1 (12.5GB -> Score Unchanged at 6100)",
+            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.5,
+            "expect_pass": True,
+            "min_band": 6000,
+            "max_band": 6200
+        },
+        {
+            "category": "Size-Aware: Oversized 2160p Fallback (Akira 41.4GB x265 Penalized by -1500)",
+            "title": "Akira.1988.REPACK.2160p.UHD.BluRay.Dual.Audio.TrueHD.5.1.HDR.x265-Chotab",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 41.36,
+            "expect_pass": False,
+            "min_band": 100,
+            "max_band": 300
+        },
+        {
+            "category": "Size-Aware: Micro-AV1 as Only Option (Score 1200 >= 1000 Cutoff -> Grabbed)",
+            "title": "Obscure.Indie.Film.2023.1080p.Bluray.AV1.Opus.2.0-Rosy",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 1.4,
+            "expect_pass": True,
+            "min_band": 1000,
+            "max_band": 1250
         }
     ]
     
@@ -744,8 +819,9 @@ def run_simulation_battery():
         arr_type = case["arr_type"]
         expect_pass = case["expect_pass"]
         category = case["category"]
+        size_gb = case.get("size_gb")
         
-        score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(conn, title, profile, arr_type)
+        score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(conn, title, profile, arr_type, size_gb=size_gb)
         
         test_success = (passed_cutoff == expect_pass)
         if "min_band" in case and score < case["min_band"]:
