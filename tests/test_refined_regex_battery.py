@@ -24,7 +24,10 @@ REGEX_PATTERNS = {
     "Banned ENTROPY": r"(?i)(?<![a-zA-Z0-9])ENTROPY\b",
 
     # 6. Plausible Release Group (Op 920: Provenance detection for nameless penalty)
-    "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|HDR|DV|10bit|8bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|2160p|1080p|720p|AAC|DDP|AC3|TrueHD|Atmos|DTS|DTS-HD|Opus)(?:[\[\].\s-]|$)|\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01)(?:[\[\].\s-]|$)|\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)"
+    "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|HDR|DV|10bit|8bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|2160p|1080p|720p|AAC|DDP|AC3|TrueHD|Atmos|DTS|DTS-HD|Opus)(?:[\[\].\s-]|$)|\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01)(?:[\[\].\s-]|$)|\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)",
+
+    # 7. Foreign Dub (Op 922: Explicit foreign dub tags demotion)
+    "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b"
 }
 
 TEST_CASES = {
@@ -173,6 +176,38 @@ TEST_CASES = {
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1-DUTCH.mkv",
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1-SWE.mkv",
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1-FRENCH.mkv"
+        ]
+    },
+    "Foreign Dub": {
+        "positive": [
+            "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard",
+            "The.Matrix.1999.German.DUBBED.2160p.AV1-Group",
+            "Inception.2010.French.DUBBED.1080p.AV1-Group",
+            "Interstellar.2014.Italian.DUB.2160p.HDR.AV1",
+            "Gladiator.2000.Spanish.DUBBED.2160p.AV1",
+            "Dune.2021.Russian.DUB.1080p.AV1",
+            "Avatar.2009.Polish.DUBBED.2160p.AV1",
+            "Movie.2024.Turkish.DUBBED.1080p",
+            "Movie.2024.Hindi.DUBBED.1080p",
+            "Movie.2024.DUBBED.German.1080p",
+            "Movie.2024.German-DUBBED-DL.1080p",
+            "Movie.2024.DL.German.DUBBED.1080p",
+            "Movie.2024.GER.DUB.1080p",
+            "Movie.2024.German.SYNCHRONISIERT.1080p"
+        ],
+        "adversarial_negatives": [
+            "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
+            "The.Bourne.Supremacy.2004.2160p.MA.WEB-DL.DTS-X.7.1.DV.HDR.H.265-BYNDR",
+            "The.Matrix.1999.MULTi.2160p.AV1-Group",
+            "Inception.2010.MULTi.VF2.1080p.AV1-Group",
+            "Movie.2024.Dual.Audio.1080p.AV1",
+            "Movie.2024.Dual-Audio.2160p.x265",
+            "Dublin.Murders.2019.S01E01.1080p.AV1",
+            "The.Dub.2020.1080p.AV1",
+            "Dubliners.1987.1080p.BluRay.x265",
+            "Movie.2024.German.Subbed.1080p.AV1",
+            "Movie.2024.German.Sub.1080p",
+            "Movie.2024.NLsub.1080p"
         ]
     }
 }

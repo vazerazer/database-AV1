@@ -1067,6 +1067,47 @@ def run_simulation_battery():
             "expect_pass": False,
             "min_band": -3000,
             "max_band": 500
+        },
+        # --- 16. OP 922: FOREIGN DUB DEMOTION BATTERY ---
+        {
+            "category": "Op 922: Das Bourne Ultimatum 18.89GB Bi0hazard German Dub (-750 Dub Penalty -> Score 3600)",
+            "title": "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 18.89,
+            "expect_pass": True,
+            "min_band": 3500,
+            "max_band": 3700
+        },
+        {
+            "category": "Op 922: The Bourne Ultimatum 18.89GB Non-Dub AV1 (No Dub Penalty -> Score 4350)",
+            "title": "The.Bourne.Ultimatum.2007.2160p.HDR.EAC3.5.1.BluRay.AV1-Bi0hazard",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 18.89,
+            "expect_pass": True,
+            "min_band": 4250,
+            "max_band": 4450
+        },
+        {
+            "category": "Op 922: Matrix German Dub 2160p AV1 (-750 Penalty -> Score 3450 Beats x265 2200)",
+            "title": "The.Matrix.1999.German.DUBBED.2160p.HDR.AV1-Group",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 16.0,
+            "expect_pass": True,
+            "min_band": 3350,
+            "max_band": 3550
+        },
+        {
+            "category": "Op 922: Matrix MULTi release (No Dub Penalty -> Score 4200)",
+            "title": "The.Matrix.1999.MULTi.2160p.HDR.AV1-Group",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 16.0,
+            "expect_pass": True,
+            "min_band": 4100,
+            "max_band": 4300
         }
     ]
     

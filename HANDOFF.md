@@ -302,6 +302,20 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`The Bourne Ultimatum` (2007):** Upgraded from 7.25 GB (8.61 Mbps) to `Bi0hazard` AV1 (17.41 GB, 20.67 Mbps, HDR10, Score: 4350).
    * **`John Wick` (2014):** Upgraded from 6.12 GB (8.27 Mbps) to `Rob74K` AV1 (12.90 GB, 17.44 Mbps, DV/HDR10, Score: 4950).
 
+---
+
+## 16. Foreign-Dub Demotion & Craft-vs-Bitrate Principle (Op 922)
+
+1. **Dub Policy (Demote-Not-Ban):**
+   * **Rationale:** Foreign dub releases (e.g. `German.DUBBED.DL`) often include the original English audio track and represent superior encoding bitrate/craft compared to barren alternative supply. They remain fully grab-able and welcome in the library when clearly superior.
+   * **Demotion Mechanic:** Dubs are demoted by **`-750`** via Custom Format `Foreign Dub` ([`ops/922.add-foreign-dub-scoring.sql`](ops/922.add-foreign-dub-scoring.sql)).
+   * **Result:** A foreign dub loses to an equivalent non-dubbed AV1 release ($4350 \text{ vs } 3600$), but comfortably outscores and beats transparent x265 fallbacks ($3600 \text{ vs } 2200$).
+
+2. **The Craft-vs-Bitrate Principle:**
+   * The $\sim 10\text{ Mbps}$ 2160p AV1 floor is an empirical heuristic for baseline safety; exceptional encoder tuning/craft (e.g. `R and H`, `CoSMiCSuRFeR`, `TAoE`) can deliver visually pristine results slightly below this line.
+   * The lean band ($6.0\text{--}11.0\text{ GB}$) acts as a craft-blind filter against marginal encodes, while legitimate user exceptions (*The Deer Hunter* 9.09 Mbps `R and H`) are preserved.
+
+
 
 
 
