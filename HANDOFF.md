@@ -490,6 +490,31 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Mechanism:** Snapshots exact active custom format scores for Profiles 64 and 67 to [`ops/profile_snapshot.json`](ops/profile_snapshot.json) (public-safe: no internal IDs or tokens).
    * **Verification:** `tests/test_profile_drift.py` asserts snapshot invariants and validates live Radarr4k profiles against the snapshot. Skips cleanly in off-box CI environments when daemon API keys are absent.
 
+---
+
+## 23. Radarr4k Full-Library Upgrade Census (Op 929)
+
+1. **Census Overview & Scope:**
+   * **Audit Date:** 2026-08-27
+   * **Target Profile:** `Movies 2160p AV1 HQ` (Profile 64, Read-Only)
+   * **Catalog Total:** 79 movies audited via live interactive search endpoints (`GET /api/v3/release`).
+   * **Public Artifact:** [`evidence/census_929_public.md`](evidence/census_929_public.md) (Tracked, public-safe).
+   * **Local Quarantine Artifact:** `evidence/census_929.csv.local` (Local only, raw search metadata).
+
+2. **Classification Distribution:**
+   * **`HOLD` (15 titles / 19.0%):** Current file is already optimal, top-scoring, or anchored by an empirical `PASS` verdict.
+   * **`UPGRADE-CANDIDATE` (22 titles / 27.8%):** Qualified candidate materially advances playback quality (e.g. x264/x265 $\rightarrow$ Tiered AV1 with DV/Atmos).
+   * **`MANUAL-REVIEW` (23 titles / 29.1%):** High score delta requiring verification of audio tracks, bitrate headroom, or craft exceptions.
+   * **`NO-QUALIFIED-CANDIDATE` (19 titles / 24.1%):** No candidate cleared the +1000 minimum profile cutoff score.
+
+3. **Standing Protocol:**
+   * **Invariant:** Census outputs represent an empirical review queue and **NEVER** authorize automated production changes. Any future library upgrade requires an explicit, separate operational directive.
+
+4. **CMRG x265 Review Analysis:**
+   * Discovered **199 candidate releases** matching `CMRG` across 8 distinct library titles.
+   * `CMRG` reliably occupies the standard transparent x265 fallback band (~2150–2450 pts), appropriately subordinate to Tiered AV1 (+3500 base).
+
+
 
 
 
