@@ -250,6 +250,25 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Rejected automated Dumpstarr sync in Profilarr (6-digit $900,000$-scale would collide and destroy AV1 4-digit priority).
    * Retained hand-rolled PCD database as primary authority while consuming upstream group intelligence via `scripts/sync_upstream.sh`.
 
+---
+
+## 14. AV1 Nameless Trust Fix (Op 920)
+
+1. **Trust Model & Provenance:**
+   * **Core Rule:** A release group name is a claim of responsibility.
+   * Group-less (nameless) AV1 releases are penalized, while named-unknown releases retain the benefit of the doubt (promoted to tiers via upstream sync, or removed via Banned Groups if flawed).
+2. **Custom Format `AV1 Nameless` ([`ops/920.add-av1-nameless-scoring.sql`](ops/920.add-av1-nameless-scoring.sql)):**
+   * **Conditions:** `Resolution: 2160p` (required) AND `Release Title: (?i)\b(AV1|AV01)\b` (required) AND negated `Release Title: Plausible Release Group` (required, fires when release title lacks a recognizable group prefix or suffix).
+   * **Junk-Suffix Handling:**
+     * Non-groups (`-NLsub`, `-xpost`, `-[N-Z-B]`, `-[TGx]`, `-[rarbg]`, bare `-AV1`) are correctly identified as nameless $\rightarrow$ CF fires.
+     * Compound groups (`-Rosy-xpost`), site-bracketed groups (`-[dAV1nci]`), ampersand variants (`-R&H`, `-R and H`), and standard hyphenated groups (`-MainFrame`, `-BYNDR`, `-hallowed`, `-RandH`) are recognized as named $\rightarrow$ CF does not fire.
+   * **Score Calibration:** `-2500` penalty in Profile 64 (`Movies 2160p AV1 HQ`).
+     * Brings nameless 2160p AV1 (~3500–4200) down to ~1000–1700, ensuring it loses to transparent x265 fallbacks (`BYNDR` / `MainFrame` / `hallowed` at ~2200).
+     * Preserves placeholder grace by landing at/above the 1000 cutoff so a nameless AV1 that is the sole existing supply for a title can still be grabbed.
+3. **Queued Operation:**
+   * **Op 921:** Lean band recalibration (pending user eyeball playback testing).
+
+
 
 
 

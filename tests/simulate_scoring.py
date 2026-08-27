@@ -935,6 +935,57 @@ def run_simulation_battery():
             "expect_pass": False,
             "min_band": -2000,
             "max_band": 500
+        },
+        # --- 14. OP 920: AV1 NAMELESS TRUST BATTERY ---
+        {
+            "category": "Op 920: NLsub Bourne 17.7GB (Nameless 2160p AV1 -> -2500 penalty -> Score 1700)",
+            "title": "The Bourne Supremacy (2004) - 2160p HDR - AV1 BRRip - NLsub",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 17.71,
+            "expect_pass": True,
+            "min_band": 1500,
+            "max_band": 1900
+        },
+        {
+            "category": "Op 920: R&H Bourne 7.8GB (Named Group -> Unchanged Score 4700)",
+            "title": "The.Bourne.Supremacy.2004-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 7.78,
+            "expect_pass": True,
+            "min_band": 4500,
+            "max_band": 4900
+        },
+        {
+            "category": "Op 920: BYNDR x265 Bourne 24.2GB (Score 2200, Beats NLsub 1700)",
+            "title": "The.Bourne.Supremacy.2004.2160p.MA.WEB-DL.DTS-X.7.1.DV.HDR.H.265-BYNDR",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 24.21,
+            "expect_pass": True,
+            "min_band": 2000,
+            "max_band": 2400
+        },
+        {
+            "category": "Op 920: Smokindevil Shawshank (Named Group -> No Nameless Penalty)",
+            "title": "The.Shawshank.Redemption.1994.2160p.HDR.AV1-Smokindevil.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 5.05,
+            "expect_pass": True,
+            "min_band": 1700,
+            "max_band": 2100
+        },
+        {
+            "category": "Op 920: anomoomin Cast Away 1080p (1080p Unaffected -> Score 4250)",
+            "title": "Cast.Away.2000.1080p.BluRay.AV1.Opus.5.1-anomoomin.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 3.89,
+            "expect_pass": True,
+            "min_band": 4100,
+            "max_band": 4400
         }
     ]
     

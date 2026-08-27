@@ -21,7 +21,10 @@ REGEX_PATTERNS = {
     "AV1 Storage Savers": r"(?i)(?:^\[(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345)\]|-(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345|\[PSA\]|\[GalaxyRG\]|\[MeGusta\]|\[VXT\]|\[d3g\]|\[Ghost\]|\[rartv\]|\[ELiTE\]|\[LAMA\]|\[KaKa\]|\[YAWNTIC\]|\[BONE\]|\[GZ\]|\[CART\]|\[LUCY\]|\[DKong\]|\[Rapta\]|\[GubrakZ\]|\[Retr0\]|\[SWAXXON\]|\[FELIX12345\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?$)",
 
     # 5. Banned Groups
-    "Banned ENTROPY": r"(?i)(?<![a-zA-Z0-9])ENTROPY\b"
+    "Banned ENTROPY": r"(?i)(?<![a-zA-Z0-9])ENTROPY\b",
+
+    # 6. Plausible Release Group (Op 920: Provenance detection for nameless penalty)
+    "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|HDR|DV|10bit|8bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|2160p|1080p|720p|AAC|DDP|AC3|TrueHD|Atmos|DTS|DTS-HD|Opus)(?:[\[\].\s-]|$)|\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01)(?:[\[\].\s-]|$)|\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)"
 }
 
 TEST_CASES = {
@@ -136,6 +139,40 @@ TEST_CASES = {
         ],
         "adversarial_negatives": [
             "Movie.Title.2024.1080p.AV1-dAV1nci.mkv"
+        ]
+    },
+    "Plausible Release Group": {
+        "positive": [
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-RandH.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-R&H.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-R and H.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-Smokindevil.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-CoSMiCSuRFeR[rarbg].mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-Rosy-xpost.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-DarQ.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-hallowed.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-MainFrame.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-BYNDR.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-D-Z0N3.mkv",
+            "[TAoE] The Bourne Supremacy 2004 2160p AV1.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-[dAV1nci].mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-UnknownGroup.mkv"
+        ],
+        "adversarial_negatives": [
+            "The Bourne Supremacy (2004) - 2160p HDR - AV1 BRRip - NLsub",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1.BRRip-NLsub.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-NLsub",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1 - NLsub.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-xpost.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-[N-Z-B].mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-[TGx].mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-[rarbg].mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-NL.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-DUTCH.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-SWE.mkv",
+            "The.Bourne.Supremacy.2004.2160p.HDR.AV1-FRENCH.mkv"
         ]
     }
 }
