@@ -19,10 +19,13 @@ from datetime import datetime
 RADARR_URL = os.environ.get("RADARR_URL", "http://127.0.0.1:7879")
 RADARR_KEY = os.environ.get("RADARR_API_KEY", "")
 
+REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STACK_DIR = os.path.dirname(REPO_DIR)
+
 if not RADARR_KEY:
-    config_xml = "/home/valdemarh/desktop-streamer/config/radarr4k/config.xml"
+    config_xml = os.path.join(STACK_DIR, "config", "radarr4k", "config.xml")
     if os.path.exists(config_xml):
-        with open(config_xml, "r") as f:
+        with open(config_xml, "r", encoding="utf-8") as f:
             for line in f:
                 if "<ApiKey>" in line:
                     RADARR_KEY = line.split("<ApiKey>")[1].split("</ApiKey>")[0].strip()
@@ -37,9 +40,9 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
-CHECKPOINT_FILE = "/home/valdemarh/desktop-streamer/database-AV1/evidence/census_930_checkpoint.json.local"
-LOCAL_CSV = "/home/valdemarh/desktop-streamer/database-AV1/evidence/census_930.csv.local"
-PUBLIC_MD = "/home/valdemarh/desktop-streamer/database-AV1/evidence/census_930_public.md"
+CHECKPOINT_FILE = os.path.join(REPO_DIR, "evidence", "census_930_checkpoint.json.local")
+LOCAL_CSV = os.path.join(REPO_DIR, "evidence", "census_930.csv.local")
+PUBLIC_MD = os.path.join(REPO_DIR, "evidence", "census_930_public.md")
 
 def api_get(endpoint):
     url = f"{RADARR_URL}/api/v3/{endpoint}"
