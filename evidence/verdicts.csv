@@ -11,6 +11,7 @@ date,title,year,group,codec,res,size_gb,runtime_min,mbps,tier_claimed,source,ver
 2026-08-27,The Deer Hunter,1978,R&H,AV1,2160p,12.18,183,9.09,Quality,prod,EXCEPTION,"Below ~10 Mbps floor; kept per user craft exception (op 922 HANDOFF). Runtime-blindness case - 183 min at 12.18GB."
 2026-08-27,The Bourne Ultimatum,2007,Bi0hazard,AV1,2160p,18.89,115,22.43,untiered,prod,EXCEPTION,"German.DUBBED.DL with English track; kept per user verdict; motivated op 922. Group is a census candidate."
 2026-08-27,Fury,2014,Smokindevil,AV1,2160p,11.24,135,11.37,untiered,prod,PASS,"Partial watch 2026-08-27: looked really good. 11.37 Mbps native UHD BluRay DV HDR TrueHD Atmos; above ~10 Mbps floor."
-2026-08-27,John Wick: Chapter 4,2023,TAoE,AV1,2160p,17.76,169,17.52,Quality,prod,PENDING,"TAoE's first evidence opportunity - currently zero observations."
+2026-08-27,John Wick: Chapter 4,2023,TAoE,AV1,2160p,17.76,169,17.52,Quality,prod,VOID,"Provenance uncertain (audit-era attribution); file replaced unwatched. Verdict void."
 2026-08-27,John Wick: Chapter 4,2023,R&H,AV1,2160p,24.96,169,20.2,Quality,shadow,PENDING,"Op 918 shadow probe; unwatched."
 2026-08-27,John Wick,2014,Rob74K,AV1,2160p,14.00,101,18.93,untiered,prod,PENDING,"Grabbed in 921 sweep. Group is a census candidate."
+2026-08-27,John Wick: Chapter 4,2023,CoSMiCSuRFeR,AV1,2160p,19.1,169,14.4,Quality,prod,PASS,"Watched 2026-08-27: looks great. DV HDR10 TrueHD Atmos. First production verdict for CoSMiCSuRFeR; upgrade from audit-era file confirmed via interactive search (+5950 top of table)."

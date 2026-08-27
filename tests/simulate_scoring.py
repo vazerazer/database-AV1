@@ -1169,6 +1169,37 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 5100,
             "max_band": 5500
+        },
+        # --- 18. OP 927: SHADOW EXPLORER PROFILE BATTERY ---
+        {
+            "category": "Op 927: SHADOW Explorer Tiered Group (dAV1nci Quality Bonus Neutralized -> Score 4500)",
+            "title": "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
+            "profile": "Movies SHADOW Explorer",
+            "arr_type": "radarr",
+            "size_gb": 14.2,
+            "expect_pass": True,
+            "min_band": 4400,
+            "max_band": 4600
+        },
+        {
+            "category": "Op 927: SHADOW Explorer Untiered Candidate (Rob74K Scores on Raw Tags -> Score 4950)",
+            "title": "John.Wick.Chapter.4.2023.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-Rob74K",
+            "profile": "Movies SHADOW Explorer",
+            "arr_type": "radarr",
+            "size_gb": 19.1,
+            "expect_pass": True,
+            "min_band": 4850,
+            "max_band": 5050
+        },
+        {
+            "category": "Op 927: SHADOW Explorer Anti-Junk Bands Active (Lean -3400 Penalty Fires -> Score 1400)",
+            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
+            "profile": "Movies SHADOW Explorer",
+            "arr_type": "radarr",
+            "size_gb": 7.11,
+            "expect_pass": True,
+            "min_band": 1300,
+            "max_band": 1500
         }
     ]
     

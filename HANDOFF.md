@@ -449,6 +449,27 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`TAoE`:** Resolved parser trailing hyphen and bracket masking; confirmed **9 2160p releases** in Quality Encoders across 8 indexers.
    * **`PRL Waldek`:** Expanded regex to cover both dot (`PRL.Waldek`) and space (`PRL Waldek`) suffix variants.
 
+---
+
+## 21. Shadow Explorer Arm & JW4 Ledger Correction (Op 927)
+
+1. **Empirical Ledger Updates ([`evidence/verdicts.csv`](evidence/verdicts.csv)):**
+   * **`John Wick: Chapter 4` (TAoE):** Annotated note $\rightarrow$ *"Provenance uncertain (audit-era attribution); file replaced unwatched. Verdict void."* Verdict set to `VOID`. `TAoE` returns to zero empirical observations (reputation-only basis flagged).
+   * **`John Wick: Chapter 4` (CoSMiCSuRFeR):** Added `PASS` row: $19.10$ GB, $14.4$ Mbps, DV HDR10 TrueHD Atmos. Note: *"Watched 2026-08-27: looks great. DV HDR10 TrueHD Atmos. First production verdict for CoSMiCSuRFeR; upgrade from audit-era file confirmed via interactive search (+5950 top of table)."*
+
+2. **Shadow Explorer Arm Architecture:**
+   * **Rationale:** Production profile `Movies 2160p AV1 HQ` (Profile 64) is strictly evidence-calibrated and untiered groups are kept at baseline to protect primary playback. The bottleneck for further promotions is empirical verdict data.
+   * **Implementation:** Created profile **`Movies SHADOW Explorer`** ([`ops/927.create-shadow-explorer-profile.sql`](ops/927.create-shadow-explorer-profile.sql) / Profile ID `67` in Radarr4k).
+   * **Scoring Rules:** Exact mirror of `Movies 2160p AV1 HQ` with tier bonuses neutralized:
+     * `AV1 Quality Encoders` score = **`0`**
+     * `AV1 Compact Encoders` score = **`0`**
+     * All universal hygiene (`CAM`, `3D`, `Upscale` @ `-10000`), sizing penalties (`Micro` @ `-2800`, `Lean` @ `-3400`), provenance checks (`Nameless` @ `-2500`), and `Foreign Dub` (`-750`) remain active.
+   * **How to Read Shadow Grabs:** Each shadow grab operates as an empirical audition. Promising untiered AV1 releases compete evenly on raw format tags. When grabbed and watched, their playback observations enter `evidence/verdicts.csv` to directly feed future census-driven tier promotions.
+
+3. **Parked Note for Op 929:**
+   * `CMRG` transparent x265 anchor evaluation and fallback calibration.
+
+
 
 
 
