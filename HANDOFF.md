@@ -3,7 +3,24 @@
 **Repository:** `vazerazer/database-AV1`  
 **Branch:** `v2`  
 **Schema Specification:** PCD v2 (Schema `1.1.0`)  
-**Status:** **Ops 900–910 Fully Implemented, Tested, Synced & Deployed**
+**Status:** **Ops 900–926 Fully Implemented, Tested, Synced & Deployed**
+
+---
+
+## 0. Standard Operational Guardrails (Permanent Protocol)
+
+* **Production Mutability Boundary:** Production `Radarr4k` Profile `64` is strictly **READ-ONLY** unless an operation explicitly mandates updates; `Sonarr4k` is always untouched unless specified.
+* **Runtime Secret Isolation:** All API keys, tokens, and credentials come from environment variables or local service configurations at runtime only — never hardcoded, never logged, never committed.
+* **Quarantine Path Pattern (Zero-Leakage Rule):** NEVER stage or commit files matching:
+  * `evidence/supply_*`
+  * `evidence/checkpoints/`
+  * `evidence/census_924.md`
+  * `evidence/indexer_map.local`
+  * `*.local`
+  *(Only `evidence/verdicts.csv` and `evidence/census_924_public.md` are allowed tracked artifacts).*
+* **Mandatory Local Proof Loop:** Full local 8-step proof loop INCLUDING [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) path and content guards must pass 100% green before any commit; paste all test battery counts in response.
+* **Local Commit & Halt Protocol:** Commit changes locally and **STOP** — the user reviews and pushes manually, every single time.
+* **Post-Push Verification:** After push, run `git ls-remote` to verify the remote ref; dispatch CI manually if the webhook is delayed; verify and report the CI run result.
 
 ---
 
