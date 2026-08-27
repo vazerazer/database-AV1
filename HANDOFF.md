@@ -315,6 +315,38 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * The $\sim 10\text{ Mbps}$ 2160p AV1 floor is an empirical heuristic for baseline safety; exceptional encoder tuning/craft (e.g. `R and H`, `CoSMiCSuRFeR`, `TAoE`) can deliver visually pristine results slightly below this line.
    * The lean band ($6.0\text{--}11.0\text{ GB}$) acts as a craft-blind filter against marginal encodes, while legitimate user exceptions (*The Deer Hunter* 9.09 Mbps `R and H`) are preserved.
 
+---
+
+## 17. Evidence Ledger & Append Protocol (Op 923)
+
+1. **Purpose & Architecture:**
+   * Grounding tier assignments on auditable empirical evidence rather than community reputation alone.
+   * The ledger is tracked in [`evidence/verdicts.csv`](evidence/verdicts.csv).
+   * **Vocabulary (Controlled):**
+     * `PASS`: Verified reference-grade or visually flawless playback.
+     * `BORDERLINE`: Marginal playback pass (on-the-limit bitrate/artifacting).
+     * `FAIL`: Unacceptable playback degradation (e.g. blocky grain, dark scene compression noise).
+     * `PENDING`: Grabbed in production or shadow stack; awaiting playback verification.
+     * `EXCEPTION`: Explicit user policy exception (e.g. craft exceptions, foreign dubs with English audio).
+
+2. **Append Protocol:**
+   * **Every Grab:** Automatically logged as a `PENDING` row on the same day (prod or shadow).
+   * **Every Watch Verdict:** Row updated from `PENDING` to `PASS`, `BORDERLINE`, or `FAIL` with a concise one-line contextual note.
+   * **Every User Policy Call:** Documented as an `EXCEPTION` row.
+   * **Tier Proposals (Op 925+):** Any group promotion or tier rebalancing must cite its concrete observation count from `evidence/verdicts.csv`. Groups without verified rows are explicitly flagged as `REPUTATION-ONLY`.
+
+3. **Current Backfill Summary (15 Observations):**
+   * **`R&H` (5):** 1 PASS, 1 BORDERLINE, 1 FAIL, 1 EXCEPTION, 1 PENDING
+   * **`FLUX` (2):** 1 PASS, 1 PENDING
+   * **`hallowed` (2):** 1 PASS, 1 PENDING
+   * **`Bi0hazard` (1):** 1 EXCEPTION
+   * **`CoSMiCSuRFeR` (1):** 1 PENDING
+   * **`TAoE` (1):** 1 PENDING
+   * **`Smokindevil` (1):** 1 PENDING
+   * **`Rob74K` (1):** 1 PENDING
+   * **Unidentified (1):** 1 PASS (*John Wick 3* 37.7 Mbps stream)
+
+
 
 
 
