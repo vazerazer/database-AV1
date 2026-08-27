@@ -351,8 +351,8 @@ All 6 development phases from architecture extraction through E2E live synchroni
 ## 18. AV1 Supply Census (Op 924)
 
 1. **Empirical Indexer Supply Inventory:**
-   * Full Newznab census executed via [`scripts/fetch_av1_supply.py`](scripts/fetch_av1_supply.py) across Indexer-C and Indexer-A (Movies UHD 2045, Movies HD 2040, Movies All 2000, `av1` + `av01`).
-   * **Raw Dataset:** 6,552 unique releases indexed in [`evidence/supply_av1.csv`](evidence/supply_av1.csv).
+   * Full Newznab census executed via [`scripts/fetch_av1_supply.py`](scripts/fetch_av1_supply.py) across dual primary indexers (Movies UHD 2045, Movies HD 2040, Movies All 2000, `av1` + `av01`).
+   * **Raw Dataset:** 6,552 unique releases indexed in local census.
    * **Resolution Breakdown:**
      * **2160p UHD:** 1,302 releases (19.9%)
      * **1080p HD:** 4,825 releases (73.6%)
@@ -375,16 +375,16 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 4. **Security & Tripwire Hygiene (Op 924c):**
    * **Core Principle:** *"The CI tripwire fires on syntactic shape, not semantics; keep data from wearing the shape of secrets."*
-   * **Sanitization:** GUIDs in `evidence/supply_av1.csv` are normalized to `<indexer>:<12-hex-hash>` (no full URLs, no 32-hex contiguous sequences).
-   * **Local Audit Parity:** Added [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) to replicate remote CI pre-push checks locally (32-hex scan, absolute path scan, URL leak scan).
+   * **Sanitization:** GUIDs in supply records are normalized to `<indexer>:<12-hex-hash>` (no full URLs, no 32-hex contiguous sequences).
+   * **Local Audit Parity:** Added [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) to replicate remote CI pre-push checks locally (32-hex scan, absolute path scan, URL leak scan, path guards).
 
 ---
 
 ## 19. All-Indexer Supply Census Expansion (Op 924b)
 
 1. **Full-Spectrum Harvest Metrics:**
-   * Expanded harvesting to all 9 Prowlarr indexers via [`scripts/fetch_av1_supply.py --all-indexers`](scripts/fetch_av1_supply.py).
-   * **Scale:** Collected 34,983 raw checkpoint records, deduplicated by normalized title into **13,722 unique AV1 releases** (over 2x the 6,552 dual-indexer baseline).
+   * Expanded harvesting across 9 configured Newznab indexers via [`scripts/fetch_av1_supply.py --all-indexers`](scripts/fetch_av1_supply.py).
+   * **Scale:** Collected 34,983 raw checkpoint records, deduplicated by normalized title into **13,722 unique AV1 releases** (documented in [`evidence/census_924_public.md`](evidence/census_924_public.md)).
    * **Multi-Indexer Propagation:** 5,033 releases (36.7%) confirmed across $\ge 2$ distinct indexers.
    * **Breakdown:**
      * **2160p UHD:** 5,679 releases (41.4%)

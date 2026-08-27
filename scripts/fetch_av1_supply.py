@@ -182,7 +182,7 @@ def get_all_prowlarr_indexers(all_indexers: bool = True) -> list:
             if r_impl.lower() not in ['newznab', 'torznab']:
                 print(f"Skipping non-Newznab indexer: {r_name} ({r_impl})")
                 continue
-            if not all_indexers and r_name not in ['Indexer-C', 'Indexer-A']:
+            if not all_indexers and os.environ.get('INDEXER_FILTER') and r_name not in os.environ.get('INDEXER_FILTER', '').split(','):
                 continue
             try:
                 s = json.loads(r_settings)
@@ -298,7 +298,7 @@ def regenerate_from_checkpoints(evidence_dir: str, output_csv: str):
             continue
             
         norm_key = normalize_title_key(title)
-        indexer = raw.get('indexer', 'Indexer-C')
+        indexer = raw.get('indexer', 'Indexer')
         
         if norm_key not in merged_by_title:
             merged_by_title[norm_key] = {

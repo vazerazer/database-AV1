@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
 scripts/census_report.py
-Analyzes evidence/supply_av1.csv and generates evidence/census_924.md.
-Includes multi-indexer cross-referencing, group robustness statistics,
-coverage gap analysis, Op 925 tier promotions, and alias consolidation.
+Analyzes evidence/supply_av1.csv and generates AV1 Supply Census Reports.
+Supports --public mode for anonymized, public-safe reports (evidence/census_924_public.md)
+and local indexer mapping (evidence/indexer_map.local).
 """
 
 import os
+import sys
 import re
 import csv
+import argparse
 import statistics
 from collections import defaultdict, Counter
 
@@ -106,10 +108,16 @@ def get_tier(group_name: str) -> str:
         return 'Nameless'
     return TIER_MAP.get(group_name.lower().strip(), 'Untiered')
 
-def main():
+def generate_report(is_public: bool = True):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_csv = os.path.join(base_dir, 'evidence', 'supply_av1.csv')
-    output_md = os.path.join(base_dir, 'evidence', 'census_924.md')
+    
+    if is_public:
+        output_md = os.path.join(base_dir, 'evidence', 'census_924_public.md')
+    else:
+        output_md = os.path.join(base_dir, 'evidence', 'census_924.md')
+        
+    map_local_file = os.path.join(base_dir, 'evidence', 'indexer_map.local')
     
     if not os.path.exists(input_csv):
         print(f"Error: {input_csv} does not exist. Run fetch_av1_supply.py first.", file=sys.stderr)
@@ -132,6 +140,28 @@ def main():
     multi_indexer_releases = 0
     group_indexers = defaultdict(set)
     
+    # Collect all distinct indexers
+    all_raw_indexers = set()
+    for r in rows:
+        raw_idx = r.get('indexers', '').strip()
+        for idx in raw_idx.split(';'):
+            if idx.strip():
+                all_raw_indexers.add(idx.strip())
+                
+    # Create deterministic anonymized map
+    sorted_indexers = sorted(list(all_raw_indexers))
+    anon_map = {}
+    for i, real_name in enumerate(sorted_indexers):
+        anon_label = f"Indexer-{chr(ord('A') + i)}"
+        anon_map[real_name] = anon_label
+        
+    # Write indexer_map.local
+    with open(map_local_file, 'w', encoding='utf-8') as f:
+        f.write("# Local-only mapping of anonymized indexer labels to real names\n")
+        f.write("# NEVER COMMIT THIS FILE TO PUBLIC REPOSITORIES\n\n")
+        for real_name in sorted_indexers:
+            f.write(f"{anon_map[real_name]}: {real_name}\n")
+            
     for r in rows:
         res = r['res']
         res_counts[res] += 1
@@ -155,7 +185,7 @@ def main():
             
     # Markdown generation
     lines = []
-    lines.append("# OP 924b: Multi-Indexer AV1 Supply Census Report")
+    lines.append("# OP 924b: Multi-Indexer AV1 Supply Census Report (Public)")
     lines.append("### Comprehensive Empirical Inventory Across All Indexers\n")
     lines.append(f"- **Total Deduplicated Unique Titles:** {total_records:,} (vs. 6,552 dual-indexer baseline)")
     lines.append(f"- **Multi-Indexer Propagated Titles (≥2 Indexers):** {multi_indexer_releases:,} ({multi_indexer_releases*100.0/total_records:.1f}%)")
@@ -165,22 +195,9 @@ def main():
     lines.append(f"- **Other / Unclassified:** {res_counts['Other']:,}\n")
     lines.append("---\n")
     
-    # 1. Indexer Coverage Analysis
-    lines.append("## 1. Indexer Coverage & Overlap Matrix\n")
-    lines.append("| Indexer Name | Total Releases Indexed | Exclusive to Indexer | Shared Across Indexers | Propagation % |")
-    lines.append("| :--- | :---: | :---: | :---: | :---: |")
-    
-    for idx_name, tot_seen in sorted(indexer_presence_counts.items(), key=lambda x: x[1], reverse=True):
-        excl = indexer_exclusive_counts[idx_name]
-        shared = tot_seen - excl
-        prop_pct = (shared * 100.0 / tot_seen) if tot_seen > 0 else 0.0
-        lines.append(f"| **`{idx_name}`** | {tot_seen:,} | {excl:,} | {shared:,} | {prop_pct:.1f}% |")
-        
-    lines.append("\n---\n")
-    
-    # 2. Top 30 2160p Groups Stats Table (with Multi-Indexer Robustness & Post-Op 925 Tiers)
-    lines.append("## 2. Top 2160p Release Groups (Empirical Statistics & Robustness)\n")
-    lines.append("| Release Group | 2160p Count | Median Size | p25 - p75 Band | % Upscale | % Lang/Dub | Indexer Count | Current Tier |")
+    # 1. Top 35 2160p Groups Stats Table (with Multi-Indexer Robustness & Post-Op 925 Tiers)
+    lines.append("## 1. Top 2160p Release Groups (Empirical Statistics & Robustness)\n")
+    lines.append("| Release Group | 2160p Count | Median Size | p25 - p75 Band | % Upscale | % Lang/Dub | Cross-Indexer Count | Current Tier |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |")
     
     sorted_2160p = sorted([(g, len(items)) for g, items in group_2160p_items.items()], key=lambda x: x[1], reverse=True)
@@ -202,8 +219,8 @@ def main():
         
     lines.append("\n---\n")
     
-    # 3. Group x Resolution Histogram (Top 25 Total Supply)
-    lines.append("## 3. Group × Resolution Histogram (Top 25 Total Supply)\n")
+    # 2. Group x Resolution Histogram (Top 25 Total Supply)
+    lines.append("## 2. Group × Resolution Histogram (Top 25 Total Supply)\n")
     lines.append("| Release Group | Total Supply | 2160p UHD | 1080p HD | 720p / Other | Cross-Indexer Count | Primary Tier |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :--- |")
     
@@ -218,8 +235,8 @@ def main():
         
     lines.append("\n---\n")
     
-    # 4. Tier Coverage Gap Analysis
-    lines.append("## 4. Tier Coverage Gap Analysis\n")
+    # 3. Tier Coverage Gap Analysis
+    lines.append("## 3. Tier Coverage Gap Analysis\n")
     lines.append("Analysis of high-frequency groups that are currently **Untiered** in `Movies 2160p AV1 HQ`:\n")
     
     untiered_2160p = [(g, len(items)) for g, items in group_2160p_items.items() if get_tier(g) == 'Untiered']
@@ -259,8 +276,8 @@ def main():
         
     lines.append("\n---\n")
     
-    # 5. Op 925 Promotion Outcomes
-    lines.append("## 5. Op 925 Promotion Outcomes (Evidence & Census Keyed)\n")
+    # 4. Op 925 Promotion Outcomes
+    lines.append("## 4. Op 925 Promotion Outcomes (Evidence & Census Keyed)\n")
     lines.append("1. **`dAV1nci`** (*Promoted to Quality Encoders +1000*): $N=12$ in 2160p (Median 11.97 GB, 0% upscale, 0% dub) and $N=90$ in 1080p (Median 3.28 GB) across **8 indexers**. Zero empirical failure records; consistent master encoder.\n")
     lines.append("2. **`UH`** (*Promoted to Quality Encoders +1000*): $N=22$ in 2160p (Median 12.94 GB, 0% upscale, 0% dub) across **6 indexers**. Solid transparent master encodings (dormant catalog value).\n")
     lines.append("3. **`Smokindevil`** (*Promoted to Quality Encoders +1000*): $N=10$ in 2160p (Median 11.11 GB, 0% upscale, 0% dub, TrueHD Atmos tracks) across **5 indexers**. Double-keyed promotion backed by 1 empirical PASS (*Fury* watch).\n")
@@ -273,7 +290,17 @@ def main():
     with open(output_md, 'w', encoding='utf-8') as f:
         f.write(report_content)
         
-    print(f"Census report generated successfully at {output_md}")
+    print(f"Report generated successfully at {output_md}")
+    if is_public:
+        print(f"Indexer map written to {map_local_file}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate AV1 Supply Census Report.")
+    parser.add_argument('--private', action='store_true', default=False, help="Generate private report with raw indexer names to census_924.md")
+    args = parser.parse_args()
+    
+    is_public = not args.private
+    generate_report(is_public=is_public)
 
 if __name__ == '__main__':
     main()
