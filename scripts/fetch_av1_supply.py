@@ -2,8 +2,9 @@
 """
 scripts/fetch_av1_supply.py
 Harvests the complete AV1 release supply across configured Newznab indexers.
-Supports per-indexer checkpointing, title-based normalization/deduplication,
-sanitized GUID generation (no URLs, no 32-hex patterns), and API politeness.
+Supports --all-indexers mode, per-indexer checkpointing, title-based normalization/deduplication,
+cross-indexer presence aggregation, sanitized GUID generation (no URLs, no 32-hex patterns),
+and API rate-limit politeness.
 """
 
 import os
@@ -83,7 +84,7 @@ def extract_group(title: str) -> str:
             
     return ''
 
-def parse_release_metadata(title: str, size_bytes: int, raw_date: str, category: str, guid: str, indexer: str) -> dict:
+def parse_release_metadata(title: str, size_bytes: int, raw_date: str, category: str, guid: str, indexers_list: list) -> dict:
     # Resolution
     if re.search(r'\b(2160p|4K|UHD)\b', title, re.I):
         res = '2160p'
@@ -120,12 +121,14 @@ def parse_release_metadata(title: str, size_bytes: int, raw_date: str, category:
         except Exception:
             date_posted = raw_date[:10]
             
-    # Clean, sanitized GUID (no URLs, no 32-hex characters)
-    safe_guid = clean_guid(indexer, guid if guid else title)
+    # Semicolon-delimited list of indexers
+    idx_str = ';'.join(sorted(list(set(indexers_list))))
+    first_idx = indexers_list[0] if indexers_list else 'idx'
+    safe_guid = clean_guid(first_idx, guid if guid else title)
             
     return {
         'date_posted': date_posted,
-        'indexer': indexer,
+        'indexers': idx_str,
         'category': category,
         'title': title,
         'size_bytes': size_bytes,
@@ -137,101 +140,117 @@ def parse_release_metadata(title: str, size_bytes: int, raw_date: str, category:
         'guid': safe_guid
     }
 
-def get_indexers_config():
+def get_all_prowlarr_indexers(all_indexers: bool = True) -> list:
+    """Discovers all Newznab/Torznab indexers from Prowlarr without logging secrets."""
     indexers = []
-    
-    # Check env vars first
-    ds_key = os.environ.get('DRUNKENSLUG_API_KEY')
-    ds_url = os.environ.get('DRUNKENSLUG_URL', 'https://indexer-c.com')
-    if ds_key:
-        indexers.append({'name': 'Indexer-C', 'baseUrl': ds_url, 'apiKey': ds_key})
-        
-    dog_key = os.environ.get('DOGNZB_API_KEY')
-    dog_url = os.environ.get('DOGNZB_URL', 'https://api.indexer-a.cr')
-    if dog_key:
-        indexers.append({'name': 'Indexer-A', 'baseUrl': dog_url, 'apiKey': dog_key})
-        
-    # If not in env, lookup safely from local prowlarr.db without writing keys to disk/logs
-    if not indexers:
-        prowlarr_db = os.environ.get(
-            'PROWLARR_DB_PATH',
-            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'config', 'prowlarr', 'prowlarr.db')
-        )
-        if os.path.exists(prowlarr_db):
-            import sqlite3
-            conn = sqlite3.connect(prowlarr_db)
-            cursor = conn.cursor()
-            rows = cursor.execute('SELECT Name, Settings FROM Indexers').fetchall()
-            for r_name, r_settings in rows:
-                if r_name in ['Indexer-C', 'Indexer-A']:
-                    try:
-                        s = json.loads(r_settings)
-                        if s.get('apiKey'):
-                            indexers.append({
-                                'name': r_name,
-                                'baseUrl': s.get('baseUrl', '').rstrip('/'),
-                                'apiKey': s.get('apiKey')
-                            })
-                    except Exception:
-                        pass
+    prowlarr_db = os.environ.get(
+        'PROWLARR_DB_PATH',
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'config', 'prowlarr', 'prowlarr.db')
+    )
+    if os.path.exists(prowlarr_db):
+        import sqlite3
+        conn = sqlite3.connect(prowlarr_db)
+        cursor = conn.cursor()
+        rows = cursor.execute('SELECT Id, Name, Implementation, Settings, Enable FROM Indexers').fetchall()
+        for r_id, r_name, r_impl, r_settings, r_enabled in rows:
+            if r_impl.lower() not in ['newznab', 'torznab']:
+                print(f"Skipping non-Newznab indexer: {r_name} ({r_impl})")
+                continue
+            if not all_indexers and r_name not in ['Indexer-C', 'Indexer-A']:
+                continue
+            try:
+                s = json.loads(r_settings)
+                api_key = s.get('apiKey')
+                base_url = s.get('baseUrl', '').rstrip('/')
+                if api_key and base_url:
+                    indexers.append({
+                        'id': r_id,
+                        'name': r_name,
+                        'baseUrl': base_url,
+                        'apiKey': api_key,
+                        'enabled': r_enabled
+                    })
+            except Exception as e:
+                print(f"Failed to parse settings for {r_name}: {e}", file=sys.stderr)
     return indexers
 
 def fetch_category_page(indexer_name: str, base_url: str, api_key: str, cat: str, query: str, offset: int, limit: int = 100) -> tuple:
     url = f"{base_url}/api?t=search&q={query}&cat={cat}&limit={limit}&offset={offset}&apikey={api_key}&extended=1"
-    req = urllib.request.Request(url, headers={'User-Agent': 'AV1SupplyCensus/1.0 (Linux; x86_64)'})
+    req = urllib.request.Request(url, headers={'User-Agent': 'AV1SupplyCensus/2.0 (Linux; x86_64)'})
     
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            raw = resp.read()
-            root = ET.fromstring(raw)
-            items = []
-            for item_elem in root.findall('.//item'):
-                title = item_elem.find('title')
-                pubDate = item_elem.find('pubDate')
-                guid = item_elem.find('guid')
-                cat_elem = item_elem.find('category')
-                
-                size_bytes = 0
-                enc = item_elem.find('enclosure')
-                if enc is not None and enc.attrib.get('length'):
-                    try:
-                        size_bytes = int(enc.attrib['length'])
-                    except ValueError:
-                        pass
-                if size_bytes == 0:
-                    for attr in item_elem.findall('.//{http://www.newznab.com/DTD/2010/feeds/attributes/}attr'):
-                        if attr.attrib.get('name') == 'size':
-                            try:
-                                size_bytes = int(attr.attrib.get('value', 0))
-                            except ValueError:
-                                pass
-                                
-                items.append({
-                    'indexer': indexer_name,
-                    'category': cat_elem.text if cat_elem is not None else cat,
-                    'title': title.text if title is not None else '',
-                    'pubDate': pubDate.text if pubDate is not None else '',
-                    'guid': guid.text if guid is not None else '',
-                    'size_bytes': size_bytes
-                })
-                
-            total_elem = root.find('.//{http://www.newznab.com/DTD/2010/feeds/attributes/}response')
-            total_count = int(total_elem.attrib.get('total', len(items))) if total_elem is not None else len(items)
-            return items, total_count
-    except Exception as e:
-        print(f"  [ERROR] {indexer_name} cat={cat} q={query} offset={offset}: {e}", file=sys.stderr)
-        return [], 0
+    retries = 2
+    while retries >= 0:
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                raw = resp.read()
+                root = ET.fromstring(raw)
+                items = []
+                for item_elem in root.findall('.//item'):
+                    title = item_elem.find('title')
+                    pubDate = item_elem.find('pubDate')
+                    guid = item_elem.find('guid')
+                    cat_elem = item_elem.find('category')
+                    
+                    size_bytes = 0
+                    enc = item_elem.find('enclosure')
+                    if enc is not None and enc.attrib.get('length'):
+                        try:
+                            size_bytes = int(enc.attrib['length'])
+                        except ValueError:
+                            pass
+                    if size_bytes == 0:
+                        for attr in item_elem.findall('.//{http://www.newznab.com/DTD/2010/feeds/attributes/}attr'):
+                            if attr.attrib.get('name') == 'size':
+                                try:
+                                    size_bytes = int(attr.attrib.get('value', 0))
+                                except ValueError:
+                                    pass
+                                    
+                    items.append({
+                        'indexer': indexer_name,
+                        'category': cat_elem.text if cat_elem is not None else cat,
+                        'title': title.text if title is not None else '',
+                        'pubDate': pubDate.text if pubDate is not None else '',
+                        'guid': guid.text if guid is not None else '',
+                        'size_bytes': size_bytes
+                    })
+                    
+                total_elem = root.find('.//{http://www.newznab.com/DTD/2010/feeds/attributes/}response')
+                total_count = int(total_elem.attrib.get('total', len(items))) if total_elem is not None else len(items)
+                return items, total_count
+        except urllib.error.HTTPError as he:
+            if he.code == 429:
+                print(f"    [429 Rate Limit] {indexer_name} - backing off for 10s...", file=sys.stderr)
+                time.sleep(10.0)
+                retries -= 1
+                continue
+            else:
+                print(f"    [HTTP {he.code}] {indexer_name} cat={cat} offset={offset}: {he.reason}", file=sys.stderr)
+                return [], 0
+        except Exception as e:
+            if retries > 0:
+                time.sleep(3.0)
+                retries -= 1
+                continue
+            print(f"    [ERROR] {indexer_name} cat={cat} offset={offset}: {e}", file=sys.stderr)
+            return [], 0
+    return [], 0
 
 def regenerate_from_checkpoints(evidence_dir: str, output_csv: str):
-    """Regenerates evidence/supply_av1.csv from local checkpoint JSONL files."""
-    checkpoint_files = [os.path.join(evidence_dir, 'supply_checkpoint.jsonl')]
+    """Regenerates evidence/supply_av1.csv from local checkpoint JSONL files with cross-indexer deduplication."""
+    checkpoint_files = []
+    cp_main = os.path.join(evidence_dir, 'supply_checkpoint.jsonl')
+    if os.path.exists(cp_main):
+        checkpoint_files.append(cp_main)
+        
     checkpoints_subdir = os.path.join(evidence_dir, 'checkpoints')
     if os.path.exists(checkpoints_subdir):
         for f in os.listdir(checkpoints_subdir):
             if f.endswith('.jsonl'):
                 checkpoint_files.append(os.path.join(checkpoints_subdir, f))
 
-    all_items = {}
+    all_raw_items = []
+    seen_guid_per_file = set()
     for cp_path in checkpoint_files:
         if os.path.exists(cp_path):
             with open(cp_path, 'r', encoding='utf-8') as f:
@@ -239,28 +258,53 @@ def regenerate_from_checkpoints(evidence_dir: str, output_csv: str):
                     if line.strip():
                         try:
                             obj = json.loads(line)
-                            k = obj.get('guid') or obj.get('title')
-                            if k and k not in all_items:
-                                all_items[k] = obj
+                            all_raw_items.append(obj)
                         except Exception:
                             pass
 
-    print(f"Loaded {len(all_items)} unique raw items from local checkpoints.")
+    print(f"Loaded {len(all_raw_items)} raw checkpoint records across {len(checkpoint_files)} files.")
+
+    # Deduplicate & merge across indexers by normalized title
+    merged_by_title = {}
+    for raw in all_raw_items:
+        title = raw.get('title', '').strip()
+        if not title:
+            continue
+            
+        norm_key = normalize_title_key(title)
+        indexer = raw.get('indexer', 'Indexer-C')
+        
+        if norm_key not in merged_by_title:
+            merged_by_title[norm_key] = {
+                'title': title,
+                'size_bytes': raw.get('size_bytes', 0),
+                'date_posted': raw.get('pubDate', ''),
+                'category': raw.get('category', ''),
+                'guid': raw.get('guid', ''),
+                'indexers': {indexer}
+            }
+        else:
+            entry = merged_by_title[norm_key]
+            entry['indexers'].add(indexer)
+            if raw.get('size_bytes', 0) > entry['size_bytes']:
+                entry['size_bytes'] = raw.get('size_bytes', 0)
+            if raw.get('pubDate') and (not entry['date_posted'] or raw.get('pubDate') < entry['date_posted']):
+                entry['date_posted'] = raw.get('pubDate')
 
     fieldnames = [
-        'date_posted', 'indexer', 'category', 'title', 'size_bytes',
+        'date_posted', 'indexers', 'category', 'title', 'size_bytes',
         'res', 'codec_tags', 'group', 'upscale_flag', 'lang_flags', 'guid'
     ]
 
     records = []
-    for k, it in all_items.items():
+    for norm_key, data in merged_by_title.items():
         norm = parse_release_metadata(
-            title=it.get('title', ''),
-            size_bytes=it.get('size_bytes', 0),
-            raw_date=it.get('pubDate', ''),
-            category=it.get('category', ''),
-            guid=it.get('guid', ''),
-            indexer=it.get('indexer', 'Indexer-C')
+            title=data['title'],
+            size_bytes=data['size_bytes'],
+            raw_date=data['date_posted'],
+            category=data['category'],
+            guid=data['guid'],
+            indexers_list=list(data['indexers'])
         )
         records.append(norm)
 
@@ -271,43 +315,32 @@ def regenerate_from_checkpoints(evidence_dir: str, output_csv: str):
         writer.writeheader()
         writer.writerows(records)
 
-    print(f"Sanitized & normalized {len(records)} records written to {output_csv}")
+    print(f"Sanitized & deduplicated {len(records):,} unique records written to {output_csv}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Fetch or regenerate AV1 supply census.")
+    parser = argparse.ArgumentParser(description="Harvest AV1 supply across all configured Prowlarr indexers.")
+    parser.add_argument('--all-indexers', action='store_true', default=False, help="Harvest from all Prowlarr indexers")
     parser.add_argument('--regenerate', action='store_true', default=False, help="Regenerate CSV from local JSONL checkpoints without API calls")
     args = parser.parse_args()
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     evidence_dir = os.path.join(base_dir, 'evidence')
-    os.makedirs(evidence_dir, exist_ok=True)
+    checkpoints_dir = os.path.join(evidence_dir, 'checkpoints')
+    os.makedirs(checkpoints_dir, exist_ok=True)
     
-    checkpoint_file = os.path.join(evidence_dir, 'supply_checkpoint.jsonl')
     output_csv = os.path.join(evidence_dir, 'supply_av1.csv')
 
-    if args.regenerate or not os.environ.get('DRUNKENSLUG_API_KEY') and os.path.exists(checkpoint_file):
+    if args.regenerate:
         regenerate_from_checkpoints(evidence_dir, output_csv)
         return
 
-    # Normal fetch logic
-    existing_items = {}
-    if os.path.exists(checkpoint_file):
-        with open(checkpoint_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    try:
-                        obj = json.loads(line)
-                        guid = obj.get('guid') or obj.get('title')
-                        if guid:
-                            existing_items[guid] = obj
-                    except Exception:
-                        pass
-
-    indexers = get_indexers_config()
+    indexers = get_all_prowlarr_indexers(all_indexers=args.all_indexers)
     if not indexers:
-        regenerate_from_checkpoints(evidence_dir, output_csv)
-        return
-
+        print("ERROR: No configured Newznab indexers found in Prowlarr DB.", file=sys.stderr)
+        sys.exit(1)
+        
+    print(f"Harvesting from {len(indexers)} indexers: {[idx['name'] for idx in indexers]}")
+    
     matrix = [
         ('2045', 'av1'),   # Movies UHD
         ('2045', 'av01'),  # Movies UHD alternate
@@ -317,30 +350,58 @@ def main():
         ('2000', 'av01')   # Movies All alternate
     ]
 
-    new_fetched = 0
-    with open(checkpoint_file, 'a', encoding='utf-8') as cp_out:
-        for idx in indexers:
-            print(f"\n--- Harvesting Indexer: {idx['name']} ---")
+    for idx in indexers:
+        idx_slug = re.sub(r'[^a-zA-Z0-9_-]', '_', idx['name'].lower())
+        idx_cp_file = os.path.join(checkpoints_dir, f"{idx_slug}.jsonl")
+        
+        idx_items = {}
+        if os.path.exists(idx_cp_file):
+            with open(idx_cp_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        try:
+                            obj = json.loads(line)
+                            k = obj.get('guid') or obj.get('title')
+                            if k:
+                                idx_items[k] = obj
+                        except Exception:
+                            pass
+            print(f"\n[{idx['name']}] Loaded {len(idx_items)} existing checkpoint records.")
+            
+        print(f"\n--- Harvesting Indexer: {idx['name']} ---")
+        new_for_idx = 0
+        
+        with open(idx_cp_file, 'a', encoding='utf-8') as cp_out:
             for cat, q in matrix:
                 offset = 0
                 limit = 100
+                print(f"  Querying {idx['name']}: cat={cat} q={q}...")
+                
                 while True:
                     items, total_reported = fetch_category_page(
                         idx['name'], idx['baseUrl'], idx['apiKey'], cat, q, offset, limit
                     )
+                    
                     if not items:
                         break
+                        
                     for it in items:
-                        guid = it.get('guid') or it.get('title')
-                        if guid and guid not in existing_items:
-                            existing_items[guid] = it
+                        k = it.get('guid') or it.get('title')
+                        if k and k not in idx_items:
+                            idx_items[k] = it
                             cp_out.write(json.dumps(it) + '\n')
                             cp_out.flush()
-                            new_fetched += 1
+                            new_for_idx += 1
+                            
+                    print(f"    Offset {offset:<5} | Page items: {len(items):<3} | Total reported: {total_reported:<5} | Cumulative for {idx['name']}: {len(idx_items)}")
+                    
                     offset += limit
                     if offset >= total_reported or len(items) < limit or offset >= 5000:
                         break
-                    time.sleep(2.0)
+                        
+                    time.sleep(2.0)  # Politeness interval between pages
+                    
+        print(f"[{idx['name']}] Finished harvesting. Total unique items: {len(idx_items)} (New: {new_for_idx})")
 
     regenerate_from_checkpoints(evidence_dir, output_csv)
 

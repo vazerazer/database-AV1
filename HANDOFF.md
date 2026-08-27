@@ -378,6 +378,34 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Sanitization:** GUIDs in `evidence/supply_av1.csv` are normalized to `<indexer>:<12-hex-hash>` (no full URLs, no 32-hex contiguous sequences).
    * **Local Audit Parity:** Added [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) to replicate remote CI pre-push checks locally (32-hex scan, absolute path scan, URL leak scan).
 
+---
+
+## 19. All-Indexer Supply Census Expansion (Op 924b)
+
+1. **Full-Spectrum Harvest Metrics:**
+   * Expanded harvesting to all 9 Prowlarr indexers via [`scripts/fetch_av1_supply.py --all-indexers`](scripts/fetch_av1_supply.py).
+   * **Scale:** Collected 34,983 raw checkpoint records, deduplicated by normalized title into **13,722 unique AV1 releases** (over 2x the 6,552 dual-indexer baseline).
+   * **Multi-Indexer Propagation:** 5,033 releases (36.7%) confirmed across $\ge 2$ distinct indexers.
+   * **Breakdown:**
+     * **2160p UHD:** 5,679 releases (41.4%)
+     * **1080p HD:** 6,076 releases (44.3%)
+     * **720p:** 998 releases (7.3%)
+     * **Other:** 969 releases (7.1%)
+
+2. **Multi-Indexer Group Robustness:**
+   * **`R and H`:** 1,444 in 2160p (seen across 7 indexers, median 8.42 GB).
+   * **`TiZU`:** 61 in 2160p, 226 in 1080p (seen across 6 indexers, median 12.23 GB).
+   * **`UH`:** 22 in 2160p (seen across 6 indexers, median 12.94 GB).
+   * **`dAV1nci`:** 12 in 2160p, 90 in 1080p (seen across 8 indexers, median 11.97 GB).
+   * **`Smokindevil`:** 10 in 2160p (seen across 5 indexers, median 11.11 GB).
+   * **`CoSMiCSuRFeR`:** 22 in 2160p (seen across 3 indexers, median 26.22 GB).
+   * **`Dust`:** 18 in 2160p (seen across 7 indexers, median 4.74 GB).
+
+3. **Solidified Op 925 Promotion Consensus:**
+   * High cross-indexer presence validates `UH` (6 indexers), `dAV1nci` (8 indexers), `Smokindevil` (5 indexers), and `CoSMiCSuRFeR` (3 indexers) as resilient, high-supply master encoders for **Quality Encoders (+800)**.
+   * `TiZU` (6 indexers) and `WhiskeyJack` (7 indexers) anchor **Compact Encoders (+500)** with broad Usenet propagation.
+
+
 
 
 
