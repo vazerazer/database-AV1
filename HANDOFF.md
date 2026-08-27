@@ -570,6 +570,36 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Verdict Anchoring:** Cross-references `evidence/verdicts.csv` (`PASS`/`EXCEPTION` records anchor as `HOLD`).
    * **Artifact:** Tracked public-safe review queue generated at [`evidence/census_931_public.md`](evidence/census_931_public.md) (62 HOLD, 6 UPGRADE-CANDIDATE, 3 MANUAL-REVIEW, 8 NO-QUALIFIED-CANDIDATE).
 
+---
+
+## 26. Naming-Hygiene Custom Formats, Source-Tier Policy & Ledger Reconcile (Op 932)
+
+1. **State & Ledger Reconcile:**
+   * **`The Perks of Being a Wallflower`:** Upgraded to `playHD` x264 (+2650 pts) — REAL upgrade confirmed and landed.
+   * **`The Wolverine`:** NO-OP — Re-grabbed identical `R&H` file due to trailing `_1` tag dropping `AV1 Compact Encoders` (+500). Recorded as naming drift case study #3.
+   * **`Melancholia` (KEPT):** `playHD` x264 (18.37 GB, ~18.5 Mbps) kept over `HONE` h265 (4.18 GB, ~4.2 Mbps) due to $4.4\times$ bitrate ratio ($> 1.5\times$ parity).
+   * **`City of God` (KEPT):** `Z0N3` x264 (14.79 GB, ~15.4 Mbps) kept over `DarQ` h265 (7.47 GB, ~7.8 Mbps) due to $2.0\times$ bitrate ratio ($> 1.5\times$ parity).
+   * **Confirmed Size-Class Upgrades:** `Fury` (2550 $\rightarrow$ 5950), `Jurassic Park` (1950 $\rightarrow$ 5350), `The Deer Hunter` (1450 $\rightarrow$ 4850), `The Hunt` (1450 $\rightarrow$ 4250), `X-Men Origins: Wolverine` (2100 $\rightarrow$ 4900).
+
+2. **Standing Source-Tier Policy:**
+   > *"Same-resolution source swaps: x264 BluRay preferred over h265 WEB-DL when its bitrate $\ge 1.5\times$ the h265 file; borderline cases decided by eyeballing a dark scene."*
+
+3. **LQ Release Title Regex Narrowing & Hygiene:**
+   * Removed legacy Dumpstarr `\b(R&H)\b` and `PiRaTeS (no WEB-DL)` specifications from CF 6614 (`LQ Release Title`).
+   * Updated `AV1 Compact Encoders`, `AV1 Quality Encoders`, and `Legacy Trusted x264` regexes to tolerate trailing indexer dupe tags (`_1`, `_2`, `_3`, `-xpost`, `.mkv-xpost`).
+
+4. **Opus 5.1 No-Audio Tag Resolution:**
+   * Added `Opus` (`\b(Opus|OPUS)\b`, `Negate: True`, `Required: True`) to CF 6617 (`No Audio`).
+   * Releases utilizing Opus 5.1/7.1 audio (e.g. `The Hunt` KIMJI) no longer receive false `No Audio` tagging.
+
+5. **Legacy Trusted WEB-DL Tier 2 Integration:**
+   * Expanded `WEB-DL Tier 2` (+2750) with legacy trusted archival groups (`PiRaTeS`, `CtrlHD`, `BHDStudio`, `DON`, `EbP`, `playHD`, `Z0N3`, `LoRD`, `MrTentsaw`, `GRiM`, `TAoE`).
+   * `Hoosiers.1986.1080p.AMZN.WEB-DL.DDP.5.1.H.264-PiRaTeS` lifts from `-1400` to `+1350`, clearing the $+1000$ profile cutoff cleanly.
+
+6. **Web Tier Documentation (`Logan`):**
+   * `Logan`'s HONE file carries `WEB Tier 01` (CF 6629, 0 pts in Profile 64; legacy Profile 63 artifact) and `WEB-DL Tier 2` (CF 6585, +2750 pts in Profile 64 via `HONE WEB`).
+
+
 
 
 

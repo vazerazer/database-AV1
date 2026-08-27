@@ -215,5 +215,54 @@ class TestLibraryAuditCore(unittest.TestCase):
                 f"Regression failure: Fixture library file '{fixture['title']}' has score 0 pts!"
             )
 
+    def test_census_token_parsing_regression(self):
+        """
+        Op 932 Regression Test: Ensures census release token parser handles
+        trailing parens, blank groups, bracketed names, and dupe tags (_1, _3, .mkv).
+        """
+        import re
+
+        def extract_group(title):
+            t = title.strip()
+            for _ in range(3):
+                t = re.sub(r'\.(mkv|mp4|avi|ts|m4v)$', '', t, flags=re.IGNORECASE)
+                t = re.sub(r'[-._ ]xpost$', '', t, flags=re.IGNORECASE)
+                t = re.sub(r'_[0-9]+$', '', t)
+                t = re.sub(r'\[[a-zA-Z0-9_\-\.]+\]$', '', t)
+                t = re.sub(r'\)+$', '', t).strip()
+                t = re.sub(r'^[\(\[]+', '', t).strip()
+            
+            m_bracket = re.match(r'^\[([a-zA-Z0-9_\-\.]+)\]', t)
+            if m_bracket:
+                return m_bracket.group(1).strip(') ]')
+                
+            m_hyphen = re.search(r'[-._ ]([a-zA-Z0-9_\&]+)$', t)
+            if m_hyphen:
+                g = m_hyphen.group(1).strip(') ]')
+                if g.lower() not in ['xpost', 'dl', 'sample', 'mkv', 'mp4', 'repack', 'proper']:
+                    return g
+                    
+            parts = t.split('-')
+            if len(parts) > 1:
+                cand = parts[-1].strip().strip(') ]')
+                if cand:
+                    return cand
+            return 'Unknown'
+
+        test_cases = [
+            ("Logan (2017) (2160p DSNP WEB-DL Hybrid H265 DV HDR DDP Atmos 5.1 English - HONE)", "HONE"),
+            ("Sisu.Road.to.Revenge.2025.2160p.AMZN.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-HONE", "HONE"),
+            ("Blackhat.2015.2160p.UHD.BluRay.x265-Scene", "Scene"),
+            ("The.Wolverine.2013.2160p.AMZN.WEB-DL.AV1-R&H_1", "R&H"),
+            ("The.Wolverine.2013.2160p.AMZN.WEB-DL.AV1-R&H.mkv", "R&H"),
+            ("X-Men.2000.2160p.AV1-ChopperHitler_3", "ChopperHitler")
+        ]
+
+        for title, expected in test_cases:
+            self.assertEqual(
+                extract_group(title), expected,
+                f"Failed to parse expected group '{expected}' from title: {title}"
+            )
+
 if __name__ == "__main__":
     unittest.main()

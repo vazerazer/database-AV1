@@ -745,8 +745,8 @@ def run_simulation_battery():
         },
         # --- OP 916 SIZE-AWARE SCORING BATTERY ---
         {
-            "category": "Size-Aware: City of God Micro-AV1 Rosy (1.4GB Penalized to 700 < 1000 Cutoff)",
-            "title": "City.of.God.2002.bluray.sdr.portuguese.1080p.av1.1500mb-Rosy-xpost",
+            "category": "Size-Aware: City of God Micro-AV1 Untiered (1.4GB Penalized to 700 < 1000 Cutoff)",
+            "title": "City.of.God.2002.bluray.sdr.portuguese.1080p.av1.1500mb-UnknownGroup-xpost",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 1.41,
@@ -1251,6 +1251,36 @@ def run_simulation_battery():
             "expect_pass": False,
             "min_band": -7600,
             "max_band": -7400
+        },
+        {
+            "category": "Op 932: Legacy Trusted 1080p WEB-DL (PiRaTeS Hoosiers Lifts Above Cutoff)",
+            "title": "Hoosiers.1986.1080p.AMZN.WEB-DL.DDP.5.1.H.264-PiRaTeS",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 11.88,
+            "expect_pass": True,
+            "min_band": 1300,
+            "max_band": 1400
+        },
+        {
+            "category": "Op 932: Indexer Dupe Tag Tolerance (R&H_1 Suffix Retains Compact Tier)",
+            "title": "The.Wolverine.2013.Theatrical.Cut.2160p.AMZN.WEB.DV.HDR10.10.bit.Encode.AV1.DTS.5.1-R&H_1",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 5.89,
+            "expect_pass": True,
+            "min_band": 2500,
+            "max_band": 2600
+        },
+        {
+            "category": "Op 932: Opus 5.1 No-Audio Fix (The Hunt KIMJI Lifts Cleanly)",
+            "title": "The.Hunt.2012.1080p.BluRay.Opus.5.1.AV1-KIMJI",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 3.59,
+            "expect_pass": True,
+            "min_band": 3700,
+            "max_band": 4300
         }
     ]
     

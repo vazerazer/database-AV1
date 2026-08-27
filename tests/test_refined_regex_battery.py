@@ -14,11 +14,13 @@ REGEX_PATTERNS = {
     
     # 2. Quality Encoders: Anchored to trailing group hyphen, optional site tag, and optional extension
     # Op 925: Promotes dAV1nci, UH, Smokindevil; consolidates PRL.Waldek & case variants (DAV1NCI, TAOE)
-    "AV1 Quality Encoders": r"(?i)(?:^\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\]|-(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil|\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?$)",
+    # Op 932: Tolerates trailing indexer dupe tags (_1, _2, _3, -xpost)
+    "AV1 Quality Encoders": r"(?i)(?:^\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\]|-(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil|\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
 
     # 3. Compact Encoders: Anchored to trailing group hyphen, optional site tag, and optional extension
     # Op 925: Adds Toasty; consolidates R&H family (R&H, RandH, R and H, RH, extension artifacts)
-    "AV1 Compact Encoders": r"(?i)(?:^\[(?:UnAV1Chain|UserHEVC|RAV1NE|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH)\]|-(?:WhiskeyJack|WhiskyJack|edge2020|UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|\[(?:UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?$)",
+    # Op 932: Tolerates trailing indexer dupe tags (_1, _2, _3, -xpost)
+    "AV1 Compact Encoders": r"(?i)(?:^\[(?:UnAV1Chain|UserHEVC|RAV1NE|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH)\]|-(?:WhiskeyJack|WhiskyJack|edge2020|UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|\[(?:UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
     
     # 4. Storage Savers: Anchored to trailing group hyphen, optional site tag, and optional extension
     "AV1 Storage Savers": r"(?i)(?:^\[(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345)\]|-(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345|\[PSA\]|\[GalaxyRG\]|\[MeGusta\]|\[VXT\]|\[d3g\]|\[Ghost\]|\[rartv\]|\[ELiTE\]|\[LAMA\]|\[KaKa\]|\[YAWNTIC\]|\[BONE\]|\[GZ\]|\[CART\]|\[LUCY\]|\[DKong\]|\[Rapta\]|\[GubrakZ\]|\[Retr0\]|\[SWAXXON\]|\[FELIX12345\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?$)",
@@ -32,8 +34,11 @@ REGEX_PATTERNS = {
     # 7. Foreign Dub (Op 922: Explicit foreign dub tags demotion)
     "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b",
 
-    # 8. Legacy Trusted x264 (Op 930: Archival reference groups)
-    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?$"
+    # 8. Legacy Trusted x264 (Op 930: Archival reference groups; Op 932: dupe tag tolerance)
+    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$",
+
+    # 9. LQ Release Title (Op 932: Cleaned naming hygiene specifications)
+    "LQ Release Title": r"(?i)\b(?:1XBET|BEN[ ._-]THE[ ._-]MEN|Feranki1980|GalaxyRG|SWTYBLZ|TeeWee|TEKNO3D|Will1869|READ(\s|\.)+NOTE)\b|(?:[-._]D3US|D3US[-._])"
 }
 
 TEST_CASES = {
@@ -257,6 +262,25 @@ TEST_CASES = {
             "Movie.2024.1080p.BluRay.x264-RARBG",
             "Movie.2024.1080p.BluRay.x264-FLUX",
             "Movie.2024.1080p.BluRay.x264-hallowed"
+        ]
+    },
+    "LQ Release Title": {
+        "positive": [
+            "Movie.Title.2024.1080p.1XBET.x265",
+            "Movie.Title.2024.1080p.BEN_THE_MEN",
+            "Movie.Title.2024.1080p.Feranki1980",
+            "Movie.Title.2024.1080p.GalaxyRG",
+            "Movie.Title.2024.1080p.TEKNO3D",
+            "Movie.Title.2024.1080p.READ.NOTE.x265",
+            "Movie.Title.2024.1080p.HDTV.D3US"
+        ],
+        "adversarial_negatives": [
+            "The.Wolverine.2013.2160p.AMZN.WEB-DL.AV1-R&H_1",
+            "The.Wolverine.2013.2160p.AMZN.WEB-DL.AV1-R&H.mkv",
+            "The.Wolverine.2013.2160p.AMZN.WEB-DL.AV1-R&H.mkv-xpost",
+            "X-Men.2000.2160p.AV1-ChopperHitler_3",
+            "Hoosiers.1986.1080p.AMZN.WEB-DL.DDP.5.1.H.264-PiRaTeS",
+            "The.Perks.of.Being.a.Wallflower.2012.1080p.BluRay.DTS.x264-PiRaTeS"
         ]
     }
 }
