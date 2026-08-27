@@ -34,8 +34,8 @@ REGEX_PATTERNS = {
     # 7. Foreign Dub (Op 922: Explicit foreign dub tags demotion)
     "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b",
 
-    # 8. Legacy Trusted x264 (Op 930: Archival reference groups; Op 932: dupe tag tolerance)
-    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$",
+    # 8. Legacy Trusted x264 (Op 930: Archival reference groups; Op 932: dupe tag tolerance; Op 933: Vetted HD Bluray union)
+    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw|ATELiER|BBQ|BMF|c0kE|Chotab|CRiSC|D-Z0N3|Dariush|decibeL|EDPH|Geek|LolHD|NCmt|PTer|TayTO|TDD|TnP|VietHD|ZQ|ZoroSenpai|NTb|EA|HiDt|HiSD|iFT|QOQ|SA89|sbR|hallowed|HiFi|SPHD|W4NK3R)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$",
 
     # 9. LQ Release Title (Op 932: Cleaned naming hygiene specifications)
     "LQ Release Title": r"(?i)\b(?:1XBET|BEN[ ._-]THE[ ._-]MEN|Feranki1980|GalaxyRG|SWTYBLZ|TeeWee|TEKNO3D|Will1869|READ(\s|\.)+NOTE)\b|(?:[-._]D3US|D3US[-._])"
@@ -253,7 +253,12 @@ TEST_CASES = {
             "Locke.2014.1080p.BluRay.DTS.x264-LoRD",
             "The.Hunt.2012.1080p.BluRay.DD5.1.x264-EbP",
             "A.Royal.Affair.2012.1080p.BluRay.DTS.x264-MrTentsaw",
-            "The.Matrix.1999.1080p.BluRay.x264-DON"
+            "The.Matrix.1999.1080p.BluRay.x264-DON",
+            "Blade.Runner.1982.1080p.BluRay.x264-ATELiER",
+            "Drive.2011.1080p.BluRay.x264-c0kE",
+            "Arrival.2016.1080p.BluRay.x264-SA89",
+            "Inception.2010.1080p.BluRay.x264-HiDt",
+            "Interstellar.2014.1080p.BluRay.x264-W4NK3R"
         ],
         "adversarial_negatives": [
             "Generic.Movie.2024.1080p.BluRay.x264-SPARKS",
@@ -261,7 +266,9 @@ TEST_CASES = {
             "Movie.2024.1080p.BluRay.x264-YTS",
             "Movie.2024.1080p.BluRay.x264-RARBG",
             "Movie.2024.1080p.BluRay.x264-FLUX",
-            "Movie.2024.1080p.BluRay.x264-hallowed"
+            "Movie.2024.1080p.BluRay.x264-SHD",
+            "Movie.2024.1080p.BluRay.x264-NhaNc3",
+            "Movie.2024.1080p.BluRay.x264-AOC"
         ]
     },
     "LQ Release Title": {

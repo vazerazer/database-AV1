@@ -50,6 +50,10 @@ class TestProfileDriftGuard(unittest.TestCase):
                 f"Hygiene/sizing CF '{cf}' differs between Prod and Shadow Explorer."
             )
 
+        # Definition hashes present and populated
+        self.assertIn('custom_format_definitions', self.snapshot)
+        self.assertGreater(len(self.snapshot['custom_format_definitions']), 50)
+
     def test_live_radarr_vs_snapshot(self):
         """Validates live Radarr4k daemon against snapshot; skips cleanly in CI."""
         api_key = os.environ.get('RADARR_API_KEY')
@@ -76,7 +80,8 @@ class TestProfileDriftGuard(unittest.TestCase):
 
         live_prof_map = {p['name']: p for p in live_profiles}
 
-        for p_name, expected in self.snapshot.items():
+        for p_name in ['Movies 2160p AV1 HQ', 'Movies SHADOW Explorer']:
+            expected = self.snapshot[p_name]
             self.assertIn(p_name, live_prof_map, f"Live profile '{p_name}' not found in Radarr4k.")
             live_p = live_prof_map[p_name]
             self.assertEqual(live_p.get('minFormatScore'), expected['min_score'], f"Live minFormatScore mismatch for '{p_name}'.")
@@ -96,6 +101,38 @@ class TestProfileDriftGuard(unittest.TestCase):
                 live_cf_scores,
                 expected_cfs,
                 f"Live score drift detected in profile '{p_name}'!\nDiff: live={live_cf_scores}\nexpected={expected_cfs}"
+            )
+
+        # Validate Custom Format Specifications (Definitions Hash Guard)
+        import hashlib
+        req_cf = urllib.request.Request(f"{radarr_url}/api/v3/customformat", headers={'X-Api-Key': api_key})
+        with urllib.request.urlopen(req_cf, timeout=10) as resp:
+            live_cfs = json.load(resp)
+        live_cf_map = {c['name']: c for c in live_cfs}
+
+        for cf_name, expected_hash in self.snapshot.get('custom_format_definitions', {}).items():
+            self.assertIn(cf_name, live_cf_map, f"Expected Custom Format '{cf_name}' not found in live Radarr4k!")
+            live_cf = live_cf_map[cf_name]
+            
+            specs = []
+            for s in sorted(live_cf.get('specifications', []), key=lambda x: x.get('name', '')):
+                field_val = s.get('fields', [{}])[0].get('value') if s.get('fields') else None
+                specs.append({
+                    'name': s.get('name'),
+                    'negate': bool(s.get('negate')),
+                    'required': bool(s.get('required')),
+                    'value': str(field_val) if field_val is not None else ''
+                })
+            canonical = json.dumps({'name': live_cf.get('name'), 'specs': specs}, sort_keys=True)
+            live_hash = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+
+            self.assertEqual(
+                live_hash,
+                expected_hash,
+                f"Custom Format specification drift detected for '{cf_name}'!\n"
+                f"Live hash:     {live_hash}\n"
+                f"Expected hash: {expected_hash}\n"
+                f"A sync or manual edit altered '{cf_name}' specifications in live Radarr4k."
             )
 
 if __name__ == '__main__':

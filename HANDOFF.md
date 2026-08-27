@@ -599,6 +599,36 @@ All 6 development phases from architecture extraction through E2E live synchroni
 6. **Web Tier Documentation (`Logan`):**
    * `Logan`'s HONE file carries `WEB Tier 01` (CF 6629, 0 pts in Profile 64; legacy Profile 63 artifact) and `WEB-DL Tier 2` (CF 6585, +2750 pts in Profile 64 via `HONE WEB`).
 
+---
+
+## 27. Vetted Group Union & Sync-Ownership Gate (Op 933)
+
+1. **Sync-Ownership Audit (Hard Gate):**
+   * **Profile 64 CF Inventory:** All 60 Custom Formats scored in Profile 64 are **100% locally-managed** in `database-AV1` PCD migrations.
+   * **Profilarr Sync State:** `radarr4k` (instance 2) has `should_sync: 0` in `arr_sync_quality_profiles_config`. External syncs cannot silently overwrite Profile 64.
+   * **Hygiene Formats:** CF 6614 (`LQ Release Title`) and CF 6617 (`No Audio`) are governed and guarded by definition-level specification hashes.
+
+2. **Custom Format Definition Drift Guard:**
+   * Extended `ops/profile_snapshot.json` schema to snapshot SHA-256 canonical specification hashes for all 63 profile-scored and hygiene Custom Formats.
+   * Upgraded `tests/test_profile_drift.py` to compare live daemon specification hashes against the snapshot, failing immediately if an upstream sync or manual edit alters a regex or negated condition.
+
+3. **Vetted Group Union (Snapshot: 2026-08-27):**
+   * **Design Invariant:** External vetting widens **ONLY** the fallback/legacy bands (`Legacy Trusted x264`, `2160p Quality/Balanced Tiers`, `1080p Quality Tier 2`, `WEB-DL Tier 2`). AV1 encoder tiers stay **evidence-earned** (explorer arm + manual verdicts) — no external group receives AV1 tier status from a static list.
+   * **Legacy Trusted x264 Union (43 Vetted Reference Groups):**
+     `CtrlHD`, `GRiM`, `PiRaTeS`, `BHDStudio`, `TAoE`, `DON`, `EbP`, `playHD`, `Z0N3`, `LoRD`, `MrTentsaw`, `ATELiER`, `BBQ`, `BMF`, `c0kE`, `Chotab`, `CRiSC`, `D-Z0N3`, `Dariush`, `decibeL`, `EDPH`, `Geek`, `LolHD`, `NCmt`, `PTer`, `TayTO`, `TDD`, `TnP`, `VietHD`, `ZQ`, `ZoroSenpai`, `NTb`, `EA`, `HiDt`, `HiSD`, `iFT`, `QOQ`, `SA89`, `sbR`, `hallowed`, `HiFi`, `SPHD`, `W4NK3R`.
+   * **Source-to-Band Mapping:**
+     * `HD Bluray Tier 01-03` $\rightarrow$ `Legacy Trusted x264` (+5400) & `1080p Quality Tier 2` (+2750) $\rightarrow$ Net Score $+1150$ to $+1250$ (Legacy Trust Band).
+     * `Dumpstarr UHD Bluray Tier 01-03` $\rightarrow$ `2160p Quality Tier 1-4` & `2160p Balanced Tier 3` $\rightarrow$ Net Score $+2650$ to $+2850$ (2160p x265 Fallback Band).
+     * WEB-only tier groups are strictly excluded from the BluRay fallback bands.
+
+4. **Adversarial & Cross-Codec Validation:**
+   * **Adversarial Rejections Preserved:** Hard-banned groups (`YTS`, `YIFY`, `SHD`, `NhaNc3`, `AOC`) score $-17000$ to $-26900$; micro/sub-1GB releases score $-10000$; nameless releases score $-2500$.
+   * **Cross-Codec Consistency:** For any unioned group, `x264` encodings land in Legacy Trust (+1150), `x265` encodings land in Fallback (+2750), and `AV1` encodings score on raw AV1 merits (+3500) until evidence-promoted.
+
+5. **Queued Operations:**
+   * **OP 934:** Dumpstarr Bake-Off *(simulation only)* — Comparative evaluation of Dumpstarr 4K profile vs PCD AV1 Master profile across library corpus.
+
+
 
 
 

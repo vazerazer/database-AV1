@@ -1281,6 +1281,46 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 3700,
             "max_band": 4300
+        },
+        {
+            "category": "Op 933: Vetted Union ATELiER 1080p BluRay (Score 1150 Clears Cutoff)",
+            "title": "Blade.Runner.1982.1080p.BluRay.DTS.x264-ATELiER",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.5,
+            "expect_pass": True,
+            "min_band": 1100,
+            "max_band": 1200
+        },
+        {
+            "category": "Op 933: Vetted Union c0kE 1080p BluRay (Score 1150 Clears Cutoff)",
+            "title": "Drive.2011.1080p.BluRay.DTS.x264-c0kE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 10.2,
+            "expect_pass": True,
+            "min_band": 1100,
+            "max_band": 1200
+        },
+        {
+            "category": "Op 933: Vetted Union SA89 Tier 1 1080p BluRay (Score 1250 Clears Cutoff)",
+            "title": "Arrival.2016.1080p.BluRay.DTS.x264-SA89",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 14.1,
+            "expect_pass": True,
+            "min_band": 1200,
+            "max_band": 1300
+        },
+        {
+            "category": "Op 933: Hard-Banned YIFY x264 (Score -17000 Rejected)",
+            "title": "Movie.2024.1080p.BluRay.x264-YIFY",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 2.1,
+            "expect_pass": False,
+            "min_band": -20000,
+            "max_band": -10000
         }
     ]
     
