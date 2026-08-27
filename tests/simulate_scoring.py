@@ -1200,6 +1200,57 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 1300,
             "max_band": 1500
+        },
+        # --- 19. OP 930: SIZE FLOOR & LEGACY TRUSTED X264 BATTERY ---
+        {
+            "category": "Op 930: Legacy Trusted x264 CtrlHD (Score 1150 Clears Cutoff)",
+            "title": "Blue.Valentine.2010.1080p.BluRay.DTS.x264-CtrlHD",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.54,
+            "expect_pass": True,
+            "min_band": 1100,
+            "max_band": 1200
+        },
+        {
+            "category": "Op 930: Legacy Trusted x264 PiRaTeS (Score 1150 Clears Cutoff)",
+            "title": "Hoosiers.1986.1080p.BluRay.DTS.x264-PiRaTeS",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 11.88,
+            "expect_pass": True,
+            "min_band": 1100,
+            "max_band": 1200
+        },
+        {
+            "category": "Op 930: Untrusted Legacy x264 Sparks (Score -7000 Rejected)",
+            "title": "Generic.Movie.1080p.BluRay.x264-SPARKS",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 10.0,
+            "expect_pass": False,
+            "min_band": -7100,
+            "max_band": -6900
+        },
+        {
+            "category": "Op 930: Micro Hard Floor 700KB Feature Film (Score -5300 Rejected)",
+            "title": "Greenland.2020.2160p.HDR.AV1-onlyfaffs",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 0.0007,
+            "expect_pass": False,
+            "min_band": -5400,
+            "max_band": -5200
+        },
+        {
+            "category": "Op 930: Micro Hard Floor 979MB HDTV Cap (Score -7500 Rejected)",
+            "title": "X-Men.The.Last.Stand.2006.1080p.HDTV.AV1-DKong",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 0.95,
+            "expect_pass": False,
+            "min_band": -7600,
+            "max_band": -7400
         }
     ]
     

@@ -514,6 +514,33 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Discovered **199 candidate releases** matching `CMRG` across 8 distinct library titles.
    * `CMRG` reliably occupies the standard transparent x265 fallback band (~2150–2450 pts), appropriately subordinate to Tiered AV1 (+3500 base).
 
+---
+
+## 24. Scoring Realism: Size Floor + Legacy x264 Trust + Census v2 (Op 930)
+
+1. **Size Hard Floor (`Micro Hard Floor` CF @ -10000):**
+   * **Problem:** Sub-1GB feature films (e.g. 700KB sample files, 979MB HDTV caps) outranked legitimate groups in negative-score candidate sets.
+   * **Solution:** Created Custom Format `Micro Hard Floor` with condition `size <= 1.0 GB` on Radarr movie feature files with `-10000` penalty. Sinks all micro junk to $\le -5300$, ensuring they are greyed out and never win.
+
+2. **Legacy Trusted x264 Architecture (`Legacy Trusted x264` CF @ +5400):**
+   * **Problem:** Trusted reference archival groups (`CtrlHD`, `GRiM`, `PiRaTeS`, `BHDStudio`, `TAoE`, `DON`, `EbP`, `playHD`, `Z0N3`, `LoRD`, `MrTentsaw`) releasing transparent 1080p x264 for classic films with no 4K/AV1 master were plunged below the +1000 cutoff by `Legacy x264 Codec` ($-5000$), forcing manual grabs.
+   * **Solution:** Created `Legacy Trusted x264` (+5400) and expanded `1080p Quality Tier 2` (+2750) with legacy group definitions.
+   * **Constraint Proof:**
+     $$\text{Untrusted x264 } (-7000) < \text{Cutoff } (+1000) \le \text{Trusted x264 } (+1150) < \text{x265 } (+2150) < \text{AV1 } (+3500)$$
+   * **Outcome:** Classic films (`Blue Valentine`, `The Right Stuff`, `Hoosiers`, `The Perks of Being a Wallflower`, `Project X`, `The Ides of March`, `Locke`) flip from sub-cutoff manual review to auto-grabbable trusted picks (+1150 to +1350).
+
+3. **Census v2 Engine ([`scripts/census_930_audit.py`](scripts/census_930_audit.py)):**
+   * **Resolution Bucketing:** Never compares 1080p candidates against 2160p library files.
+   * **DATA-SUSPECT Flag:** Automatically excludes sub-1.5GB/0.0GB candidates from viable upgrade picks.
+   * **Artifact:** Tracked public-safe review queue generated at [`evidence/census_930_public.md`](evidence/census_930_public.md).
+
+4. **Blocklist Hygiene:**
+   * Removed stale blocklist entry ID 2381 (`LOTR ROTK CoSMiCSuRFeR`) caused by transient Altmount fast-fail segment check during stack initialization.
+
+5. **Release Naming Drift Note:**
+   * Grab $\rightarrow$ import score drift (e.g. `Interstellar R&H`) occurs due to release title metadata parsing vs on-disk folder naming. The **IMPORT** score on disk is the canonical ground truth for audits and ledgers.
+
+
 
 
 

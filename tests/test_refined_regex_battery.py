@@ -30,7 +30,10 @@ REGEX_PATTERNS = {
     "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|HDR|DV|10bit|8bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|2160p|1080p|720p|AAC|DDP|AC3|TrueHD|Atmos|DTS|DTS-HD|Opus)(?:[\[\].\s-]|$)|\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01)(?:[\[\].\s-]|$)|\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)",
 
     # 7. Foreign Dub (Op 922: Explicit foreign dub tags demotion)
-    "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b"
+    "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b",
+
+    # 8. Legacy Trusted x264 (Op 930: Archival reference groups)
+    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?$"
 }
 
 TEST_CASES = {
@@ -232,6 +235,28 @@ TEST_CASES = {
             "Movie.2024.German.Subbed.1080p.AV1",
             "Movie.2024.German.Sub.1080p",
             "Movie.2024.NLsub.1080p"
+        ]
+    },
+    "Legacy Trusted x264": {
+        "positive": [
+            "Blue.Valentine.2010.1080p.BluRay.DTS.x264-CtrlHD",
+            "Project.X.2012.1080p.BluRay.DTS.x264-CtrlHD.mkv",
+            "Hoosiers.1986.1080p.BluRay.DTS.x264-PiRaTeS",
+            "The.Right.Stuff.1983.1080p.BluRay.DTS.x264-BHDStudio",
+            "The.Perks.of.Being.a.Wallflower.2012.1080p.BluRay.DTS.x264-PiRaTeS",
+            "The.Ides.of.March.2011.1080p.BluRay.DTS.x264-Z0N3",
+            "Locke.2014.1080p.BluRay.DTS.x264-LoRD",
+            "The.Hunt.2012.1080p.BluRay.DD5.1.x264-EbP",
+            "A.Royal.Affair.2012.1080p.BluRay.DTS.x264-MrTentsaw",
+            "The.Matrix.1999.1080p.BluRay.x264-DON"
+        ],
+        "adversarial_negatives": [
+            "Generic.Movie.2024.1080p.BluRay.x264-SPARKS",
+            "Movie.2024.1080p.BluRay.x264-YIFY",
+            "Movie.2024.1080p.BluRay.x264-YTS",
+            "Movie.2024.1080p.BluRay.x264-RARBG",
+            "Movie.2024.1080p.BluRay.x264-FLUX",
+            "Movie.2024.1080p.BluRay.x264-hallowed"
         ]
     }
 }
