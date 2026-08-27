@@ -265,8 +265,43 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Score Calibration:** `-2500` penalty in Profile 64 (`Movies 2160p AV1 HQ`).
      * Brings nameless 2160p AV1 (~3500–4200) down to ~1000–1700, ensuring it loses to transparent x265 fallbacks (`BYNDR` / `MainFrame` / `hallowed` at ~2200).
      * Preserves placeholder grace by landing at/above the 1000 cutoff so a nameless AV1 that is the sole existing supply for a title can still be grabbed.
-3. **Queued Operation:**
-   * **Op 921:** Lean band recalibration (pending user eyeball playback testing).
+
+---
+
+## 15. AV1 Lean-Band Parity Floor (Op 921)
+
+1. **Eyeball-Calibrated Perceptual Floor & User Policy:**
+   * **Policy Rule:** *"Sometimes good is not good enough when better supply exists."*
+   * **Empirical Evidence:**
+     * *Blade Runner (1982)* 2160p AV1 at 8.63 Mbps fails visually on dark/smoke content (blocky grain artifacting).
+     * *The Bourne Supremacy (2004)* 2160p AV1 at 9.06 Mbps is a borderline pass.
+     * *John Wick: Chapter 3* 2160p AV1 at 37.7 Mbps plays smoothly with zero playback buffer issues (proving Altmount/Rclone network buffering handles higher average bitrates).
+   * **Perceptual Floor:** $\approx 10\text{ Mbps}$ for 2160p AV1 on large OLED/Mini-LED displays.
+
+2. **Custom Format `AV1 Lean 2160p` ([`ops/921.add-av1-lean-scoring.sql`](ops/921.add-av1-lean-scoring.sql)):**
+   * **Conditions:** `Resolution: 2160p` (required) AND `Release Title: (?i)\b(AV1|AV01)\b` (required) AND `Size: 6.0 GB to 11.0 GB` (required).
+   * **Score Calibration:** **`-3400`** penalty in Profile 64 (`Movies 2160p AV1 HQ`).
+   * **Ladder Hierarchy Asserted:**
+     $$\text{Fat Named AV1 } (>11\text{GB}, 5300\text{--}6100) > \text{Vetted x265 } (\sim 2150\text{--}2450) > \text{Lean Named AV1 } (1300\text{--}1900) > \text{Nameless AV1 } (1400\text{--}1700) > \text{Micro AV1 } (<1200) > 1000\text{ Cutoff}$$
+
+3. **Stacking Rule (Nameless + Lean):**
+   * Releases that are BOTH unprovenanced (nameless) AND lean ($6.0\text{--}11.0\text{ GB}$) trigger both penalties ($-2500 + -3400 = -5900$), dropping their score to $\mathbf{-1700 \ll 1000}$, effectively rejecting them. Starved and unprovenanced media is blocked from entering the library.
+
+4. **Bitrate & Size Guardrails:**
+   * Fallback to 2160p x265 requires: (a) size $\le 25\text{ GB}$, and (b) computed bitrate $\le 30.0\text{ Mbps}$ (e.g. *MainFrame* at 27.3 Mbps preferred over *BYNDR* at 30.5 Mbps).
+
+5. **Lean Cohort Sweep Outcomes:**
+   * **`Blade Runner` (1982):** Upgraded from 7.11 GB (8.23 Mbps) to `hallowed` x265 (13.82 GB, 15.99 Mbps, DV/HDR10, Score: 2150).
+   * **`Gladiator` (2000):** Kept `RandH` AV1 (11.88 GB, 10.46 Mbps, unpenalized $>11\text{GB}$, Score: 5300).
+   * **`Fury` (2014):** Upgraded from 9.90 GB (10.01 Mbps) to `Smokindevil` AV1 (11.24 GB, 11.37 Mbps, unpenalized $>11\text{GB}$, Score: 5450).
+   * **`The Deer Hunter` (1978):** Upgraded from 10.75 GB (8.02 Mbps) to `R and H` AV1 (12.18 GB, 9.09 Mbps, unpenalized $>11\text{GB}$, Score: 4850).
+   * **`Dark Phoenix` (2019):** Kept `ChopperHitler` AV1 (5.89 GB, 7.05 Mbps) (no qualifying supply above current file).
+   * **`The Rip` (2026):** Upgraded from 7.80 GB (9.42 Mbps) to `FLUX` x265 (15.25 GB, 18.43 Mbps, DV/HDR10, Score: 2450).
+   * **`The Wolverine` (2013):** Kept `R` AV1 (5.55 GB, 6.01 Mbps) (no qualifying supply above current file).
+   * **`The Bourne Supremacy` (2004):** Upgraded from 6.83 GB (8.63 Mbps) to `MainFrame` x265 (21.59 GB, 27.29 Mbps, DV/HDR10, Score: 2200).
+   * **`The Bourne Ultimatum` (2007):** Upgraded from 7.25 GB (8.61 Mbps) to `Bi0hazard` AV1 (17.41 GB, 20.67 Mbps, HDR10, Score: 4350).
+   * **`John Wick` (2014):** Upgraded from 6.12 GB (8.27 Mbps) to `Rob74K` AV1 (12.90 GB, 17.44 Mbps, DV/HDR10, Score: 4950).
+
 
 
 
