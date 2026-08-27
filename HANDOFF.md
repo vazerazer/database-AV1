@@ -402,8 +402,36 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`Dust`:** 18 in 2160p (seen across 7 indexers, median 4.74 GB).
 
 3. **Solidified Op 925 Promotion Consensus:**
-   * High cross-indexer presence validates `UH` (6 indexers), `dAV1nci` (8 indexers), `Smokindevil` (5 indexers), and `CoSMiCSuRFeR` (3 indexers) as resilient, high-supply master encoders for **Quality Encoders (+800)**.
+   * High cross-indexer presence validates `UH` (6 indexers), `dAV1nci` (8 indexers), `Smokindevil` (5 indexers), and `CoSMiCSuRFeR` (3 indexers) as resilient, high-supply master encoders for **Quality Encoders (+1000)**.
    * `TiZU` (6 indexers) and `WhiskeyJack` (7 indexers) anchor **Compact Encoders (+500)** with broad Usenet propagation.
+
+---
+
+## 20. Census-Driven Tier Expansion & Alias Consolidation (Op 925)
+
+1. **Empirical Ledger Updates:**
+   * **`Fury` (Smokindevil):** Updated to `PASS`. Note: *"Partial watch 2026-08-27: looked really good. 11.37 Mbps native UHD BluRay DV HDR TrueHD Atmos; above ~10 Mbps floor."*
+   * **`Blade Runner` (hallowed x265):** Updated to `PASS`. Note: *"Watched 2026-08-27: good. 18.3 Mbps transparent x265; hallowed now 2x PASS (JW2, Blade Runner) — x265 anchor evidence-backed."*
+
+2. **Tier Promotions (Compact $\rightarrow$ Quality Encoders +1000):**
+   * **`dAV1nci`:** Census $N=12$ in 2160p (Median 11.97 GB, 0% upscale, 0% dub), $N=90$ in 1080p, 8 indexers. Verdicts: 0. Promoted on **Reputation + Census Supply Robustness** basis.
+   * **`UH`:** Census $N=22$ in 2160p (Median 12.94 GB, 0% upscale, 0% dub), 6 indexers. Verdicts: 0. Group has been dormant since 2024-12, providing high-value historical catalog depth.
+   * **`Smokindevil`:** Census $N=10$ in 2160p (Median 11.11 GB, 0% upscale, 0% dub, TrueHD Atmos), 5 indexers. Verdicts: 1 PASS (*Fury* watch). **Model Case:** The first double-keyed tier promotion backed by both wide multi-indexer supply and empirical pass observation.
+
+3. **Compact Encoders (+500) Adjustments:**
+   * **`Toasty` (Added):** Census $N=2$ in 2160p (Median 21.65 GB, 0% upscale, 0% dub). High-bitrate reference supply tiered at Compact ceiling pending direct watch verdicts.
+   * **`TiZU` (Hold):** Retained as Compact anchor ($N=62$ in 2160p, $N=226$ in 1080p, 7 indexers) pending first empirical watch.
+   * **`R and H` / `WhiskeyJack` (Hold):** Core volume anchors.
+
+4. **Watch-List Rationale (Untiered):**
+   * **`Don`:** 7 in 2160p (12.35 GB median), but only present on 1 indexer; hold for wider distribution.
+   * **`WtF`:** 20 in 2160p (13.37 GB median), but 20% upscale rate and mixed sizing; hold for quality consistency.
+
+5. **Alias Consolidation & Recount:**
+   * **`R and H` Family:** Consolidated regex matching `R&H`, `RandH`, `R and H`, bare `-RH` token, and `.mkv` extension artifacts without substring bleeding. Recount yields **1,486 consolidated 2160p releases** across 8 indexers.
+   * **`TAoE`:** Resolved parser trailing hyphen and bracket masking; confirmed **9 2160p releases** in Quality Encoders across 8 indexers.
+   * **`PRL Waldek`:** Expanded regex to cover both dot (`PRL.Waldek`) and space (`PRL Waldek`) suffix variants.
+
 
 
 

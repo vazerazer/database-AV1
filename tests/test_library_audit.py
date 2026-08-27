@@ -66,18 +66,21 @@ class TestLibraryAuditCore(unittest.TestCase):
         self.assertAlmostEqual(parse_runtime_minutes(7200), 120.0, places=1)  # Seconds format
 
     def test_classify_group_tier(self):
-        # Quality Tier
+        # Quality Tier (Op 925 expanded)
         self.assertEqual(classify_group_tier("CoSMiCSuRFeR", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("TAoE", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("Waldek", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("PRL", self.tier_patterns), "Quality")
+        self.assertEqual(classify_group_tier("dAV1nci", self.tier_patterns), "Quality")
+        self.assertEqual(classify_group_tier("UH", self.tier_patterns), "Quality")
+        self.assertEqual(classify_group_tier("Smokindevil", self.tier_patterns), "Quality")
         
-        # Compact Tier
-        self.assertEqual(classify_group_tier("dAV1nci", self.tier_patterns), "Compact")
-        self.assertEqual(classify_group_tier("Smokindevil", self.tier_patterns), "Compact")
+        # Compact Tier (Op 925 expanded)
+        self.assertEqual(classify_group_tier("Toasty", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("LAZARUS", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("DKV", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("R and H", self.tier_patterns), "Compact")
+        self.assertEqual(classify_group_tier("WhiskeyJack", self.tier_patterns), "Compact")
         
         # Storage Tier
         self.assertEqual(classify_group_tier("PSA", self.tier_patterns), "Storage")

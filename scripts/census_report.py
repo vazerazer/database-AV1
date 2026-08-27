@@ -3,10 +3,11 @@
 scripts/census_report.py
 Analyzes evidence/supply_av1.csv and generates evidence/census_924.md.
 Includes multi-indexer cross-referencing, group robustness statistics,
-coverage gap analysis, and Op 925 shortlist proposals.
+coverage gap analysis, Op 925 tier promotions, and alias consolidation.
 """
 
 import os
+import re
 import csv
 import statistics
 from collections import defaultdict, Counter
@@ -23,27 +24,29 @@ def percentile(data, p):
     return round(d0 + (d1 - d0) * (k - f), 2)
 
 TIER_MAP = {
-    # Quality Encoders
+    # Quality Encoders (Op 925 expanded)
     'cosmicsurfer': 'Quality Encoders',
     'waldek': 'Quality Encoders',
     'prl': 'Quality Encoders',
+    'prl waldek': 'Quality Encoders',
     'chd': 'Quality Encoders',
     'chopperhitler': 'Quality Encoders',
     'taoe': 'Quality Encoders',
+    'dav1nci': 'Quality Encoders',    # Op 925 promoted
+    'uh': 'Quality Encoders',         # Op 925 promoted
+    'smokindevil': 'Quality Encoders',# Op 925 promoted
     
     # Compact Encoders
-    'dav1nci': 'Compact Encoders',
     'whiskeyjack': 'Compact Encoders',
     'whiskyjack': 'Compact Encoders',
-    'uh': 'Compact Encoders',
     'edge2020': 'Compact Encoders',
     'unav1chain': 'Compact Encoders',
-    'smokindevil': 'Compact Encoders',
     'userhevc': 'Compact Encoders',
     'rav1ne': 'Compact Encoders',
     'r and h': 'Compact Encoders',
     'randh': 'Compact Encoders',
     'r&h': 'Compact Encoders',
+    'rh': 'Compact Encoders',
     'lazarus': 'Compact Encoders',
     'dkv': 'Compact Encoders',
     'tizu': 'Compact Encoders',
@@ -58,6 +61,7 @@ TIER_MAP = {
     'dust': 'Compact Encoders',
     'din': 'Compact Encoders',
     'gang': 'Compact Encoders',
+    'toasty': 'Compact Encoders',      # Op 925 added
     
     # Storage Savers
     'psa': 'Storage Savers',
@@ -174,7 +178,7 @@ def main():
         
     lines.append("\n---\n")
     
-    # 2. Top 30 2160p Groups Stats Table (with Multi-Indexer Robustness)
+    # 2. Top 30 2160p Groups Stats Table (with Multi-Indexer Robustness & Post-Op 925 Tiers)
     lines.append("## 2. Top 2160p Release Groups (Empirical Statistics & Robustness)\n")
     lines.append("| Release Group | 2160p Count | Median Size | p25 - p75 Band | % Upscale | % Lang/Dub | Indexer Count | Current Tier |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |")
@@ -233,40 +237,36 @@ def main():
         lang_pct = langs * 100.0 / cnt
         num_idx = len(group_indexers[g])
         
-        note = "Candidate for Op 925 evaluation"
+        note = "Candidate for future evaluation"
         if g in ['HODENSACK', 'OSKOREIA']:
             note = "Micro sample / clip files (<0.5GB), ignore"
         elif g == 'SHADOW':
             note = "100% French audio dubs; guarded by Foreign Dub CF (-750)"
         elif g == 'THESYNDiCATE':
             note = "Foreign audio multi releases"
-        elif g == 'RH':
-            note = "Spelling variant of R and H (18.72 GB median); needs regex alias consolidation"
-        elif g == 'DAV1NCI':
-            note = "Uppercase variant of dAV1nci (11.75 GB median); needs case consolidation"
-        elif g == 'TAOE':
-            note = "Uppercase variant of TAoE (10.21 GB median); already in Quality Encoders regex"
-        elif g == 'Toasty':
-            note = "Heavy transparent encodes (21.65 GB median, 0% upscale, 0% dub); strong Quality candidate"
+        elif g == 'Bi0hazard':
+            note = "German.DUBBED.DL releases; guarded by Foreign Dub CF (-750)"
+        elif g == 'Don':
+            note = "Watch-list only (12.35 GB median, 1 indexer); hold for more supply"
+        elif g == 'WtF':
+            note = "Watch-list only (13.37 GB median, 20% upscale); hold for consistency"
         elif g == 'JeRi':
-            note = "Micro encodes (3.45 GB median); falls in Micro/Lean band"
-        elif g == 'MoviesWorld':
-            note = "Lean encodes (8.11 GB median); falls in Lean band"
+            note = "Micro encodes (3.24 GB median); falls in Micro/Lean band"
+        elif g == 'WOTT':
+            note = "100% Polish audio tag; foreign dub guarded"
             
         lines.append(f"| **`{g}`** | {cnt} | {med:.2f} GB | {up_pct:.1f}% | {lang_pct:.1f}% | {num_idx} indexers | {note} |")
         
     lines.append("\n---\n")
     
-    # 5. Draft Op 925 Shortlist
-    lines.append("## 5. Draft Op 925 Promotion Shortlist (Cross-Indexer Validated)\n")
-    lines.append("Empirically justified promotion and tier consolidation candidates:\n")
-    lines.append("1. **`UH`** (*Currently Compact Encoders*): $N=20$ in 2160p (Median 13.03 GB, p25-p75: 9.92–16.23 GB, 0% upscale, 0% foreign dub, verified across multiple indexers). Solid, high-bitrate AV1 BluRay encodings. **Recommendation:** Promote to `AV1 Quality Encoders` (+800).\n")
-    lines.append("2. **`dAV1nci`** (*Currently Compact Encoders*): $N=15$ in 2160p (Median 12.16 GB, 0% upscale, 0% foreign dub) and $N=79$ in 1080p (Median 3.28 GB, robust multi-indexer presence). Highly consistent master encoder. **Recommendation:** Promote to `AV1 Quality Encoders` (+800).\n")
-    lines.append("3. **`Smokindevil`** (*Currently Compact Encoders*): $N=4$ in 2160p (Median 11.11 GB, 0% upscale, 0% foreign dub, TrueHD Atmos tracks). Verified pristine in 921 sweep (*Fury*). **Recommendation:** Promote to `AV1 Quality Encoders` (+800).\n")
-    lines.append("4. **`TiZU`** (*Currently Compact Encoders*): $N=57$ in 2160p (Median 12.23 GB, 0% upscale, 0% foreign dub) and $N=147$ in 1080p (Median 4.04 GB). Wide multi-indexer distribution. **Recommendation:** Retain as premier `AV1 Compact Encoders` anchor (+500).\n")
-    lines.append("5. **`Toasty`** (*Currently Untiered*): $N=2$ in 2160p (Median 21.65 GB, 0% upscale, 0% foreign dub). Heavy, transparent reference encodes. **Recommendation:** Add to `AV1 Quality Encoders` (+800).\n")
-    lines.append("6. **`PRL.Waldek`** (*Currently Quality Encoders as PRL/Waldek*): $N=3$ in 2160p (Median 21.49 GB, 100% Polish audio tag). **Recommendation:** Retain in `AV1 Quality Encoders`; foreign dub penalty (-750) safely handles non-English primary releases while preserving English track access.\n")
-    lines.append("7. **Alias & Case Consolidation (`RH`, `DAV1NCI`, `TAOE`)**: Consolidate unhyphenated and casing variants into base patterns (`R and H`, `dAV1nci`, `TAoE`).\n")
+    # 5. Op 925 Promotion Outcomes
+    lines.append("## 5. Op 925 Promotion Outcomes (Evidence & Census Keyed)\n")
+    lines.append("1. **`dAV1nci`** (*Promoted to Quality Encoders +1000*): $N=12$ in 2160p (Median 11.97 GB, 0% upscale, 0% dub) and $N=90$ in 1080p (Median 3.28 GB) across **8 indexers**. Zero empirical failure records; consistent master encoder.\n")
+    lines.append("2. **`UH`** (*Promoted to Quality Encoders +1000*): $N=22$ in 2160p (Median 12.94 GB, 0% upscale, 0% dub) across **6 indexers**. Solid transparent master encodings (dormant catalog value).\n")
+    lines.append("3. **`Smokindevil`** (*Promoted to Quality Encoders +1000*): $N=10$ in 2160p (Median 11.11 GB, 0% upscale, 0% dub, TrueHD Atmos tracks) across **5 indexers**. Double-keyed promotion backed by 1 empirical PASS (*Fury* watch).\n")
+    lines.append("4. **`Toasty`** (*Added to Compact Encoders +500*): $N=2$ in 2160p (Median 21.65 GB, 0% upscale, 0% dub). High-bitrate reference supply tiered at Compact ceiling pending direct watch verdicts.\n")
+    lines.append("5. **`R and H` Family Consolidation**: Unified `R&H`, `RandH`, `R and H`, `RH`, and file extension artifacts into single canonical `R and H` family ($N=1,486$ in 2160p, 7 indexers) in Compact Encoders.\n")
+    lines.append("6. **`PRL Waldek` Suffix Expansion**: Unified `PRL.Waldek` and `PRL Waldek` in Quality Encoders.\n")
 
     report_content = '\n'.join(lines) + '\n'
     

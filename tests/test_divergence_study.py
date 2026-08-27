@@ -44,13 +44,13 @@ class TestDivergenceStudyCore(unittest.TestCase):
     def test_divergence_classification_synthetic(self):
         # Synthetic recorded corpus with known parser behaviors
         synthetic_corpus = [
-            # 1. Agreement Pass: Clean standard release
+            # 1. Direct Agreement (Both title regex and parsed group match Compact)
             {
-                "title": "The.Lord.of.the.Rings.2003.2160p.AV1-dAV1nci.mkv",
+                "title": "The.Lord.of.the.Rings.2003.Extended.1080p.AV1.DDP.Atmos-TiZU.mkv",
                 "category": "Standard Compact",
                 "target_cf": "AV1 Compact Encoders",
                 "expected_pass": True,
-                "parsed_group": "dAV1nci",
+                "parsed_group": "TiZU",
                 "arr_type": "radarr"
             },
             # 2. Compound Group Truncation (Radarr parses 'R' for 'R&H') -> TITLE_ONLY_MATCH

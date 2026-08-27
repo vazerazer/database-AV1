@@ -84,16 +84,17 @@ def get_all_tiered_groups_from_db(conn):
         
         for r in rows:
             pat = r[0]
-            matches = re.findall(r"\(\?:([^)]+)\)", pat)
-            for m in matches:
-                raw_groups = m.split("|")
-                for rg in raw_groups:
-                    clean_g = re.sub(r'^[^\w&]+|[^\w&]+$', '', rg).strip()
-                    clean_g = re.sub(r'^\??:?', '', clean_g).strip()
-                    clean_g = re.sub(r'^[^\w&]+', '', clean_g).strip()
-                    clean_g = clean_g.replace("[-._ ]", " ").replace("[-._]?", "").replace("[-._ ]?", " ")
-                    clean_g = re.sub(r"\s+", " ", clean_g).strip()
-                    if clean_g and len(clean_g) >= 2 and not clean_g.isdigit() and clean_g.lower() not in ("and", "or"):
+            cleaned = re.sub(r"\(\?i\)", "", pat)
+            cleaned = re.sub(r"\(\?:", "|", cleaned)
+            cleaned = re.sub(r"\[[a-z0-9_\\-\\.]+\]", "", cleaned, flags=re.I)
+            cleaned = re.sub(r"\(\?:\\[\.\s]+[a-zA-Z0-9_-]+\)\?", "", cleaned)
+            raw_tokens = re.split(r"[|()\[\]]", cleaned)
+            for tok in raw_tokens:
+                clean_g = re.sub(r"^[^\w&]+|[^\w&]+$", "", tok).strip()
+                clean_g = clean_g.replace("[-._ ]", " ").replace("[-._]?", "").replace("[-._ ]?", " ")
+                clean_g = re.sub(r"\s+", " ", clean_g).strip()
+                if clean_g and len(clean_g) >= 2 and not clean_g.isdigit() and clean_g.lower() not in ("and", "or", "a-z0-9", "mkv", "mp4"):
+                    if not clean_g.startswith("a-z") and not clean_g.startswith("0-9") and not clean_g.startswith("2,4") and not clean_g.startswith("s+"):
                         tiered_groups[clean_g] = tier
                         
     return tiered_groups

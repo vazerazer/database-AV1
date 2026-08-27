@@ -49,18 +49,46 @@ def normalize_title_key(title: str) -> str:
     t = re.sub(r'[\s._-]+', ' ', t.lower()).strip()
     return t
 
+def normalize_group_alias(g: str) -> str:
+    g_clean = g.strip()
+    if re.match(r'^(?:RandH|R&H|R and H|R_and_H|RH)$', g_clean, re.I):
+        return 'R and H'
+    if re.match(r'^dAV1nci$', g_clean, re.I):
+        return 'dAV1nci'
+    if re.match(r'^TAoE$', g_clean, re.I):
+        return 'TAoE'
+    if re.match(r'^PRL[\s.]*Waldek$', g_clean, re.I):
+        return 'PRL Waldek'
+    if re.match(r'^Smokindevil$', g_clean, re.I):
+        return 'Smokindevil'
+    if re.match(r'^(?:WhiskeyJack|WhiskyJack)$', g_clean, re.I):
+        return 'WhiskeyJack'
+    if re.match(r'^Toasty$', g_clean, re.I):
+        return 'Toasty'
+    if re.match(r'^CoSMiCSuRFeR$', g_clean, re.I):
+        return 'CoSMiCSuRFeR'
+    return g_clean
+
 def extract_group(title: str) -> str:
-    title_clean = re.sub(r'\.(mkv|mp4|avi|ts)$', '', title, flags=re.IGNORECASE)
+    title_clean = title.strip()
+    title_clean = re.sub(r'\.(mkv|mp4|avi|ts|iso|nfo|rar|par2)$', '', title_clean, flags=re.I).strip()
+    title_clean = re.sub(r'[\s._-]+$', '', title_clean).strip()
+    title_clean = re.sub(r'\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv|xpost)\]$', '', title_clean, flags=re.I).strip()
+    title_clean = re.sub(r'[\s._-]+$', '', title_clean).strip()
     
-    # 1. Leading bracket
+    # 1. Trailing bracket group e.g. .[TAoE]
+    m_tail_bracket = re.search(r'\[([A-Za-z0-9._ -]+)\]$', title_clean)
+    if m_tail_bracket:
+        g = m_tail_bracket.group(1).strip()
+        if g and not re.search(r'\b(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv|xpost)\b', g, re.I):
+            return normalize_group_alias(g)
+
+    # 2. Leading bracket
     m_prefix = re.match(r'^\[([A-Za-z0-9._ -]+)\]', title_clean)
     if m_prefix:
         g = m_prefix.group(1).strip()
         if g and not re.search(r'\b(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\b', g, re.I):
-            return g
-
-    # 2. Strip only known indexer site tags at the end
-    title_clean = re.sub(r'\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv|xpost)\]$', '', title_clean, flags=re.I).strip()
+            return normalize_group_alias(g)
 
     # 3. Last hyphen
     if '-' in title_clean:
@@ -75,12 +103,10 @@ def extract_group(title: str) -> str:
             return ''
             
         suffix = re.sub(r'^\[|\]$', '', suffix).strip()
+        suffix = re.sub(r'\.(mkv|mp4|avi|ts)$', '', suffix, flags=re.I).strip()
         
-        if re.match(r'^(?:RandH|R&H|R and H|R_and_H)$', suffix, re.I):
-            return 'R and H'
-            
-        if len(suffix) <= 30 and re.match(r'^[A-Za-z0-9_&. -]+$', suffix):
-            return suffix
+        if len(suffix) <= 35 and re.match(r'^[A-Za-z0-9_&. -]+$', suffix):
+            return normalize_group_alias(suffix)
             
     return ''
 

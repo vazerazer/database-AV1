@@ -48,7 +48,7 @@ class TestSupplyAuditCore(unittest.TestCase):
         self.assertIn("CoSMiCSuRFeR", tiered)
         self.assertEqual(tiered["CoSMiCSuRFeR"], "Quality")
         self.assertIn("dAV1nci", tiered)
-        self.assertEqual(tiered["dAV1nci"], "Compact")
+        self.assertEqual(tiered["dAV1nci"], "Quality")
         self.assertIn("PSA", tiered)
         self.assertEqual(tiered["PSA"], "Storage")
         self.assertIn("Trix", tiered)

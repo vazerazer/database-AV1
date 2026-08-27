@@ -968,14 +968,14 @@ def run_simulation_battery():
             "max_band": 2400
         },
         {
-            "category": "Op 920: Smokindevil Shawshank (Named Group -> No Nameless Penalty)",
+            "category": "Op 920: Smokindevil Shawshank (Named Group -> No Nameless Penalty -> Op 925 Quality Score 2400)",
             "title": "The.Shawshank.Redemption.1994.2160p.HDR.AV1-Smokindevil.mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 5.05,
             "expect_pass": True,
-            "min_band": 1700,
-            "max_band": 2100
+            "min_band": 2200,
+            "max_band": 2600
         },
         {
             "category": "Op 920: anomoomin Cast Away 1080p (1080p Unaffected -> Score 4250)",
@@ -1108,6 +1108,67 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 4100,
             "max_band": 4300
+        },
+        # --- 17. OP 925: CENSUS-DRIVEN TIER EXPANSION BATTERY ---
+        {
+            "category": "Op 925: Fat dAV1nci 2160p (Quality +1000 -> Score 5500 Beats x265 2200)",
+            "title": "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 14.2,
+            "expect_pass": True,
+            "min_band": 5400,
+            "max_band": 5600
+        },
+        {
+            "category": "Op 925: Fat UH 2160p (Quality +1000 -> Score 6100 Beats x265 2200)",
+            "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.DV.DDP.Atmos-UH",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 13.5,
+            "expect_pass": True,
+            "min_band": 6000,
+            "max_band": 6200
+        },
+        {
+            "category": "Op 925: Fat Smokindevil 2160p (Quality +1000 -> Score 5950 Beats x265 2200)",
+            "title": "Fury.2014.2160p.UHD.BluRay.AV1.DV.HDR.TrueHD.Atmos-Smokindevil.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.5,
+            "expect_pass": True,
+            "min_band": 5850,
+            "max_band": 6050
+        },
+        {
+            "category": "Op 925: Lean dAV1nci 2160p (Quality +1000 & Lean -3400 -> Score 1800 in Lean Band)",
+            "title": "The.Matrix.1999.2160p.HDR.AV1-dAV1nci",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 8.5,
+            "expect_pass": True,
+            "min_band": 1700,
+            "max_band": 1900
+        },
+        {
+            "category": "Op 925: Fat Toasty 2160p (Compact +500 -> Score 5300)",
+            "title": "The.Thing.1982.2160p.UHD.BluRay.DV.HDR.DTS.5.1.AV1-Toasty",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 21.65,
+            "expect_pass": True,
+            "min_band": 5100,
+            "max_band": 5500
+        },
+        {
+            "category": "Op 925: Consolidated R and H bare RH suffix (Compact +500 -> Score 5300)",
+            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RH",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.0,
+            "expect_pass": True,
+            "min_band": 5100,
+            "max_band": 5500
         }
     ]
     
