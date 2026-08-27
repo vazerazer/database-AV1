@@ -67,4 +67,7 @@ python3 tests/test_divergence_study.py
 
 # 8. Local Security Tripwire & Path Guard
 python3 tests/test_tripwire_hygiene.py
+
+# 9. Profile Drift Guard Test
+python3 tests/test_profile_drift.py
 ```

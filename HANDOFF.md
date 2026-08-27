@@ -469,6 +469,28 @@ All 6 development phases from architecture extraction through E2E live synchroni
 3. **Parked Note for Op 929:**
    * `CMRG` transparent x265 anchor evaluation and fallback calibration.
 
+---
+
+## 22. Audition Ledger & Profile Drift Guard (Op 928)
+
+1. **Audition Ledger ([`evidence/auditions.csv`](evidence/auditions.csv)):**
+   * **Schema:** `date,title,tmdb_id,group,codec,res,size_gb,explorer_score,prod_would_score,delta,status,verdict_ref`
+   * **Audition Lifecycle:**
+     $$\text{Grab by SHADOW} \longrightarrow \text{Audition Ledger Entry} \longrightarrow \text{Eyeball Watch} \longrightarrow \text{Verdict in verdicts.csv} \longrightarrow \text{Promotion Candidate}$$
+   * **Status Codes:** `grabbed` (pending watch), `watched` (linked to `verdicts.csv`), `rejected` (junk filtered out).
+   * **Deduplication:** Unique key on `tmdb_id + group` ensures idempotent incremental harvesting.
+
+2. **Harvest Tool ([`tools/harvest_auditions.py`](tools/harvest_auditions.py)):**
+   * Connects to Radarr4k API (`GET /api/v3/history`) in strictly read-only mode using API key from runtime environment.
+   * Compares release scoring under both `Movies SHADOW Explorer` (Profile 67) and `Movies 2160p AV1 HQ` (Profile 64) via PCD DB simulation engine.
+   * Populates `prod_would_score` and `delta` to track how neutralization alters selection dynamics.
+
+3. **Profile Drift Guard ([`ops/profile_snapshot.json`](ops/profile_snapshot.json) & [`tests/test_profile_drift.py`](tests/test_profile_drift.py)):**
+   * **Rationale:** Enforces the "Profile 64 Read-Only" rule programmatically rather than relying purely on manual policy.
+   * **Mechanism:** Snapshots exact active custom format scores for Profiles 64 and 67 to [`ops/profile_snapshot.json`](ops/profile_snapshot.json) (public-safe: no internal IDs or tokens).
+   * **Verification:** `tests/test_profile_drift.py` asserts snapshot invariants and validates live Radarr4k profiles against the snapshot. Skips cleanly in off-box CI environments when daemon API keys are absent.
+
+
 
 
 

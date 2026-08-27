@@ -100,3 +100,7 @@ jobs:
           fi
 
           echo "CI Tripwire check passed: Zero credentials and zero personal paths found."
+
+      - name: Step 9 - Run Profile Drift Guard Test Suite
+        run: |
+          python3 tests/test_profile_drift.py
