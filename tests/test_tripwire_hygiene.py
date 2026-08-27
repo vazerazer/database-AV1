@@ -3,7 +3,7 @@
 tests/test_tripwire_hygiene.py
 Ensures strict repository hygiene, secret tripwire safety, absolute path sanitization,
 and path guards preventing private catalog/indexer data from entering the public repository.
-Replicates remote GitHub Actions CI security tripwire locally before push.
+Scans BOTH tracked files and untracked working-tree files (via `git ls-files -co --exclude-standard`).
 """
 
 import os
@@ -46,7 +46,14 @@ def run_tripwire_checks():
 
     errors = []
 
-    # 1. Path Guard: Tracked files must NEVER match forbidden local patterns
+    # 1. Enumerate all active workspace files (tracked + untracked non-ignored)
+    res_files = subprocess.run(
+        ['git', 'ls-files', '-co', '--exclude-standard'],
+        cwd=repo_root, capture_output=True, text=True
+    )
+    active_files = [f.strip() for f in res_files.stdout.strip().splitlines() if f.strip()]
+
+    # 2. Path Guard: Tracked files must NEVER match forbidden local patterns
     res_tracked = subprocess.run(
         ['git', 'ls-files'],
         cwd=repo_root, capture_output=True, text=True
@@ -58,33 +65,41 @@ def run_tripwire_checks():
             if fnmatch.fnmatch(tf, pat):
                 errors.append(f"PATH GUARD VIOLATION: Forbidden private file '{tf}' is tracked by git (matches pattern '{pat}').")
 
-    # 2. Check for 32-hex secret-like patterns across tracked files
-    res_hex = subprocess.run(
-        ['git', 'grep', '-nEi', r'\b[0-9a-f]{32}\b', '--', ':!.github/last-upstream-sha'],
-        cwd=repo_root, capture_output=True, text=True
-    )
-    if res_hex.stdout.strip():
-        lines = res_hex.stdout.strip().splitlines()
-        errors.append(f"Found {len(lines)} instances of 32-hex string pattern:\n" + "\n".join(lines[:10]))
+    # 3. Scan all active files for secrets, absolute paths, and indexer leaks
+    hex_pat = re.compile(r'\b[0-9a-f]{32}\b', re.IGNORECASE)
+    home_pat = re.compile(r'/home/[A-Za-z0-9._-]+')
+    indexer_regexes = [re.compile(p, re.IGNORECASE) for p in INDEXER_NAME_PATTERNS]
 
-    # 3. Check for absolute /home/ paths
-    res_home = subprocess.run(
-        ['git', 'grep', '-nE', r'/home/[A-Za-z0-9._-]+'],
-        cwd=repo_root, capture_output=True, text=True
-    )
-    if res_home.stdout.strip():
-        lines = res_home.stdout.strip().splitlines()
-        errors.append(f"Found {len(lines)} instances of absolute /home/ paths:\n" + "\n".join(lines[:10]))
+    for rel_path in active_files:
+        if rel_path == '.github/last-upstream-sha' or rel_path.endswith('.png') or rel_path.endswith('.jpg'):
+            continue
+            
+        full_path = os.path.join(repo_root, rel_path)
+        if not os.path.isfile(full_path):
+            continue
+            
+        try:
+            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                lines = f.readlines()
+        except Exception:
+            continue
 
-    # 4. Check documentation & data files for unredacted indexer names
-    for pat in INDEXER_NAME_PATTERNS:
-        res_idx = subprocess.run(
-            ['git', 'grep', '-nEi', pat, '--', ':!tests/*', ':!scripts/*'],
-            cwd=repo_root, capture_output=True, text=True
-        )
-        if res_idx.stdout.strip():
-            lines = res_idx.stdout.strip().splitlines()
-            errors.append(f"Found unredacted indexer names matching '{pat}' in tracked non-script files:\n" + "\n".join(lines[:5]))
+        is_test_or_script = rel_path.startswith('tests/') or rel_path.startswith('scripts/')
+
+        for line_num, line in enumerate(lines, start=1):
+            # Check 32-hex
+            if hex_pat.search(line):
+                errors.append(f"Found 32-hex secret string in {rel_path}:{line_num}: {line.strip()[:80]}")
+                
+            # Check absolute /home/
+            if home_pat.search(line):
+                errors.append(f"Found absolute /home/ path in {rel_path}:{line_num}: {line.strip()[:80]}")
+                
+            # Check indexer names in non-test/script files
+            if not is_test_or_script:
+                for idx_re in indexer_regexes:
+                    if idx_re.search(line):
+                        errors.append(f"Found unredacted indexer name matching '{idx_re.pattern}' in {rel_path}:{line_num}: {line.strip()[:80]}")
 
     if errors:
         print("\n[FAIL] TRIPWIRE AUDIT FAILED WITH ERRORS:\n", file=sys.stderr)
@@ -92,7 +107,7 @@ def run_tripwire_checks():
             print(f"[-] {err}\n", file=sys.stderr)
         sys.exit(1)
 
-    print("\n[PASS] 100% CLEAN: Path guards verified, 0 32-hex patterns, 0 absolute paths, 0 indexer leaks.")
+    print("\n[PASS] 100% CLEAN: Path guards verified, 0 32-hex patterns, 0 absolute paths, 0 indexer leaks across tracked & untracked files.")
     print("================================================================================")
 
 if __name__ == '__main__':

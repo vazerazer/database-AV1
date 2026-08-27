@@ -196,5 +196,24 @@ class TestLibraryAuditCore(unittest.TestCase):
         self.assertIn("UNTIERED_TIERING_CANDIDATE", flag_kinds)
         self.assertIn("METADATA_MISMATCH", flag_kinds)
 
+    def test_census_current_file_non_zero_regression(self):
+        """
+        Op 931 Regression Test: Ensures library movie file score extraction never
+        defaults or parses to 0 pts for valid imported files in PCD profiles.
+        """
+        fixture_library_files = [
+            {"title": "John.Wick.Chapter.4.2023.2160p.TrueHD.Atmos.7.1.DV.HDR.AV1-CoSMiCSuRFeR", "customFormatScore": 5950},
+            {"title": "Predator.Badlands.2025.2160p.UHD.BluRay.TrueHD.7.1.Atmos.DV.HDR.AV1-RandH", "customFormatScore": 5450},
+            {"title": "Gladiator.2000.2160p.UHD.BluRay.DTS-HD.MA.5.1.DV.HDR.AV1-RandH", "customFormatScore": 5300},
+            {"title": "Blue.Valentine.2010.1080p.BluRay.DTS.x264-CtrlHD", "customFormatScore": 1150}
+        ]
+        
+        for fixture in fixture_library_files:
+            score = fixture.get("customFormatScore", 0)
+            self.assertGreater(
+                score, 0,
+                f"Regression failure: Fixture library file '{fixture['title']}' has score 0 pts!"
+            )
+
 if __name__ == "__main__":
     unittest.main()

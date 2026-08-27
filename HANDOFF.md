@@ -538,7 +538,38 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Removed stale blocklist entry ID 2381 (`LOTR ROTK CoSMiCSuRFeR`) caused by transient Altmount fast-fail segment check during stack initialization.
 
 5. **Release Naming Drift Note:**
-   * Grab $\rightarrow$ import score drift (e.g. `Interstellar R&H`) occurs due to release title metadata parsing vs on-disk folder naming. The **IMPORT** score on disk is the canonical ground truth for audits and ledgers.
+   * Grab $\rightarrow$ import score drift occurs due to release title metadata parsing vs on-disk folder naming. The **IMPORT** score on disk is the canonical ground truth for audits and ledgers:
+     * **Example 1 (`Interstellar` R&H):** Usenet search title matched `10-bit Depth` (+300) and `Atmos` (+250) leading to +550 drift before on-disk metadata normalized to 5300.
+     * **Example 2 (`John Wick: Chapter 2` Rob74K):** Usenet candidate string scored 4350 (+700 delta vs 3650 baseline) via explicit `TrueHD` (+150), `7.1` (+300), and `Atmos` (+250) tag matching.
+
+---
+
+## 25. Op 930 Verification & Census v2.1 Scoring Repair (Op 931)
+
+1. **The Flat +1150 Component Stacking Math:**
+   * **$-4250$ Starter (`Blue Valentine` / `CtrlHD`):**
+     $$\text{Tier 2 } (+2750) + \text{Legacy Trusted x264 } (+5400) - \text{Legacy x264 } (-5000) - \text{Not AV1 } (-2000) = \mathbf{+1150}$$
+   * **$-7000$ Starter (`Hoosiers` / `PiRaTeS`):**
+     $$\text{Tier 2 (Expanded) } (+2750) + \text{Legacy Trusted x264 } (+5400) - \text{Legacy x264 } (-5000) - \text{Not AV1 } (-2000) = \mathbf{+1150}$$
+   * **Convergence Rationale:** Op 930 unified all unindexed legacy reference encoders into `1080p Quality Tier 2` ($+2750$), while `Legacy Trusted x264` supplies the deterministic $+5400$ offset to lift all reference archival releases cleanly above the $+1000$ cutoff.
+
+2. **Resolution Integrity Verifications:**
+   * **`The Black Cauldron (1985)`:** Interactive search confirmed all 2160p releases are untiered x265 or DV without fallback (scores $\le -1450$). Landing `TiZU` AV1 1080p (4150 pts) was 100% correct, not a resolution priority leak.
+   * **`The Outsiders (1983)`:** `c0kE` release (`The.Outsiders.1983.DC.1080p.UHD.BluRay...x265-c0kE`) contains both `1080p` and `UHD.BluRay` markers. Radarr classifies it as `Bluray-1080p` (score 2200). Manual delete+search re-grabbed the same 1080p file as no true 2160p candidate exists.
+
+3. **Profile 64 & 67 Invariants:**
+   * **Profile 64 Baseline Diff:** Tracked at [`evidence/op930_profile64_diff.md`](evidence/op930_profile64_diff.md). Confirmed strictly limited to `+Micro Hard Floor (-10000)`, `+Legacy Trusted x264 (+5400)`, and `1080p Quality Tier 2` group additions.
+   * **SHADOW Explorer Profile 67 Recommendation:** Profile 67 inherits `Micro Hard Floor` (-10000) to protect VPS download quotas and prevent wasting probes on corrupt $<1.0\text{GB}$ sample posts, while leaving all viable untiered encode auditions unpenalized.
+
+4. **Tripwire Hygiene Hardening:**
+   * **Root Cause of CI Step 8 Failure:** Local test used `git grep`, which only inspected git-tracked files. Newly created scripts (like `census_930_audit.py`) were untracked during local testing and escaped scanning until staged.
+   * **Permanent Fix:** Upgraded `tests/test_tripwire_hygiene.py` to scan `git ls-files -co --exclude-standard` (both tracked and untracked non-ignored workspace files), preventing any future path leaks before staging.
+
+5. **Census v2.1 Engine ([`scripts/census_931_audit.py`](scripts/census_931_audit.py)):**
+   * **Live Current-File Scoring:** Direct `GET /api/v3/moviefile/{id}` evaluation resolves exact live Radarr scores (spot-checks: `JW4=5950`, `Predator: Badlands=5450`, `Gladiator=5300`, `Shawshank=3150`).
+   * **Verdict Anchoring:** Cross-references `evidence/verdicts.csv` (`PASS`/`EXCEPTION` records anchor as `HOLD`).
+   * **Artifact:** Tracked public-safe review queue generated at [`evidence/census_931_public.md`](evidence/census_931_public.md) (62 HOLD, 6 UPGRADE-CANDIDATE, 3 MANUAL-REVIEW, 8 NO-QUALIFIED-CANDIDATE).
+
 
 
 
