@@ -346,6 +346,40 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`Rob74K` (1):** 1 PENDING
    * **Unidentified (1):** 1 PASS (*John Wick 3* 37.7 Mbps stream)
 
+---
+
+## 18. AV1 Supply Census (Op 924)
+
+1. **Empirical Indexer Supply Inventory:**
+   * Full Newznab census executed via [`scripts/fetch_av1_supply.py`](scripts/fetch_av1_supply.py) across Indexer-C and Indexer-A (Movies UHD 2045, Movies HD 2040, Movies All 2000, `av1` + `av01`).
+   * **Raw Dataset:** 6,552 unique releases indexed in [`evidence/supply_av1.csv`](evidence/supply_av1.csv).
+   * **Resolution Breakdown:**
+     * **2160p UHD:** 1,302 releases (19.9%)
+     * **1080p HD:** 4,825 releases (73.6%)
+     * **720p:** 352 releases (5.4%)
+     * **Other:** 73 releases (1.1%)
+
+2. **Key Group Profiles & Statistical Distributions:**
+   * **`R and H`:** 814 releases in 2160p (Median 8.92 GB, p25-p75: 6.90–11.54 GB, 29.2% AI-upscale flagged). Dominant volume encoder.
+   * **`WhiskeyJack`:** 108 releases in 2160p (Median 6.68 GB) and 621 releases in 1080p (Median 4.06 GB). Lean/Compact anchor.
+   * **`TiZU`:** 57 releases in 2160p (Median 12.23 GB, 0% upscale, 0% dub) and 147 releases in 1080p (Median 4.04 GB). High volume and robust sizing.
+   * **`UH`:** 20 releases in 2160p (Median 13.03 GB, 0% upscale, 0% dub). Clean, uncompressed transparent encodes.
+   * **`dAV1nci`:** 15 releases in 2160p (Median 12.16 GB, 0% upscale, 0% dub) and 79 releases in 1080p (Median 3.28 GB).
+   * **`Smokindevil`:** 4 releases in 2160p (Median 11.11 GB, 0% upscale, 0% dub, TrueHD Atmos).
+   * **`Toasty`:** 2 releases in 2160p (Median 21.65 GB, 0% upscale, 0% dub). Transparent reference encodes.
+
+3. **Draft Op 925 Promotion Shortlist:**
+   * **Quality Promotion (+800):** `UH`, `dAV1nci`, `Smokindevil`, `Toasty`.
+   * **Compact Anchor (+500):** `TiZU`, `WhiskeyJack`, `R and H`, `Saon`.
+   * **Consolidation / Alias Updates:** Align `RH` with `R and H`, `DAV1NCI` with `dAV1nci`, `TAOE` with `TAoE`.
+
+4. **Security & Tripwire Hygiene (Op 924c):**
+   * **Core Principle:** *"The CI tripwire fires on syntactic shape, not semantics; keep data from wearing the shape of secrets."*
+   * **Sanitization:** GUIDs in `evidence/supply_av1.csv` are normalized to `<indexer>:<12-hex-hash>` (no full URLs, no 32-hex contiguous sequences).
+   * **Local Audit Parity:** Added [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) to replicate remote CI pre-push checks locally (32-hex scan, absolute path scan, URL leak scan).
+
+
+
 
 
 

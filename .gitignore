@@ -21,6 +21,7 @@ Thumbs.db
 .cache/
 __pycache__/
 *.pyc
+*.jsonl
 .pytest_cache/
 scratch/
 deps/
@@ -29,3 +30,4 @@ deps/
 *.log
 telemetry/
 export/
+
