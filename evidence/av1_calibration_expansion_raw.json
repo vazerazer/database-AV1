@@ -1,0 +1,266 @@
+[
+  {
+    "title": "John Wick (2014)",
+    "year": 2014,
+    "edition": "Theatrical UHD BluRay",
+    "av1_group": "Rob74K",
+    "av1_tier": "Quality Tier 1 Candidate",
+    "av1_bitrate_mbps": 18.25,
+    "ref_group": "hallowed",
+    "ref_format": "2160p x265 HDR/DV",
+    "ref_bitrate_mbps": 16.8,
+    "bpp": 0.1239,
+    "scenes": [
+      {
+        "scene_name": "Dark / Low-Light",
+        "description": "Red Circle VIP lounge near-black shadows",
+        "timestamp": "00:48:30",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 68.61,
+        "psnr_db": 27.6,
+        "ssim": 0.8998,
+        "vmaf_per_mbps": 3.76,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "High-Motion",
+        "description": "Red Circle dance floor gunfight & strobes",
+        "timestamp": "00:52:10",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 76.65,
+        "psnr_db": 27.33,
+        "ssim": 0.8927,
+        "vmaf_per_mbps": 4.2,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Film Grain / Texture",
+        "description": "Home night robbery textured 35mm grain",
+        "timestamp": "00:18:20",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 71.99,
+        "psnr_db": 27.72,
+        "ssim": 0.932,
+        "vmaf_per_mbps": 3.94,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Near-Black Gradient",
+        "description": "Continental weapon room deep shadows",
+        "timestamp": "00:36:00",
+        "duration_sec": 10,
+        "is_optional": true,
+        "vmaf": 72.91,
+        "psnr_db": 26.37,
+        "ssim": 0.8344,
+        "vmaf_per_mbps": 4.0,
+        "offset_ms": 0
+      }
+    ],
+    "aggregate": {
+      "mean_vmaf_standard": 72.42,
+      "mean_psnr_db_standard": 27.55,
+      "mean_ssim_standard": 0.9082,
+      "mean_vmaf_per_mbps_standard": 3.97,
+      "min_scene_vmaf": 68.61
+    }
+  },
+  {
+    "title": "X-Men (2000)",
+    "year": 2000,
+    "edition": "Theatrical UHD BluRay",
+    "av1_group": "ChopperHitler",
+    "av1_tier": "Compact / Storage Candidate",
+    "av1_bitrate_mbps": 17.53,
+    "ref_group": "hallowed",
+    "ref_format": "2160p x265 HDR",
+    "ref_bitrate_mbps": 18.7,
+    "bpp": 0.119,
+    "scenes": [
+      {
+        "scene_name": "Dark / Low-Light",
+        "description": "Poland 1944 rainstorm night gate opening",
+        "timestamp": "00:01:20",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 94.52,
+        "psnr_db": 53.89,
+        "ssim": 0.9986,
+        "vmaf_per_mbps": 5.39,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "High-Motion",
+        "description": "Statue of Liberty torch battle & machinery",
+        "timestamp": "01:19:10",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 91.1,
+        "psnr_db": 45.23,
+        "ssim": 0.9947,
+        "vmaf_per_mbps": 5.2,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Film Grain / Texture",
+        "description": "Northern Alberta tavern heavy 35mm grain",
+        "timestamp": "00:15:30",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 94.71,
+        "psnr_db": 44.63,
+        "ssim": 0.9963,
+        "vmaf_per_mbps": 5.4,
+        "offset_ms": 0
+      }
+    ],
+    "aggregate": {
+      "mean_vmaf_standard": 93.44,
+      "mean_psnr_db_standard": 47.92,
+      "mean_ssim_standard": 0.9965,
+      "mean_vmaf_per_mbps_standard": 5.33,
+      "min_scene_vmaf": 91.1
+    }
+  },
+  {
+    "title": "X-Men: Days of Future Past (2014)",
+    "year": 2014,
+    "edition": "Theatrical UHD BluRay",
+    "av1_group": "ChopperHitler",
+    "av1_tier": "Compact / Storage Candidate",
+    "av1_bitrate_mbps": 13.01,
+    "ref_group": "hallowed",
+    "ref_format": "2160p x265 HDR",
+    "ref_bitrate_mbps": 18.81,
+    "bpp": 0.0884,
+    "scenes": [
+      {
+        "scene_name": "Dark / Low-Light",
+        "description": "Moscow underground bunker near-black shadows",
+        "timestamp": "00:03:40",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 96.84,
+        "psnr_db": 49.91,
+        "ssim": 0.9977,
+        "vmaf_per_mbps": 7.44,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "High-Motion",
+        "description": "Future Sentinel ambush & portal action",
+        "timestamp": "00:06:30",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 96.94,
+        "psnr_db": 48.58,
+        "ssim": 0.9978,
+        "vmaf_per_mbps": 7.45,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Film Grain / Texture",
+        "description": "Paris peace summit 1973 period grain",
+        "timestamp": "00:48:20",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 97.69,
+        "psnr_db": 47.96,
+        "ssim": 0.9979,
+        "vmaf_per_mbps": 7.51,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Near-Black Gradient",
+        "description": "Temple final stand near-black storm",
+        "timestamp": "01:48:10",
+        "duration_sec": 10,
+        "is_optional": true,
+        "vmaf": 98.11,
+        "psnr_db": 46.66,
+        "ssim": 0.9977,
+        "vmaf_per_mbps": 7.54,
+        "offset_ms": 0
+      }
+    ],
+    "aggregate": {
+      "mean_vmaf_standard": 97.16,
+      "mean_psnr_db_standard": 48.82,
+      "mean_ssim_standard": 0.9978,
+      "mean_vmaf_per_mbps_standard": 7.47,
+      "min_scene_vmaf": 96.84
+    }
+  },
+  {
+    "title": "John Wick: Chapter 2 (2017)",
+    "year": 2017,
+    "edition": "Theatrical UHD BluRay",
+    "av1_group": "Rob74K",
+    "av1_tier": "Quality Tier 1 Candidate",
+    "av1_bitrate_mbps": 14.8,
+    "ref_group": "hallowed",
+    "ref_format": "2160p x265 HDR/DV",
+    "ref_bitrate_mbps": 16.85,
+    "bpp": 0.1005,
+    "scenes": [
+      {
+        "scene_name": "Dark / Low-Light",
+        "description": "Rome catacombs concert underground shadows",
+        "timestamp": "00:42:10",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 83.07,
+        "psnr_db": 25.66,
+        "ssim": 0.5788,
+        "vmaf_per_mbps": 5.61,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "High-Motion",
+        "description": "Catacombs tactical gunfight & reload chase",
+        "timestamp": "00:49:30",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 75.52,
+        "psnr_db": 27.32,
+        "ssim": 0.8776,
+        "vmaf_per_mbps": 5.1,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Film Grain / Texture",
+        "description": "Museum hall of mirrors fine geometry",
+        "timestamp": "01:38:00",
+        "duration_sec": 10,
+        "is_optional": false,
+        "vmaf": 73.55,
+        "psnr_db": 27.87,
+        "ssim": 0.8978,
+        "vmaf_per_mbps": 4.97,
+        "offset_ms": 0
+      },
+      {
+        "scene_name": "Near-Black Gradient",
+        "description": "NYC subway platform deep shadow gradients",
+        "timestamp": "01:05:20",
+        "duration_sec": 10,
+        "is_optional": true,
+        "vmaf": 77.29,
+        "psnr_db": 28.69,
+        "ssim": 0.9198,
+        "vmaf_per_mbps": 5.22,
+        "offset_ms": 0
+      }
+    ],
+    "aggregate": {
+      "mean_vmaf_standard": 77.38,
+      "mean_psnr_db_standard": 26.95,
+      "mean_ssim_standard": 0.7847,
+      "mean_vmaf_per_mbps_standard": 5.23,
+      "min_scene_vmaf": 73.55
+    }
+  }
+]

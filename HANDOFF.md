@@ -1,8 +1,8 @@
 # 💎 Profilarr Compliant Database (PCD) — Session Handoff & Architecture Guide
 
-**Repository:** `vazerazer/database-AV1`  
-**Branch:** `v2`  
-**Schema Specification:** PCD v2 (Schema `1.1.0`)  
+**Repository:** `vazerazer/database-AV1`
+**Branch:** `v2`
+**Schema Specification:** PCD v2 (Schema `1.1.0`)
 **Status:** **Ops 900–926 Fully Implemented, Tested, Synced & Deployed**
 
 ---
@@ -769,32 +769,41 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Extend verdict ledger schema (`evidence/verdicts.csv`) with measured fidelity fields (`vmaf_mean`, `psnr_mean`, `vmaf_per_mbps`).
    * Wire calibration thresholds into automated explorer promotion gates.
 
+---
 
+## 33. AV1 Calibration Expansion (Op 939)
 
+1. **Tooling & Metric Classification:**
+   * **Engine:** Static FFmpeg 9.0.1 with `libvmaf`, `libdav1d`, `libzimg`, and Netflix 4K model `vmaf_4k_v0.6.1.json`.
+   * **Metric Classification:** VMAF is the primary reference-relative metric. `float_ssim` and `psnr_y` are secondary diagnostic metrics produced by libvmaf/FFmpeg; they are not substitutes for SSIMULACRA2.
+   * **SSIMULACRA2 Status:** Not available / not measured during this op.
+   * **Combined Corpus:** 8 Total Titles (4 Op 938 + 4 Op 939) $\times$ 27 Calibrated 4K UHD Scenes across 5 Release Groups.
 
+2. **Selected Anchors & Transfer Parity:**
+   * `John Wick (2014)`: `Rob74K` (18.25 Mbps) vs `hallowed` (x265 HDR/DV) — 35mm grain & dark club shadows.
+   * `X-Men (2000)`: `ChopperHitler` (17.53 Mbps) vs `hallowed` (x265 HDR) — Heavy 35mm film grain catalog scan.
+   * `X-Men: Days of Future Past (2014)`: `ChopperHitler` (13.01 Mbps) vs `hallowed` (x265 HDR) — Dark HDR dystopian near-black gradients.
+   * `John Wick: Chapter 2 (2017)`: `Rob74K` (14.80 Mbps) vs `hallowed` (x265 HDR/DV) — High-contrast museum & catacombs shadows.
 
+3. **Group Evidence Assessment & Confidence:**
+   * **`ChopperHitler` (High-Confidence Candidate):** Two same-master titles show strong mean fidelity (**`Mean VMAF 95.30`**, **`48.37 dB PSNR`**). However, its minimum measured scene is **`91.10`**, which is below the draft Tier 1 minimum-scene floor of 93.0. Requires at least one additional same-master title before any tier promotion is considered. No tier changes.
+   * **`Rob74K` (Review Candidate Only):** Two same-master titles show poor measured fidelity (**`Mean VMAF 74.90`**, **`27.25 dB PSNR`**) despite high nominal bitrates (15–18 Mbps), exhibiting heavy spatial filtering. Preserved without promotion. No tier changes.
+   * **`Smokindevil` (Content-Sensitive in Sample):** Strong on *The Shawshank Redemption* (93.78 mean, 92.62 floor), weak on *Fury* (76.02 mean, 66.77 floor). Preserved in current tier. No tier changes.
+   * **`CoSMiCSuRFeR` & `RandH`:** Single-title observations requiring a second same-master title for full confidence.
+   * ***Fury* Outcome Context:** Consistent with release-specific encoder bitrate/tuning failure under dark, high-entropy 35mm grain, rather than an inherent AV1 limitation.
 
+4. **Threshold Review & Governance Policy:**
+   * **Prominent Policy:** All AV1 thresholds in ops 938–939 remain **DRAFT**, unenforced, and are not used to change current tier membership or automated scoring.
+   * **VMAF/Mbps Policy:** VMAF/Mbps is retained as a descriptive efficiency metric only. It is not an eligibility or promotion criterion. AV1 promotion evidence must establish repeated same-master fidelity first: a minimum-scene floor, a mean-fidelity result, and sufficient independent title coverage. Efficiency may be used only as a secondary tie-breaker once fidelity has been established.
+   * **Threshold Review Table:**
+     * `Tier 1 Mean VMAF $\ge 95.0$`: **DRAFT — retain for validation.** (Current measurements demonstrate that individual releases can meet this range; no release group has yet satisfied the complete multi-title evidence standard).
+     * `Tier 1 Min Scene Floor $\ge 93.0$`: **DRAFT — retain for validation.** (Current measurements demonstrate that individual releases can meet this range; no release group has yet satisfied the complete multi-title evidence standard).
+     * `Tier 1 PSNR ($Y$) Floor $\ge 45.0\text{ dB}$`: **DRAFT — retain for validation.**
+     * `Tier 2 Mean VMAF $\ge 85.0$`: **DRAFT — retain for validation.**
+     * `Tier 2 Grain Floor`: **DRAFT — provisional proposal** (Provisional proposal: minimum-scene VMAF $\ge 80.0$ for grain-heavy 4K material, pending validation on at least two additional grain-heavy same-master reference pairs across at least two independent AV1 release groups).
+     * `Compact Tier Fidelity $\text{Mean VMAF} \ge 90.0$`: **DRAFT — retain for validation.**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+5. **Proposed Op 940 Options:**
+   * **940A:** Add measured result fields (`vmaf_mean`, `min_vmaf`, `psnr_mean`, `bpp`, `confidence_state`) to the AV1 verdict ledger (`evidence/verdicts.csv`), with zero tier changes.
+   * **940B:** Acquire/measure a targeted reference for a particular candidate group (e.g. `Bi0hazard`, `TiZU`, or `WhiskeyJack`).
+   * **940C:** Install and validate SSIMULACRA2 as a secondary metric after operational assessment.
