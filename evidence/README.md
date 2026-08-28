@@ -61,6 +61,9 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 940B Targeted Candidate Calibration (CoSMiCSuRFeR JW3):**
   * Report: [`av1_calibration_cosmicsurfer_jw3_report.md`](av1_calibration_cosmicsurfer_jw3_report.md)
   * Raw Metrics: [`av1_calibration_cosmicsurfer_jw3_raw.json`](av1_calibration_cosmicsurfer_jw3_raw.json)
+* **Op 941A Targeted Candidate Calibration (RandH Gladiator):**
+  * Report: [`av1_calibration_randh_gladiator_report.md`](av1_calibration_randh_gladiator_report.md)
+  * Raw Metrics: [`av1_calibration_randh_gladiator_raw.json`](av1_calibration_randh_gladiator_raw.json)
 
 ---
 

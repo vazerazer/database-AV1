@@ -830,3 +830,26 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Group Aggregate:** **`Mean VMAF 94.94`** | **`Min Floor 88.85`** | **`Mean PSNR-Y 45.09 dB`** | **`Mean SSIM 0.9969`**.
    * **Confidence State:** Transitioned from `single-title` $\rightarrow$ **`candidate`**.
    * **Tier Status:** Preserved in active Quality Tier 1 without score or profile modifications.
+
+---
+
+## 35. Targeted Candidate Calibration: RandH Gladiator (Op 941A)
+
+1. **Calibration Title & Parity:**
+   * **Title:** *Gladiator* (2000) [Extended Cut]
+   * **AV1 Candidate:** `RandH` (9.95 Mbps, 0.0675 bpp, 2160p DV/HDR10, DTS 5.1).
+   * **Reference Master:** `hallowed` (18.86 Mbps, 2160p DV/HDR10, DDP 7.1).
+   * **Parity:** 100% transfer parity verified ($3840 \times 1600$, $23.976\text{ fps}$, BT.2020 PQ, $+0\text{ ms}$ offset, matched 170.9 min runtime).
+
+2. **Empirical Results (4 Scenes):**
+   * Scene 1 (Near-Black / Shadow-Detail Tent, `00:26:00`): **`VMAF 90.02`** | **`45.42 dB`** | **`0.9956`**
+   * Scene 2 (High-Motion Forest Battle, `00:10:30`): **`VMAF 92.42`** | **`44.85 dB`** | **`0.9933`**
+   * Scene 3 (Texture / Fine-Detail Market, `00:46:00`): **`VMAF 91.31`** | **`42.25 dB`** | **`0.9947`**
+   * Scene 4 (Optional Colosseum Chariot Battle & Dust Stress, `01:25:00`): **`VMAF 97.60`** | **`46.10 dB`** | **`0.9967`**
+   * **Title Aggregate (Core):** **`Mean VMAF 91.25`** | **`Min VMAF 90.02`** | **`Mean PSNR-Y 44.17 dB`** | **`Mean SSIM 0.9945`**
+
+3. **Multi-Title Confidence Transition:**
+   * **Combined Corpus ($n=2$, 7 Scenes):** *Interstellar* (`95.61` mean, `93.21` min) + *Gladiator* (`91.25` mean, `90.02` min).
+   * **Group Aggregate:** **`Mean VMAF 93.43`** | **`Min Floor 90.02`** | **`Mean PSNR-Y 45.72 dB`** | **`Mean SSIM 0.9957`**.
+   * **Confidence State:** Transitioned from `single-title` $\rightarrow$ **`candidate`**.
+   * **Tier Status:** Preserved in existing operational configuration without score or profile modifications.

@@ -1,0 +1,78 @@
+{
+  "title": "Gladiator (2000)",
+  "year": 2000,
+  "edition": "Extended Cut UHD BluRay",
+  "av1_group": "RandH",
+  "av1_bitrate_mbps": 9.95,
+  "ref_group": "hallowed",
+  "ref_format": "2160p x265 HDR/DV",
+  "ref_bitrate_mbps": 18.86,
+  "bpp": 0.0675,
+  "resolution": "3840x1600",
+  "fps": 23.976,
+  "runtime_min": 170.9,
+  "scenes": [
+    {
+      "scene_name": "Near-Black / Shadow-Detail",
+      "description": "Imperial tent candlelight & low-light shadows",
+      "timestamp": "00:26:00",
+      "duration_sec": 10,
+      "is_optional": false,
+      "status": "ACCEPTED",
+      "vmaf": 90.02,
+      "psnr_y_db": 45.42,
+      "ssim": 0.9956,
+      "vmaf_per_mbps": 9.05,
+      "aligned_offset_ms": 0
+    },
+    {
+      "scene_name": "High-Motion",
+      "description": "Germania forest battle flaming arrows, cavalry charge & sword clash",
+      "timestamp": "00:10:30",
+      "duration_sec": 10,
+      "is_optional": false,
+      "status": "ACCEPTED",
+      "vmaf": 92.42,
+      "psnr_y_db": 44.85,
+      "ssim": 0.9933,
+      "vmaf_per_mbps": 9.29,
+      "aligned_offset_ms": 0
+    },
+    {
+      "scene_name": "Texture / Fine-Detail",
+      "description": "Zucchabar desert market rough stone architecture & linen grain",
+      "timestamp": "00:46:00",
+      "duration_sec": 10,
+      "is_optional": false,
+      "status": "ACCEPTED",
+      "vmaf": 91.31,
+      "psnr_y_db": 42.25,
+      "ssim": 0.9947,
+      "vmaf_per_mbps": 9.18,
+      "aligned_offset_ms": 0
+    },
+    {
+      "scene_name": "Colosseum Chariot Battle & Dust Stress (Optional)",
+      "description": "Battle of Carthage arena dust cloud, heavy 35mm grain & rapid chariot motion",
+      "timestamp": "01:25:00",
+      "duration_sec": 10,
+      "is_optional": true,
+      "status": "ACCEPTED",
+      "vmaf": 97.6,
+      "psnr_y_db": 46.1,
+      "ssim": 0.9967,
+      "vmaf_per_mbps": 9.81,
+      "aligned_offset_ms": 0
+    }
+  ],
+  "aggregate": {
+    "mean_vmaf_core": 91.25,
+    "min_vmaf_all": 90.02,
+    "mean_psnr_y_db_core": 44.17,
+    "mean_ssim_core": 0.9945,
+    "core_scene_count": 3,
+    "total_scene_count": 4,
+    "accepted_scene_count": 4,
+    "rejected_scene_count": 0
+  }
+}
