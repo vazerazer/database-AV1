@@ -115,6 +115,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 950A Live Hybrid AV1 Profile Rule Application (Option A):**
   * Application Report: [`hybrid_av1_profile_apply_950a_report.md`](hybrid_av1_profile_apply_950a_report.md)
   * Raw Config & Search Results: [`hybrid_av1_profile_apply_950a_raw.json`](hybrid_av1_profile_apply_950a_raw.json)
+* **Op 951A Hybrid AV1 Profile Field Test (25 Titles):**
+  * Field Test Report: [`hybrid_av1_profile_field_test_951a_report.md`](hybrid_av1_profile_field_test_951a_report.md)
+  * Raw Test Results: [`hybrid_av1_profile_field_test_951a_raw.json`](hybrid_av1_profile_field_test_951a_raw.json)
+  * Test Runner: [`../scripts/run_hybrid_av1_field_test_951a.py`](../scripts/run_hybrid_av1_field_test_951a.py)
 
 ---
 

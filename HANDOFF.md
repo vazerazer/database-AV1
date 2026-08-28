@@ -1048,3 +1048,20 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Updated [`evidence/hybrid_av1_profile_rule_949a.md`](evidence/hybrid_av1_profile_rule_949a.md), [`evidence/hybrid_av1_profile_apply_950a_report.md`](evidence/hybrid_av1_profile_apply_950a_report.md), and associated JSON datasets to explicitly codify that the hybrid AV1→x265 rule applies exclusively to the 4K profile (`Movies 2160p AV1 HQ`, ID `64`).
    * Codified that in the 2160p profile, Radarr enforces resolution precedence over Custom Format scores: a 1080p release (even matching AV1 Custom Formats) will not win release selection when a qualifying 2160p release exists.
    * Zero live configuration changes were made.
+
+---
+
+## 46. Hybrid AV1 Profile Field Test (Op 951A)
+
+1. **Field Test Execution ($N=25$ Titles):**
+   * Executed live field test across 25 representative titles spanning multiple franchises (*X-Men*, *Bourne*, *John Wick*, *LOTR*, *Jurassic*), eras (1968–2023), and master types in Radarr4k (`Movies 2160p AV1 HQ`, ID `64`).
+   * Documented in [`evidence/hybrid_av1_profile_field_test_951a_report.md`](evidence/hybrid_av1_profile_field_test_951a_report.md) and [`evidence/hybrid_av1_profile_field_test_951a_raw.json`](evidence/hybrid_av1_profile_field_test_951a_raw.json).
+
+2. **Observed Arbitration & Tier Breakdown:**
+   * **Tier 1 (Preferred Candidate AV1):** 11 titles ($44.0\%$) won with commanding score separation ($4900–5950$).
+   * **Tier 2 (Review AV1 Fallback):** 4 titles ($16.0\%$) won intermediate supply gaps ($4650–5300$).
+   * **Tier 3 (Reference x265 Fallback):** 10 titles ($40.0\%$) seamlessly won as guaranteed fallback baseline ($1500–2400$) when no 2160p AV1 was present.
+   * **Tier 4 (Quarantined AV1):** 0 titles selected ($0.0\%$).
+
+3. **Governance & Safety Confirmation:**
+   * Purely observational field test. Zero operational configurations, Custom Formats, profile scores, media files, or running containers were modified.
