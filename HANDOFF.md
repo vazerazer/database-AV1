@@ -953,3 +953,20 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. Hallowed remains a practical quality baseline, not an AV1 release group. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 40. Evidence-Led Policy Simulation Harness (Op 946A)
+
+1. **Simulation Purpose & Architecture:**
+   * Built a strictly non-operational simulation harness ([`scripts/simulate_av1_policy_946a.py`](scripts/simulate_av1_policy_946a.py)) to model release-selection behavior across the 30 consolidated verdict ledger rows under 4 distinct hypothetical policy scenarios.
+   * Artifacts generated: [`evidence/av1_policy_simulation_946a_report.md`](evidence/av1_policy_simulation_946a_report.md) and [`evidence/av1_policy_simulation_946a_raw.json`](evidence/av1_policy_simulation_946a_raw.json).
+
+2. **Scenario Impact Findings ($N=30$ Ledger Rows):**
+   * **`baseline_current`:** 15 Allowed (6 Preferred, 9 Non-Preferred), 15 Blocked. Balances candidate preference (`ChopperHitler`, `CoSMiCSuRFeR`) with review group fallback (`RandH`, `Smokindevil`, `Rob74K`).
+   * **`strict_candidate_only`:** 6 Allowed (6 Preferred), 24 Blocked. Restricts selection strictly to candidate groups; eliminates exposure to review-group low-end dips (e.g. *Fury* 66.77 VMAF) at the cost of a 60% reduction in allowed titles.
+   * **`relaxed_review_allowed`:** 15 Allowed (6 Preferred, 9 Non-Preferred), 15 Blocked. Preserves maximum supply while ranking candidate groups first.
+   * **`evidence_basis_aware`:** 15 Allowed (6 Preferred, 9 Non-Preferred), 15 Blocked. Differentiates true same-master reference releases from descriptive Hallowed-relative observations with transparent reason codes.
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. All thresholds remain non-enforcing DRAFT.

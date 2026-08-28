@@ -1,0 +1,1351 @@
+{
+  "simulation_metadata": {
+    "operation": "OP 946A",
+    "campaign_name": "Evidence-Led Policy Simulation Harness",
+    "date": "2026-08-28",
+    "scope": "Simulation of hypothetical release-selection policies across 30 consolidated verdict ledger rows",
+    "governance_notice": "Non-operational simulation only. Zero modifications to Radarr, Profilarr, Custom Formats, profile scores, tier assignments, release restrictions, media, or live automation."
+  },
+  "scenarios": {
+    "baseline_current": {
+      "name": "Baseline (Current Operational Logic)",
+      "description": "Candidate groups preferred when parity is credible; review groups allowed but non-preferred; unmeasured, insufficient-parity, and uncalibrated rows excluded."
+    },
+    "strict_candidate_only": {
+      "name": "Strict Candidate-Only",
+      "description": "Only candidate groups with credible evidence are allowed/preferred; all review, unmeasured, insufficient-parity, and uncalibrated rows are blocked."
+    },
+    "relaxed_review_allowed": {
+      "name": "Relaxed Review-Allowed",
+      "description": "Candidate groups preferred; review groups permitted as non-preferred alternatives; unmeasured and uncalibrated rows blocked."
+    },
+    "evidence_basis_aware": {
+      "name": "Evidence-Basis Aware",
+      "description": "Refines release selection using evidence_basis: differentiates between true same-master reference calibrations and descriptive Hallowed-relative observations."
+    }
+  },
+  "scenario_aggregates": {
+    "baseline_current": {
+      "total_evaluated": 30,
+      "allowed_count": 15,
+      "preferred_count": 6,
+      "blocked_count": 15,
+      "by_group": {
+        "RandH": {
+          "allowed": 4,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "hallowed": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "CoSMiCSuRFeR": {
+          "allowed": 2,
+          "preferred": 2,
+          "blocked": 2
+        },
+        "R&H": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 4
+        },
+        "FLUX": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "SHADOW": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Bi0hazard": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "Smokindevil": {
+          "allowed": 3,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "TAoE": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Rob74K": {
+          "allowed": 2,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "ChopperHitler": {
+          "allowed": 4,
+          "preferred": 4,
+          "blocked": 0
+        },
+        "Waldek": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        }
+      },
+      "by_basis": {
+        "same-master-reference": {
+          "allowed": 12,
+          "preferred": 5,
+          "blocked": 0
+        },
+        "none": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 12
+        },
+        "insufficient-parity": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "hallowed-relative": {
+          "allowed": 3,
+          "preferred": 1,
+          "blocked": 2
+        }
+      }
+    },
+    "strict_candidate_only": {
+      "total_evaluated": 30,
+      "allowed_count": 6,
+      "preferred_count": 6,
+      "blocked_count": 24,
+      "by_group": {
+        "RandH": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 4
+        },
+        "hallowed": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "CoSMiCSuRFeR": {
+          "allowed": 2,
+          "preferred": 2,
+          "blocked": 2
+        },
+        "R&H": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 4
+        },
+        "FLUX": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "SHADOW": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Bi0hazard": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "Smokindevil": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 3
+        },
+        "TAoE": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Rob74K": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "ChopperHitler": {
+          "allowed": 4,
+          "preferred": 4,
+          "blocked": 0
+        },
+        "Waldek": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        }
+      },
+      "by_basis": {
+        "same-master-reference": {
+          "allowed": 5,
+          "preferred": 5,
+          "blocked": 7
+        },
+        "none": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 12
+        },
+        "insufficient-parity": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "hallowed-relative": {
+          "allowed": 1,
+          "preferred": 1,
+          "blocked": 4
+        }
+      }
+    },
+    "relaxed_review_allowed": {
+      "total_evaluated": 30,
+      "allowed_count": 15,
+      "preferred_count": 6,
+      "blocked_count": 15,
+      "by_group": {
+        "RandH": {
+          "allowed": 4,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "hallowed": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "CoSMiCSuRFeR": {
+          "allowed": 2,
+          "preferred": 2,
+          "blocked": 2
+        },
+        "R&H": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 4
+        },
+        "FLUX": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "SHADOW": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Bi0hazard": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "Smokindevil": {
+          "allowed": 3,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "TAoE": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Rob74K": {
+          "allowed": 2,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "ChopperHitler": {
+          "allowed": 4,
+          "preferred": 4,
+          "blocked": 0
+        },
+        "Waldek": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        }
+      },
+      "by_basis": {
+        "same-master-reference": {
+          "allowed": 12,
+          "preferred": 5,
+          "blocked": 0
+        },
+        "none": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 12
+        },
+        "insufficient-parity": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "hallowed-relative": {
+          "allowed": 3,
+          "preferred": 1,
+          "blocked": 2
+        }
+      }
+    },
+    "evidence_basis_aware": {
+      "total_evaluated": 30,
+      "allowed_count": 15,
+      "preferred_count": 6,
+      "blocked_count": 15,
+      "by_group": {
+        "RandH": {
+          "allowed": 4,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "hallowed": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "CoSMiCSuRFeR": {
+          "allowed": 2,
+          "preferred": 2,
+          "blocked": 2
+        },
+        "R&H": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 4
+        },
+        "FLUX": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "SHADOW": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Bi0hazard": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 2
+        },
+        "Smokindevil": {
+          "allowed": 3,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "TAoE": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "Rob74K": {
+          "allowed": 2,
+          "preferred": 0,
+          "blocked": 0
+        },
+        "ChopperHitler": {
+          "allowed": 4,
+          "preferred": 4,
+          "blocked": 0
+        },
+        "Waldek": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        }
+      },
+      "by_basis": {
+        "same-master-reference": {
+          "allowed": 12,
+          "preferred": 5,
+          "blocked": 0
+        },
+        "none": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 12
+        },
+        "insufficient-parity": {
+          "allowed": 0,
+          "preferred": 0,
+          "blocked": 1
+        },
+        "hallowed-relative": {
+          "allowed": 3,
+          "preferred": 1,
+          "blocked": 2
+        }
+      }
+    }
+  },
+  "row_evaluations": [
+    {
+      "title": "John Wick",
+      "year": "2014",
+      "group": "RandH",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "87.16",
+      "vmaf_min": "83.52",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 2",
+      "year": "2017",
+      "group": "hallowed",
+      "codec": "x265",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 3 - Parabellum",
+      "year": "2019",
+      "group": "CoSMiCSuRFeR",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "candidate",
+      "vmaf_mean": "92.81",
+      "vmaf_min": "88.85",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-same-master-reference"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference-fully-preferred"
+        }
+      }
+    },
+    {
+      "title": "The Bourne Supremacy",
+      "year": "2004",
+      "group": "R&H",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "Blade Runner",
+      "year": "1982",
+      "group": "R&H",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "Blade Runner",
+      "year": "1982",
+      "group": "hallowed",
+      "codec": "x265",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        }
+      }
+    },
+    {
+      "title": "The Rip",
+      "year": "2026",
+      "group": "FLUX",
+      "codec": "h264",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-h264"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-h264"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-h264"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-h264"
+        }
+      }
+    },
+    {
+      "title": "The Rip",
+      "year": "2026",
+      "group": "FLUX",
+      "codec": "x265",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "non-av1-anchor-x265"
+        }
+      }
+    },
+    {
+      "title": "The Rip",
+      "year": "2026",
+      "group": "CoSMiCSuRFeR",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "The Rip",
+      "year": "2026",
+      "group": "SHADOW",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "The Deer Hunter",
+      "year": "1978",
+      "group": "R&H",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "The Bourne Ultimatum",
+      "year": "2007",
+      "group": "Bi0hazard",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "Fury",
+      "year": "2014",
+      "group": "Smokindevil",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "76.02",
+      "vmaf_min": "66.77",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 4",
+      "year": "2023",
+      "group": "TAoE",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 4",
+      "year": "2023",
+      "group": "R&H",
+      "codec": "AV1",
+      "evidence_basis": "none",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "",
+      "vmaf_min": "",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "John Wick",
+      "year": "2014",
+      "group": "Rob74K",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "72.42",
+      "vmaf_min": "68.61",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 4",
+      "year": "2023",
+      "group": "CoSMiCSuRFeR",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "candidate",
+      "vmaf_mean": "97.06",
+      "vmaf_min": "96.79",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-same-master-reference"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference-fully-preferred"
+        }
+      }
+    },
+    {
+      "title": "The Shawshank Redemption",
+      "year": "1994",
+      "group": "Smokindevil",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "93.78",
+      "vmaf_min": "92.62",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "Interstellar",
+      "year": "2014",
+      "group": "RandH",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "95.61",
+      "vmaf_min": "93.21",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 2",
+      "year": "2017",
+      "group": "Rob74K",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "77.38",
+      "vmaf_min": "73.55",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "X-Men",
+      "year": "2000",
+      "group": "ChopperHitler",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "candidate",
+      "vmaf_mean": "93.44",
+      "vmaf_min": "91.10",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-same-master-reference"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference-fully-preferred"
+        }
+      }
+    },
+    {
+      "title": "X-Men: Days of Future Past",
+      "year": "2014",
+      "group": "ChopperHitler",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "candidate",
+      "vmaf_mean": "97.16",
+      "vmaf_min": "96.84",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-same-master-reference"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference-fully-preferred"
+        }
+      }
+    },
+    {
+      "title": "Gladiator",
+      "year": "2000",
+      "group": "RandH",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "review",
+      "vmaf_mean": "91.25",
+      "vmaf_min": "90.02",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-same-master-reference-allowed"
+        }
+      }
+    },
+    {
+      "title": "X-Men: Apocalypse",
+      "year": "2016",
+      "group": "ChopperHitler",
+      "codec": "AV1",
+      "evidence_basis": "same-master-reference",
+      "confidence_state": "candidate",
+      "vmaf_mean": "96.72",
+      "vmaf_min": "94.48",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-same-master-reference"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-same-master-reference"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-same-master-reference-fully-preferred"
+        }
+      }
+    },
+    {
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": "2001",
+      "group": "CoSMiCSuRFeR",
+      "codec": "AV1",
+      "evidence_basis": "insufficient-parity",
+      "confidence_state": "insufficient-parity",
+      "vmaf_mean": "78.22",
+      "vmaf_min": "76.71",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-insufficient-parity"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-insufficient-parity"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-insufficient-parity"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-insufficient-parity"
+        }
+      }
+    },
+    {
+      "title": "X-Men: Dark Phoenix",
+      "year": "2019",
+      "group": "ChopperHitler",
+      "codec": "AV1",
+      "evidence_basis": "hallowed-relative",
+      "confidence_state": "candidate",
+      "vmaf_mean": "95.45",
+      "vmaf_min": "94.22",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-hallowed-relative"
+        },
+        "strict_candidate_only": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-accepted-hallowed-relative"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-preferred-hallowed-relative"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": true,
+          "reason_code": "candidate-hallowed-relative-only-preferred"
+        }
+      }
+    },
+    {
+      "title": "The Bourne Ultimatum",
+      "year": "2007",
+      "group": "RandH",
+      "codec": "AV1",
+      "evidence_basis": "hallowed-relative",
+      "confidence_state": "review",
+      "vmaf_mean": "97.06",
+      "vmaf_min": "96.12",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-hallowed-relative"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-hallowed-relative"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-hallowed-relative-only-allowed-warning"
+        }
+      }
+    },
+    {
+      "title": "The Sixth Sense",
+      "year": "1999",
+      "group": "Smokindevil",
+      "codec": "AV1",
+      "evidence_basis": "hallowed-relative",
+      "confidence_state": "review",
+      "vmaf_mean": "86.25",
+      "vmaf_min": "83.92",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-hallowed-relative"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "blocked-non-candidate-review"
+        },
+        "relaxed_review_allowed": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-allowed-non-preferred-hallowed-relative"
+        },
+        "evidence_basis_aware": {
+          "allowed": true,
+          "preferred": false,
+          "reason_code": "review-hallowed-relative-only-allowed-warning"
+        }
+      }
+    },
+    {
+      "title": "The Bourne Ultimatum",
+      "year": "2007",
+      "group": "Bi0hazard",
+      "codec": "AV1",
+      "evidence_basis": "hallowed-relative",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "98.55",
+      "vmaf_min": "97.06",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    },
+    {
+      "title": "John Wick: Chapter 2",
+      "year": "2017",
+      "group": "Waldek",
+      "codec": "AV1",
+      "evidence_basis": "hallowed-relative",
+      "confidence_state": "unmeasured",
+      "vmaf_mean": "70.71",
+      "vmaf_min": "63.31",
+      "scenarios": {
+        "baseline_current": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "strict_candidate_only": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "relaxed_review_allowed": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        },
+        "evidence_basis_aware": {
+          "allowed": false,
+          "preferred": false,
+          "reason_code": "excluded-unmeasured-no-evidence"
+        }
+      }
+    }
+  ]
+}

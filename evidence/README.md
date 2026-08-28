@@ -92,6 +92,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Consolidation Report: [`verdict_ledger_consolidation_945a_report.md`](verdict_ledger_consolidation_945a_report.md)
   * Raw Metrics: [`verdict_ledger_consolidation_945a_raw.json`](verdict_ledger_consolidation_945a_raw.json)
   * Validator: [`../scripts/validate_verdict_ledger_945a.py`](../scripts/validate_verdict_ledger_945a.py)
+* **Op 946A Evidence-Led Policy Simulation Harness:**
+  * Simulation Script: [`../scripts/simulate_av1_policy_946a.py`](../scripts/simulate_av1_policy_946a.py)
+  * Simulation Report: [`av1_policy_simulation_946a_report.md`](av1_policy_simulation_946a_report.md)
+  * Raw Simulation Metrics: [`av1_policy_simulation_946a_raw.json`](av1_policy_simulation_946a_raw.json)
 
 ---
 
