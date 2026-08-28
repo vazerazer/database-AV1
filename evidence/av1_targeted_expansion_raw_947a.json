@@ -1,0 +1,55 @@
+{
+  "expansion_metadata": {
+    "operation": "OP 947A",
+    "campaign_name": "Targeted Evidence Expansion for Review & Transition Groups",
+    "date": "2026-08-28",
+    "scope": "Targeted measurement planning and candidate pairing for RandH, Smokindevil, Rob74K, Bi0hazard, and Waldek",
+    "status": "PROVISIONAL_PLANNING",
+    "governance_notice": "Planning and documentation artifact only. Zero modifications to active tiers, profile scores, Custom Formats, release restrictions, download rules, media files, or live automation."
+  },
+  "summary_by_group": {
+    "RandH": {
+      "confidence_state": "review",
+      "same_master_title_count": 3,
+      "proposed_expansion_count": 3,
+      "proposed_titles": ["The Bourne Supremacy (2004)", "Jack Reacher (2012)", "Blade Runner (1982) The Final Cut"],
+      "inventory_status": "planned-local-candidates-available"
+    },
+    "Smokindevil": {
+      "confidence_state": "review",
+      "same_master_title_count": 2,
+      "proposed_expansion_count": 1,
+      "proposed_titles": ["The Sixth Sense (1999)"],
+      "inventory_status": "partially-exhausted-remux-acquisition-needed"
+    },
+    "Rob74K": {
+      "confidence_state": "review",
+      "same_master_title_count": 2,
+      "proposed_expansion_count": 0,
+      "proposed_titles": [],
+      "inventory_status": "inventory-exhausted"
+    },
+    "Bi0hazard": {
+      "confidence_state": "unmeasured",
+      "same_master_title_count": 0,
+      "proposed_expansion_count": 1,
+      "proposed_titles": ["The Bourne Ultimatum (2007)"],
+      "inventory_status": "remux-acquisition-and-discovery-planned"
+    },
+    "Waldek": {
+      "confidence_state": "unmeasured",
+      "same_master_title_count": 0,
+      "proposed_expansion_count": 1,
+      "proposed_titles": ["John Wick: Chapter 2 (2017)"],
+      "inventory_status": "remux-acquisition-and-discovery-planned"
+    }
+  },
+  "validation": {
+    "manifest_file": "evidence/av1_targeted_expansion_manifest_947a.json",
+    "validator_script": "scripts/plan_av1_targeted_expansion_947a.py",
+    "status": "PASS",
+    "total_target_groups": 5,
+    "total_proposed_titles": 6,
+    "groups_with_inventory_exhaustion": 1
+  }
+}

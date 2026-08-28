@@ -970,3 +970,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 41. Targeted Evidence Expansion for Review Groups (Op 947A)
+
+1. **Planning Purpose & Architecture:**
+   * Established a pre-registered evidence expansion plan ([`evidence/av1_targeted_expansion_plan_947a.md`](evidence/av1_targeted_expansion_plan_947a.md)) and manifest ([`evidence/av1_targeted_expansion_manifest_947a.json`](evidence/av1_targeted_expansion_manifest_947a.json)) targeting the 5 groups that shift behavior between baseline and strict scenarios in Op 946A (`RandH`, `Smokindevil`, `Rob74K`, `Bi0hazard`, and `Waldek`).
+   * Validated via [`scripts/plan_av1_targeted_expansion_947a.py`](scripts/plan_av1_targeted_expansion_947a.py).
+
+2. **Group-Level Expansion Status ($n=6$ Planned Titles Across 5 Groups):**
+   * **`RandH` ($n=3$ planned):** *The Bourne Supremacy (2004)* (same-master candidate from Op 943A baseline), *Jack Reacher (2012)* (Hallowed-relative), and *Blade Runner (1982)* (Hallowed-relative optical grain stress).
+   * **`Smokindevil` ($n=1$ planned):** Local library corpus fully cataloged; *The Sixth Sense (1999)* prioritized for 1:1 UHD Remux master acquisition to upgrade from Hallowed-relative to same-master reference.
+   * **`Rob74K` ($n=0$ local titles / Inventory Exhausted):** Both available local releases (*JW1*, *JW2*) already evaluated in `verdicts.csv`; expansion requires external candidate release discovery.
+   * **`Bi0hazard` ($n=1$ planned):** Prioritized for 1:1 UHD Remux acquisition for *The Bourne Ultimatum (2007)* to upgrade Hallowed-relative observation into a true same-master reference calibration.
+   * **`Waldek` ($n=1$ planned):** Prioritized for 1:1 UHD Remux acquisition for *John Wick: Chapter 2 (2017)* to establish ground-truth reference measurements.
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. All thresholds remain non-enforcing DRAFT.

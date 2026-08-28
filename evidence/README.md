@@ -96,6 +96,12 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Simulation Script: [`../scripts/simulate_av1_policy_946a.py`](../scripts/simulate_av1_policy_946a.py)
   * Simulation Report: [`av1_policy_simulation_946a_report.md`](av1_policy_simulation_946a_report.md)
   * Raw Simulation Metrics: [`av1_policy_simulation_946a_raw.json`](av1_policy_simulation_946a_raw.json)
+* **Op 947A Targeted Evidence Expansion for Review Groups:**
+  * Expansion Plan Document: [`av1_targeted_expansion_plan_947a.md`](av1_targeted_expansion_plan_947a.md)
+  * Pre-Registered Manifest: [`av1_targeted_expansion_manifest_947a.json`](av1_targeted_expansion_manifest_947a.json)
+  * Summary Report: [`av1_targeted_expansion_report_947a.md`](av1_targeted_expansion_report_947a.md)
+  * Raw Expansion Data: [`av1_targeted_expansion_raw_947a.json`](av1_targeted_expansion_raw_947a.json)
+  * Validator: [`../scripts/plan_av1_targeted_expansion_947a.py`](../scripts/plan_av1_targeted_expansion_947a.py)
 
 ---
 

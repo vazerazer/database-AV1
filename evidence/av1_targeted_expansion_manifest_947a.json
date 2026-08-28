@@ -1,0 +1,153 @@
+{
+  "plan_metadata": {
+    "operation": "OP 947A",
+    "campaign_name": "Targeted Evidence Expansion for Review & Transition Groups",
+    "date": "2026-08-28",
+    "scope": "Targeted calibration planning for AV1 groups whose behavior changes between baseline and strict scenarios in Op 946A (RandH, Smokindevil, Rob74K, Bi0hazard, Waldek)",
+    "governance_notice": "Planning and documentation artifact only. Zero modifications to active tiers, profile scores, Custom Formats, release restrictions, download rules, media files, or live automation."
+  },
+  "target_groups": [
+    {
+      "group_name": "RandH",
+      "current_confidence_state": "review",
+      "current_same_master_title_count": 3,
+      "current_evidence_basis_distribution": {
+        "same-master-reference": 3,
+        "hallowed-relative": 1,
+        "none": 4
+      },
+      "behavioral_transition_in_op946a": "Shifts from allowed non-preferred fallback in baseline_current (4 titles) to strictly blocked in strict_candidate_only (0 titles).",
+      "expansion_status": "planned-local-candidates-available",
+      "proposed_titles": [
+        {
+          "title": "The Bourne Supremacy",
+          "year": 2004,
+          "edition": "Theatrical UHD BluRay",
+          "target_evidence_basis": "same-master-reference",
+          "av1_identity": "The.Bourne.Supremacy.2004-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H (6.83 GB, 8.63 Mbps)",
+          "reference_identity": "The.Bourne.Supremacy.2004.UHD.BluRay.2160p.DTS-HD.MA.5.1.DV.HDR10.x265-MainFrame (22.28 GB, 28.17 Mbps)",
+          "hallowed_identity": "The.Bourne.Supremacy.2004.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (14.91 GB, 18.85 Mbps)",
+          "parity_rationale": "Same-master 2160p UHD BluRay master. Evaluated in Op 943A baseline calibration (94.49 mean VMAF against Hallowed, 95.31 against MainFrame reference).",
+          "content_categories": ["Near-Black Shadow Detail", "Extreme Shaky Cam Motion", "35mm Super 35 Grain", "Tunnel Crash Stress"],
+          "known_caveats": "MainFrame reference is high-bitrate x265 rather than raw remux; confirmed exact spatial/temporal alignment in Op 943A."
+        },
+        {
+          "title": "Jack Reacher",
+          "year": 2012,
+          "edition": "Theatrical UHD BluRay",
+          "target_evidence_basis": "hallowed-relative",
+          "av1_identity": "Jack.Reacher.2012.2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H (6.74 GB, 7.15 Mbps)",
+          "reference_identity": null,
+          "hallowed_identity": "Jack.Reacher.2012.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (15.68 GB, 16.64 Mbps)",
+          "parity_rationale": "Exact matching 3840x1600 active canvas, 23.976 fps, and HDR10 PQ metadata.",
+          "content_categories": ["Low-Light Bar Shadows", "High-Speed Car Chase Motion", "35mm Film Grain", "Rainy Highway Stress"],
+          "known_caveats": "No 1:1 Remux counterpart in current local library; planned initially as Hallowed-relative."
+        },
+        {
+          "title": "Blade Runner",
+          "year": 1982,
+          "edition": "The Final Cut UHD BluRay",
+          "target_evidence_basis": "hallowed-relative",
+          "av1_identity": "Blade.Runner.The.Final.Cut.1982-2160p.BluRay.HDR10.10.bit.Encode.AV1.TrueHD.Atmos.7.1-R and H (7.11 GB, 8.23 Mbps)",
+          "reference_identity": null,
+          "hallowed_identity": "Blade.Runner.The.Final.Cut.1982.UHD.BluRay.2160p.TrueHD.Atmos.7.1.DV.HDR.x265-hallowed (15.69 GB, 18.30 Mbps)",
+          "parity_rationale": "Matching 3840x1600 canvas and 23.976 fps on The Final Cut 4K master.",
+          "content_categories": ["Pitch-Black Urban Shadows", "Optical Film Grain", "Smoke & Volumetric Mist", "High-Risk Neon Highlight Stress"],
+          "known_caveats": "Historical Op 921 eyeball audit noted blocky smoke at 8.23 Mbps; metric measurement will objectively quantify the degradation floor."
+        }
+      ]
+    },
+    {
+      "group_name": "Smokindevil",
+      "current_confidence_state": "review",
+      "current_same_master_title_count": 2,
+      "current_evidence_basis_distribution": {
+        "same-master-reference": 2,
+        "hallowed-relative": 1,
+        "none": 0
+      },
+      "behavioral_transition_in_op946a": "Shifts from allowed non-preferred fallback in baseline_current (3 titles) to strictly blocked in strict_candidate_only (0 titles).",
+      "expansion_status": "partially-exhausted-remux-acquisition-needed",
+      "proposed_titles": [
+        {
+          "title": "The Sixth Sense",
+          "year": 1999,
+          "edition": "Theatrical UHD BluRay",
+          "target_evidence_basis": "same-master-reference",
+          "av1_identity": "The.Sixth.Sense.1999.2160p.UHD.BluRay.HDR10.DD+5.1.AV1-Smokindevil (15.02 GB, 18.65 Mbps)",
+          "reference_identity": "Targeting 1:1 UHD BluRay Remux master acquisition",
+          "hallowed_identity": "The.Sixth.Sense.1999.UHD.BluRay.2160p.DDP.5.1.DV.HDR.x265-hallowed (15.12 GB, 18.77 Mbps)",
+          "parity_rationale": "Measured in Op 944A as Hallowed-relative (86.25 mean / 83.92 floor). Acquiring a 1:1 Remux master will convert this into a same-master reference calibration.",
+          "content_categories": ["Dark Basement Shadows", "Fast Traffic Panning", "Church Interior Texture", "Cold Breath Mist Stress"],
+          "known_caveats": "Requires external acquisition of 1:1 UHD Remux master."
+        }
+      ]
+    },
+    {
+      "group_name": "Rob74K",
+      "current_confidence_state": "review",
+      "current_same_master_title_count": 2,
+      "current_evidence_basis_distribution": {
+        "same-master-reference": 2,
+        "hallowed-relative": 0,
+        "none": 0
+      },
+      "behavioral_transition_in_op946a": "Shifts from allowed non-preferred fallback in baseline_current (2 titles) to strictly blocked in strict_candidate_only (0 titles).",
+      "expansion_status": "inventory-exhausted",
+      "proposed_titles": [],
+      "exhaustion_notes": "All available 2160p releases from Rob74K in the local library corpus (John Wick 1 and John Wick 2) are already measured and committed in verdicts.csv. Expansion requires acquiring new 2160p Rob74K releases from external sources."
+    },
+    {
+      "group_name": "Bi0hazard",
+      "current_confidence_state": "unmeasured",
+      "current_same_master_title_count": 0,
+      "current_evidence_basis_distribution": {
+        "same-master-reference": 0,
+        "hallowed-relative": 1,
+        "none": 1
+      },
+      "behavioral_transition_in_op946a": "Blocked across all scenarios due to unmeasured single-title status.",
+      "expansion_status": "remux-acquisition-and-discovery-planned",
+      "proposed_titles": [
+        {
+          "title": "The Bourne Ultimatum",
+          "year": 2007,
+          "edition": "Theatrical UHD BluRay",
+          "target_evidence_basis": "same-master-reference",
+          "av1_identity": "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard (18.70 GB, 21.63 Mbps)",
+          "reference_identity": "Targeting 1:1 UHD BluRay Remux master acquisition",
+          "hallowed_identity": "The.Bourne.Ultimatum.2007.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (16.31 GB, 18.86 Mbps)",
+          "parity_rationale": "Measured in Op 944A as Hallowed-relative (98.55 mean / 97.06 floor). Acquiring a 1:1 Remux master will establish Bi0hazard's true reference calibration fidelity.",
+          "content_categories": ["Moscow Night Shadows", "Tangier Rooftop Shaky Cam", "35mm Film Grain", "Subway Crash Smoke Stress"],
+          "known_caveats": "German dubbed DL release; contains English video stream with German secondary track."
+        }
+      ]
+    },
+    {
+      "group_name": "Waldek",
+      "current_confidence_state": "unmeasured",
+      "current_same_master_title_count": 0,
+      "current_evidence_basis_distribution": {
+        "same-master-reference": 0,
+        "hallowed-relative": 1,
+        "none": 0
+      },
+      "behavioral_transition_in_op946a": "Blocked across all scenarios due to unmeasured single-title status and severe 63.31 VMAF floor.",
+      "expansion_status": "remux-acquisition-and-discovery-planned",
+      "proposed_titles": [
+        {
+          "title": "John Wick: Chapter 2",
+          "year": 2017,
+          "edition": "Theatrical UHD BluRay",
+          "target_evidence_basis": "same-master-reference",
+          "av1_identity": "John.Wick.Chapter.2.2017.BluRay.2160p.UHD.AV1.HDR10.TrueHD.7.1.Atmos.PRL.Waldek (16.03 GB, 17.46 Mbps)",
+          "reference_identity": "Targeting 1:1 UHD BluRay Remux master acquisition",
+          "hallowed_identity": "John.Wick.Chapter.2.2017.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (15.46 GB, 16.85 Mbps)",
+          "parity_rationale": "Measured in Op 944A as Hallowed-relative (70.71 mean / 63.31 floor). Remux calibration will establish whether textural degradation originates from encoding parameters or source preprocessing.",
+          "content_categories": ["Warehouse Night Shadows", "Catacombs Gunfight Motion", "Fine Tailored Suit Weave", "Neon Mirror Specular Stress"],
+          "known_caveats": "Requires -41.7 ms (-1 frame) offset normalization."
+        }
+      ]
+    }
+  ]
+}
