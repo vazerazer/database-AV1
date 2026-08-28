@@ -106,6 +106,12 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Campaign Report: [`av1_targeted_expansion_measurements_948a_report.md`](av1_targeted_expansion_measurements_948a_report.md)
   * Raw Metrics: [`av1_targeted_expansion_measurements_948a_raw.json`](av1_targeted_expansion_measurements_948a_raw.json)
   * Runner: [`../scripts/run_av1_targeted_expansion_measurements_948a.py`](../scripts/run_av1_targeted_expansion_measurements_948a.py)
+* **Op 949A Hybrid AV1 Profile Rule (Finish Line):**
+  * Full Specification Document: [`hybrid_av1_profile_rule_949a.md`](hybrid_av1_profile_rule_949a.md)
+  * Summary Report: [`hybrid_av1_profile_rule_949a_report.md`](hybrid_av1_profile_rule_949a_report.md)
+  * Mapping Schema JSON: [`hybrid_av1_profile_mapping_949a.json`](hybrid_av1_profile_mapping_949a.json)
+  * Threshold Raw Dataset: [`hybrid_av1_profile_thresholds_949a_raw.json`](hybrid_av1_profile_thresholds_949a_raw.json)
+  * Validator: [`../scripts/validate_hybrid_profile_rule_949a.py`](../scripts/validate_hybrid_profile_rule_949a.py)
 
 ---
 

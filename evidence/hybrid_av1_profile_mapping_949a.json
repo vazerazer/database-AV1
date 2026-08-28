@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0.0",
+  "rule_metadata": {
+    "operation": "OP 949A",
+    "rule_name": "Hybrid AV1→x265 Release-Selection Rule",
+    "date": "2026-08-28",
+    "purpose": "Final release-selection architecture combining candidate AV1 priority, guarded review AV1 fallback, high-quality x265 fallback, and unmeasured AV1 quarantine"
+  },
+  "tier_definitions": {
+    "Tier 1": {
+      "tier_name": "Preferred AV1",
+      "priority_level": 1,
+      "member_groups": ["ChopperHitler", "CoSMiCSuRFeR"],
+      "confidence_state": "candidate",
+      "evidence_basis_allowed": ["same-master-reference", "hallowed-relative"],
+      "selection_behavior": "Preferred over all other tiers when available and technical parity is credible.",
+      "score_band": ">= 2300"
+    },
+    "Tier 2": {
+      "tier_name": "Review AV1 Fallback (Guarded)",
+      "priority_level": 2,
+      "member_groups": ["RandH", "Smokindevil", "Rob74K"],
+      "confidence_state": "review",
+      "evidence_basis_allowed": ["same-master-reference", "hallowed-relative"],
+      "selection_behavior": "Allowed as fallback when Tier 1 is absent, provided title passes concrete quality/bitrate guardrails; demoted to Tier 4 if guardrails fail.",
+      "score_band": "1500 - 2000"
+    },
+    "Tier 3": {
+      "tier_name": "x265 Reference Fallback",
+      "priority_level": 3,
+      "member_groups": ["hallowed", "Dumpstarr 4K", "MainFrame", "Framestor", "NTb", "FLUX", "BHDStudio"],
+      "confidence_state": "reference-baseline",
+      "evidence_basis_allowed": ["same-master-reference", "none"],
+      "selection_behavior": "Preferred over Tier 4 and over Tier 2 when review AV1 fails guardrails; secondary fallback when Tier 1 AV1 is unavailable.",
+      "score_band": "1000 - 1400"
+    },
+    "Tier 4": {
+      "tier_name": "Last-Resort AV1 / Quarantine",
+      "priority_level": 4,
+      "member_groups": ["Bi0hazard", "Waldek", "SHADOW", "Untrusted/Unmeasured Groups"],
+      "confidence_state": "unmeasured",
+      "evidence_basis_allowed": ["none", "insufficient-parity", "hallowed-relative"],
+      "selection_behavior": "Quarantined; selected only when no Tier 1, Tier 2, or Tier 3 releases exist in pool; lowest priority.",
+      "score_band": "0 - 400"
+    }
+  },
+  "tier_2_guardrails": {
+    "vmaf_mean_min_threshold": 90.0,
+    "vmaf_min_floor_threshold": 85.0,
+    "mbps_min_threshold_2160p": 8.0,
+    "min_bpp_2160p": 0.055,
+    "demotion_rule": "Any review group title recording VMAF min < 85.0 on fine texture or shadow scenes is immediately treated as Tier 4, promoting Tier 3 x265 over it."
+  },
+  "radarr_profilarr_mapping_reference": {
+    "primary_profile": {
+      "id": 14,
+      "name": "Movies 2160p AV1 HQ",
+      "upgrade_allowed": true,
+      "cutoff_cf": "AV1 Quality Encoders"
+    },
+    "reference_fallback_profile": {
+      "id": 9,
+      "name": "2160p Quality",
+      "upgrade_allowed": true
+    },
+    "custom_format_ladder": [
+      {
+        "tier": "Tier 1",
+        "custom_format_id": 295,
+        "custom_format_name": "AV1 Quality Encoders",
+        "groups": ["ChopperHitler", "CoSMiCSuRFeR"],
+        "score": 2500
+      },
+      {
+        "tier": "Tier 2",
+        "custom_format_id": 290,
+        "custom_format_name": "AV1 Compact Encoders",
+        "groups": ["RandH", "Smokindevil", "Rob74K"],
+        "score": 1800
+      },
+      {
+        "tier": "Tier 2 Guardrail Penalty",
+        "custom_format_id": 302,
+        "custom_format_name": "AV1 Lean 2160p (Size/Bitrate Floor)",
+        "score": -1000
+      },
+      {
+        "tier": "Tier 3",
+        "custom_format_id": 67,
+        "custom_format_name": "2160p Quality Tier 1",
+        "groups": ["hallowed", "Dumpstarr 4K", "MainFrame", "Framestor"],
+        "score": 1200
+      },
+      {
+        "tier": "Tier 4",
+        "custom_format_id": 301,
+        "custom_format_name": "AV1 Nameless / Unmeasured",
+        "groups": ["Bi0hazard", "Waldek", "SHADOW"],
+        "score": 200
+      }
+    ]
+  },
+  "scenario_simulations": [
+    {
+      "scenario_id": "SIM-01",
+      "description": "Candidate AV1 and high-quality x265 both available",
+      "candidate_release": "X-Men.2000.2160p.HDR.AV1-ChopperHitler (Tier 1, Score 2500)",
+      "alternative_release": "X-Men.2000.2160p.HDR.x265-hallowed (Tier 3, Score 1200)",
+      "selection_outcome": "Candidate AV1 (ChopperHitler) selected (Score 2500 > 1200).",
+      "verdict": "OPTIMAL_AV1_STREAMING"
+    },
+    {
+      "scenario_id": "SIM-02",
+      "description": "Review AV1 passes guardrails and x265 available",
+      "candidate_release": "The.Bourne.Supremacy.2004.2160p.HDR.AV1-R and H (Tier 2 Passed, Score 1800)",
+      "alternative_release": "The.Bourne.Supremacy.2004.2160p.HDR.x265-hallowed (Tier 3, Score 1200)",
+      "selection_outcome": "Review AV1 (RandH) selected (Score 1800 > 1200; 95.31 mean / 93.85 min exceeds guardrails).",
+      "verdict": "CONTROLLED_AV1_SAVINGS"
+    },
+    {
+      "scenario_id": "SIM-03",
+      "description": "Review AV1 fails guardrails and x265 available",
+      "candidate_release": "Blade.Runner.1982.2160p.HDR.AV1-R and H (Tier 2 Failed, Score 800 via penalty)",
+      "alternative_release": "Blade.Runner.1982.2160p.HDR.x265-hallowed (Tier 3, Score 1200)",
+      "selection_outcome": "x265 (Hallowed) selected (Score 1200 > 800; RandH fails VMAF min floor 85.0 with 74.55).",
+      "verdict": "QUALITY_PRESERVATION_FALLBACK"
+    },
+    {
+      "scenario_id": "SIM-04",
+      "description": "Only high-quality x265 available",
+      "candidate_release": "None",
+      "alternative_release": "Gladiator.2000.2160p.HDR.x265-hallowed (Tier 3, Score 1200)",
+      "selection_outcome": "x265 (Hallowed) selected (Score 1200 > min cutoff 1000).",
+      "verdict": "SEAMLESS_X265_EXPERIENCE"
+    },
+    {
+      "scenario_id": "SIM-05",
+      "description": "Only unmeasured AV1 available alongside standard Web-DL",
+      "candidate_release": "John.Wick.2.2017.2160p.HDR.AV1-Waldek (Tier 4, Score 200)",
+      "alternative_release": "John.Wick.2.2017.2160p.HDR.WEB-DL-BYNDR (Score 800)",
+      "selection_outcome": "Web-DL selected over unmeasured AV1 (Score 800 > 200; Waldek quarantined).",
+      "verdict": "SAFETY_QUARANTINE_ACTIVE"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "threshold_metadata": {
+    "operation": "OP 949A",
+    "rule_name": "Hybrid AV1→x265 Release-Selection Rule",
+    "date": "2026-08-28",
+    "scope": "Derivation and justification of concrete numeric thresholds for Tier 2 review AV1 releases from 32 consolidated ledger rows",
+    "governance_notice": "Specification artifact only. Zero modifications to active profiles, tiers, scores, Custom Formats, Radarr/Profilarr configuration, release restrictions, download rules, media files, or live automation."
+  },
+  "ledger_metric_distribution": {
+    "tier_1_candidates": {
+      "ChopperHitler": {
+        "titles_measured": 4,
+        "vmaf_mean_range": [93.44, 97.16],
+        "vmaf_min_range": [91.10, 96.84],
+        "mean_vmaf": 95.69,
+        "mean_psnr_y": 48.77,
+        "mean_ssim": 0.9976,
+        "mean_bpp": 0.0841
+      },
+      "CoSMiCSuRFeR": {
+        "titles_measured": 2,
+        "vmaf_mean_range": [92.81, 97.06],
+        "vmaf_min_range": [88.85, 96.79],
+        "mean_vmaf": 94.94,
+        "mean_psnr_y": 45.09,
+        "mean_ssim": 0.9969,
+        "mean_bpp": 0.1786
+      }
+    },
+    "tier_2_review_groups": {
+      "RandH": {
+        "titles_measured": 5,
+        "vmaf_mean_range": [83.96, 97.06],
+        "vmaf_min_range": [74.55, 96.12],
+        "mean_vmaf": 91.01,
+        "mean_psnr_y": 43.72,
+        "mean_ssim": 0.9926,
+        "mean_bpp": 0.0627,
+        "passing_titles_above_guardrails": [
+          "The Bourne Supremacy (2004) [95.31 mean / 93.85 min / 8.63 Mbps]",
+          "The Bourne Ultimatum (2007) [97.06 mean / 96.12 min / 9.00 Mbps]",
+          "Interstellar (2014) [95.61 mean / 93.21 min / 14.05 Mbps]",
+          "Gladiator (2000) [91.25 mean / 90.02 min / 9.95 Mbps]"
+        ],
+        "failing_titles_below_guardrails": [
+          "Blade Runner (1982) [83.96 mean / 74.55 min / 8.23 Mbps] (Fails VMAF min floor 85.0 on smoke/grain)",
+          "John Wick (2014) [87.16 mean / 83.52 min / 8.66 Mbps] (Fails VMAF min floor 85.0 on suit texture smoothing)"
+        ]
+      },
+      "Smokindevil": {
+        "titles_measured": 3,
+        "vmaf_mean_range": [76.02, 93.78],
+        "vmaf_min_range": [66.77, 92.62],
+        "mean_vmaf": 85.35,
+        "mean_psnr_y": 43.62,
+        "mean_ssim": 0.9832,
+        "mean_bpp": 0.0651,
+        "passing_titles_above_guardrails": [
+          "The Shawshank Redemption (1994) [93.78 mean / 92.62 min / 5.07 Mbps]",
+          "The Sixth Sense (1999) [86.25 mean / 83.92 min / 18.65 Mbps]"
+        ],
+        "failing_titles_below_guardrails": [
+          "Fury (2014) [76.02 mean / 66.77 min / 10.52 Mbps] (Fails VMAF mean 90.0 & min floor 85.0 on heavy low-light 35mm grain)"
+        ]
+      },
+      "Rob74K": {
+        "titles_measured": 2,
+        "vmaf_mean_range": [72.42, 77.38],
+        "vmaf_min_range": [68.61, 73.55],
+        "mean_vmaf": 74.90,
+        "mean_psnr_y": 27.25,
+        "mean_ssim": 0.8465,
+        "mean_bpp": 0.1122,
+        "passing_titles_above_guardrails": [],
+        "failing_titles_below_guardrails": [
+          "John Wick (2014) [72.42 mean / 68.61 min / 18.25 Mbps] (Fails all thresholds)",
+          "John Wick: Chapter 2 (2017) [77.38 mean / 73.55 min / 14.80 Mbps] (Fails all thresholds)"
+        ]
+      }
+    },
+    "tier_3_x265_reference_baseline": {
+      "hallowed": {
+        "titles_measured": 3,
+        "vmaf_mean": 95.56,
+        "vmaf_min": 94.10,
+        "mean_bitrate_mbps": 18.65
+      }
+    }
+  },
+  "proposed_thresholds": {
+    "vmaf_mean_minimum": {
+      "threshold": 90.0,
+      "rationale": "90.0 VMAF ensures perceptual parity with high-quality 2160p BluRay encodes, weeding out severely softened or pre-filtered releases."
+    },
+    "vmaf_min_floor": {
+      "threshold": 85.0,
+      "rationale": "85.0 minimum scene floor specifically prevents localized catastrophic collapses (e.g. Fury 66.77, John Wick 1 68.61, Blade Runner 74.55)."
+    },
+    "mbps_minimum_2160p": {
+      "threshold": 8.0,
+      "bpp_equivalent": 0.055,
+      "rationale": "2160p AV1 encodes below 8.0 Mbps consistently suffer from macroblocking in dense grain and near-black mist gradients."
+    }
+  }
+}

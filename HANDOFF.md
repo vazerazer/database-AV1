@@ -1005,3 +1005,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. Group confidence states and title counts remain unchanged. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 43. Hybrid AV1 Profile Rule (Op 949A — Finish Line)
+
+1. **Policy Architecture (4-Tier Decision Hierarchy):**
+   * Synthesized calibration findings (Ops 938–948A) into the final Hybrid AV1→x265 selection rule ([`evidence/hybrid_av1_profile_rule_949a.md`](evidence/hybrid_av1_profile_rule_949a.md)).
+   * **Tier 1 (Preferred AV1, Score $\ge 2300$):** `ChopperHitler`, `CoSMiCSuRFeR`. Multi-title candidate groups with verified transparent reference fidelity ($95.69$ mean VMAF).
+   * **Tier 2 (Guarded Review AV1, Score $1500 - 2000$):** `RandH`, `Smokindevil`, `Rob74K`. Permitted when Tier 1 is absent, subject to strict numeric guardrails ($\text{VMAF Mean} \ge 90.0$, $\text{VMAF Min} \ge 85.0$, $\text{Bitrate} \ge 8.0\text{ Mbps}$). Demoted to Tier 4 (penalty $-1000$) if guardrails fail.
+   * **Tier 3 (x265 Reference Fallback, Score $1000 - 1400$):** `hallowed`, `Dumpstarr 4K`, `MainFrame`, `Framestor`. Rock-solid reference fallback ($95.56$ mean VMAF) preferred over Tier 4 and over failing Tier 2 AV1 releases.
+   * **Tier 4 (Last Resort / Quarantine, Score $0 - 400$):** `Bi0hazard`, `Waldek`, `SHADOW`, and sub-threshold releases. Safely quarantined.
+
+2. **Schema & Validator:**
+   * Generated mapping schema ([`evidence/hybrid_av1_profile_mapping_949a.json`](evidence/hybrid_av1_profile_mapping_949a.json)) and threshold derivation dataset ([`evidence/hybrid_av1_profile_thresholds_949a_raw.json`](evidence/hybrid_av1_profile_thresholds_949a_raw.json)).
+   * Programmatically validated via [`scripts/validate_hybrid_profile_rule_949a.py`](scripts/validate_hybrid_profile_rule_949a.py).
+
+3. **Governance Statement:**
+   * Zero active operational configurations, Custom Formats, profile scores, tier assignments, release restrictions, download rules, media files, or running containers were modified. All thresholds remain non-enforcing DRAFT.
