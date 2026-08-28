@@ -35,10 +35,22 @@ REGEX_PATTERNS = {
     "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b",
 
     # 8. Legacy Trusted x264 (Op 930: Archival reference groups; Op 932: dupe tag tolerance; Op 933: Vetted HD Bluray union)
-    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw|ATELiER|BBQ|BMF|c0kE|Chotab|CRiSC|D-Z0N3|Dariush|decibeL|EDPH|Geek|LolHD|NCmt|PTer|TayTO|TDD|TnP|VietHD|ZQ|ZoroSenpai|NTb|EA|HiDt|HiSD|iFT|QOQ|SA89|sbR|hallowed|HiFi|SPHD|W4NK3R)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$",
+    "Legacy Trusted x264": r"(?i)(?:^|[\s._-])(?:CtrlHD|GRiM|PiRaTeS|BHDStudio|TAoE|DON|EbP|playHD|Z0N3|LoRD|MrTentsaw|ATELiER|BBQ|BMF|c0kE|Chotab|CRiSC|D-Z0N3|Dariush|decibeL|EDPH|Geek|LolHD|NCmt|PTer|TayTO|TayTo|TDD|TnP|VietHD|ZQ|ZoroSenpai|NTb|EA|HiDt|HiSD|iFT|QOQ|SA89|sbR|hallowed|HiFi|SPHD|W4NK3R)(?:\[[^\]]*\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$",
 
     # 9. LQ Release Title (Op 932: Cleaned naming hygiene specifications)
-    "LQ Release Title": r"(?i)\b(?:1XBET|BEN[ ._-]THE[ ._-]MEN|Feranki1980|GalaxyRG|SWTYBLZ|TeeWee|TEKNO3D|Will1869|READ(\s|\.)+NOTE)\b|(?:[-._]D3US|D3US[-._])"
+    "LQ Release Title": r"(?i)\b(?:1XBET|BEN[ ._-]THE[ ._-]MEN|Feranki1980|GalaxyRG|SWTYBLZ|TeeWee|TEKNO3D|Will1869|READ(\s|\.)+NOTE)\b|(?:[-._]D3US|D3US[-._])",
+
+    # 10. Repack Ladder (Op 935: Proper / Repack micro-tiers)
+    "Repack1": r"(?i)\b(re(pack|rip)|proper)\b",
+
+    # 11. 4K Remaster (Op 935: Restored / Remastered editions)
+    "4K Remaster": r"(?i)\b(Remaster(ed)?|Restored|4K[ ._-]?Remaster(ed)?|Restoration)\b",
+
+    # 12. Audio Description (Op 935: DVS / Accessibility audio reject)
+    "Audio Description": r"(?i)\b(DVS|Audio[ ._-]?Description|Descriptive[ ._-]?Audio|Descriptive[ ._-]?Video[ ._-]?Service|ASL|BASL|BSL)\b",
+
+    # 13. Line Audio Reject (Op 935: Hygiene Line Audio & ProRes in CAM)
+    "Line Audio": r"(?i)\b(LINE[ ._-]?Audio|HQ[ ._-]?LINE|LINE(?=[\W_]+(?:AC3|DDP|AAC|5\.1|2\.0))|ProRes|PRORES)\b"
 }
 
 TEST_CASES = {
@@ -288,6 +300,58 @@ TEST_CASES = {
             "X-Men.2000.2160p.AV1-ChopperHitler_3",
             "Hoosiers.1986.1080p.AMZN.WEB-DL.DDP.5.1.H.264-PiRaTeS",
             "The.Perks.of.Being.a.Wallflower.2012.1080p.BluRay.DTS.x264-PiRaTeS"
+        ]
+    },
+    "Repack1": {
+        "positive": [
+            "Movie.Title.2024.2160p.AV1.PROPER-Group",
+            "Movie.Title.2024.2160p.AV1.REPACK-Group",
+            "Movie.Title.2024.1080p.BluRay.RERIP.x264-Group",
+            "Movie.Title.2024.2160p.WEB-DL.Proper-Group"
+        ],
+        "adversarial_negatives": [
+            "Movie.Title.2024.2160p.AV1-Group",
+            "Properties.of.Matter.2024.1080p.AV1-Group",
+            "Repackage.2024.1080p.AV1-Group"
+        ]
+    },
+    "4K Remaster": {
+        "positive": [
+            "Movie.Title.1982.2160p.Remastered.AV1-Group",
+            "Movie.Title.1982.1080p.BluRay.Restored.AV1-Group",
+            "Movie.Title.1994.2160p.4K.Remaster.AV1-Group",
+            "Movie.Title.1979.2160p.4K.Restoration.AV1-Group"
+        ],
+        "adversarial_negatives": [
+            "Movie.Title.2024.2160p.AV1-Group",
+            "Remasters.of.the.Universe.2024.1080p.AV1-Group"
+        ]
+    },
+    "Audio Description": {
+        "positive": [
+            "Movie.Title.2024.1080p.WEB-DL.DDP5.1.DVS-Group",
+            "Movie.Title.2024.1080p.Audio.Description.DDP5.1-Group",
+            "Movie.Title.2024.1080p.Descriptive.Video.Service-Group",
+            "Movie.Title.2024.1080p.ASL-Group"
+        ],
+        "adversarial_negatives": [
+            "Movie.Title.2024.1080p.WEB-DL.DDP5.1.Atmos.AV1-Group",
+            "The.Hunt.2012.1080p.BluRay.Opus.5.1.AV1-KIMJI",
+            "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH"
+        ]
+    },
+    "Line Audio": {
+        "positive": [
+            "Movie.Title.2024.1080p.LINE.Audio.x264-Group",
+            "Movie.Title.2024.1080p.HQ.LINE.x264-Group",
+            "Movie.Title.2024.1080p.LINE.DDP5.1-Group",
+            "Movie.Title.2024.2160p.ProRes.HQ-Group"
+        ],
+        "adversarial_negatives": [
+            "Walk.the.Line.2005.1080p.BluRay.DTS.x264-CtrlHD",
+            "The.Thin.Red.Line.1998.2160p.HDR.AV1-dAV1nci",
+            "Line.of.Duty.S01E01.1080p.AV1-Group",
+            "Movie.Title.2024.2160p.AV1.TrueHD.Atmos-Waldek"
         ]
     }
 }

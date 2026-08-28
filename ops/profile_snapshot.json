@@ -13,6 +13,7 @@
       "2160p Quality Tier 3": 2700,
       "2160p Quality Tier 4": 2650,
       "3D": -10000,
+      "4K Remaster": 25,
       "8-bit Depth": -1000,
       "AMZN": 50,
       "AV1": 3500,
@@ -80,6 +81,7 @@
       "2160p Quality Tier 3": 2700,
       "2160p Quality Tier 4": 2650,
       "3D": -10000,
+      "4K Remaster": 25,
       "8-bit Depth": -1000,
       "AMZN": 50,
       "AV1": 3500,
@@ -144,6 +146,7 @@
     "2160p Quality Tier 3": "d39c9082afbd3fab2680f205b91065fcfdb9906149d89415e612ee3b6a78bada",
     "2160p Quality Tier 4": "efb9d50d28481e622e044aa09a3e682bfde3d8852ae08bd5f38246af0b5c01c6",
     "3D": "5ab4f7428bf63d5c188e9f4a277fc74b792edc07965542c98035bbd7bb35a348",
+    "4K Remaster": "1c28eed1605baa80bcd2bb9e3170c81e0be0f1f87e3d3db5fec5f464ece2c6d4",
     "8-bit Depth": "6288384400e736b73392068a3c131804c0b30a0b257a7a87c3488b3de2a46c21",
     "AMZN": "39b4e4484f75760250781e81ace3f29e896c35ba92d8d63e3213e3353bd91a6e",
     "AV1": "7f82f4e5d2fca0cb7f58263d71acd0e72a243e189d9f0b9707d3dd33d21a89c9",
@@ -158,7 +161,7 @@
     "Banned Groups (Efficient)": "6645b324491a662287f915bf267c1540462ea4e0ae7cbdfcb4508153035841b6",
     "Banned Groups (Regular)": "0818f52d7f0d282ef82f58f5cbfb9624842af5184e3a295b8063aec949c529a2",
     "Banned Remux": "226c7b75e20968eede7e3dce42e7750341fa1ae7bcd96cdd2ddfbab862363dd3",
-    "CAM": "2647f61bf88afb67b088949b59b54544222e45ea351286ff183aa0d3c3b5d87b",
+    "CAM": "256f65d7e1438962152fba2bcedac683f36933fa60b1470e0f99438a8a0021be",
     "CRIT": "45db160e6cced77543e76fe85ebdd172cadf5375618c10ff582798bc1c9b7036",
     "DSNP": "bb4b5e625d4a5eb2ef37ce44ffa6f08bf98a777e62c0925e12930821d18d134b",
     "DTS-X": "4ca53037ae753b77995b273549a0f89800188d0d7273b26aa6c5858fd3a4d8d6",
@@ -191,7 +194,7 @@
     "TrueHD": "1508aa18ce32840478eade7d4c6761dfec01e980d1ac002a05db2f4b92b98741",
     "Upscale": "ea4fe6f6879fb51a363380f43089e2e78353c226315a8205ff2a0ad38b37939a",
     "WEB-DL Tier 1": "e79f69a25646823076602c8c686fd1b9ad514c2d1a3871354a31a7a829de6cd5",
-    "WEB-DL Tier 2": "cff194acf8b44cb7271fa1e28bff684be9e4ecc6a1472b244c0026bf8d47a1fd",
+    "WEB-DL Tier 2": "2abfe92858f4e81db968b7d5e5c495145be807b4adf19dc7f1a0b05b34d4dbc8",
     "WEB-DL Tier 3": "9f1d29d264e6738c396666fe0ab8309dbf5fa37984cf2161c5878883d63ff54d"
   }
 }

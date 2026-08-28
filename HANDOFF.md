@@ -661,6 +661,35 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Adopt `Proper / Repack` micro-tiers (+5 to +7 pts).
    * Expand `WEB-DL Tier 1-3` with vetted streaming scene/P2P groups (`FLUX`, `SiGMA`, `KiNGS`, `ETHiCS`, `Cinefeel`, `ViSUM`, `DEEP`).
 
+---
+
+## 29. WEB-Tier Union, Repack Ladder & Hygiene Rejects (Op 935)
+
+1. **Upstream Reconcile Decisions (Ops 300–311):**
+   * **Accepted Upstream Ops:** Ops 300–305 & 311 (streaming regex standardization for iT, Play, iQIYI, NOW, SHO, STAN, HBO), Ops 306, 307, 309, 310 (720p/1080p Tier 5 adds), and Op 308 (`Fix TayTO` regex update and condition alignment).
+   * **TayTO Battery Verification:** Re-proved against `test_refined_regex_battery.py` covering both `TayTO` and `TayTo` spellings against `1080p Quality Tier 2` and `Legacy Trusted x264`.
+
+2. **Repack / Proper Micro-Ladder (+5 to +7 pts):**
+   * **Scores:** `Repack1` (+5), `Repack2` (+6), `Repack3` (+7).
+   * **Boundary Safety:** +7 bonus is $>14\times$ smaller than the smallest tier step (+100). Resolves revision collisions deterministically without crossing ladder boundaries.
+
+3. **Expanded Source & Audio Hygiene (-10,000 pts):**
+   * **`Audio Description` (-10,000):** Integrated `DVS` condition (`\b(DVS|Descriptive[ ._-]?Audio|Descriptive[ ._-]?Video[ ._-]?Service)\b`). Eliminates accessibility audio tracks from qualifying.
+   * **`CAM` (-10,000):** Updated to include `LINE[ ._-]?Audio`, `HQ[ ._-]?LINE`, `ProRes`, `WORKPRINT`, and `TELESYNC` variants. Word-boundary anchored to prevent false positives on titles (e.g. *Walk the Line*).
+
+4. **4K Remaster Edition (+25 pts):**
+   * Created `4K Remaster` Custom Format (+25 pts) targeting `\b(Remaster(ed)?|Restored|4K[ ._-]?Remaster(ed)?|Restoration)\b`.
+   * Boundary proof: Remaster bonus ($+25$) is $4\times$ smaller than the smallest tier difference ($+100$). A Tier 2 Remaster ($2750 + 25 = 2775$) will never beat a Tier 1 release ($2850$).
+
+5. **WEB-DL Tier 2 Vetted Group Union (46 Groups):**
+   * **Unioned Groups:** `SiGMA`, `JETIX`, `CEBEX`, `RTN`, `SDCC`, `GNOME`, `SLiGNOME`, `CRUD`, `DRACULA`, `PHOENiX`, `PSiG`, `DEEP`, `orbitron`, `APEX`, `BLOOM`, `ETHiCS`, `ViSUM`, `XEPA`, `MiU`, `PEXA`, `Dooky`, `iKA`, `KiMCHI`, `NYH`, `ABBIE`, `FC`, `iJP`, `PAXA`, `Flights`, `T6D`, `T4H`, `SiC`, `CiT`, `NINJACENTRAL`, `dB`, `END`, `SwAgLaNdEr`, `iT00NZ`, `ROCCaT`, `ViSiON`, `3cTWeB`, `RTFM`, `SPiRiT`, `4KBEC`, `Coo7`, `WEBDV`.
+   * **Banned Groups Excluded:** Hard-rejections maintained for `YTS`, `YIFY`, `SHD`, `NhaNc3`, `AOC`.
+
+6. **Design Invariant Preserved:**
+   * External vetting widens **ONLY** the fallback bands (`WEB-DL Tier 2`, `Legacy Trusted x264`, `2160p Quality/Balanced Tiers`).
+   * AV1 tier membership remains strictly **evidence-earned** via explorer auditing and verified test verdicts.
+
+
 
 
 

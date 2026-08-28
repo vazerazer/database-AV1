@@ -1321,6 +1321,56 @@ def run_simulation_battery():
             "expect_pass": False,
             "min_band": -20000,
             "max_band": -10000
+        },
+        {
+            "category": "Op 935: Repack1 Micro-Ladder (Score 4655 Beats Standard 4650)",
+            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-Waldek",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 18.5,
+            "expect_pass": True,
+            "min_band": 4600,
+            "max_band": 4700
+        },
+        {
+            "category": "Op 935: 4K Remaster Tag (+25 pts on Fallback Tier)",
+            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 16.5,
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 1550
+        },
+        {
+            "category": "Op 935: Audio Description Hard Reject (-10000 Rejection)",
+            "title": "Movie.Title.2024.1080p.WEB-DL.DDP5.1.DVS-FLUX",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 4.5,
+            "expect_pass": False,
+            "min_band": -10000,
+            "max_band": -5000
+        },
+        {
+            "category": "Op 935: Line Audio Hard Reject (-10000 Rejection)",
+            "title": "Movie.Title.2024.1080p.LINE.Audio.x264-Group",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 3.2,
+            "expect_pass": False,
+            "min_band": -20000,
+            "max_band": -10000
+        },
+        {
+            "category": "Op 935: Vetted WEB-DL Tier 2 Union (SiGMA 2160p Fallback)",
+            "title": "Movie.Title.2024.2160p.AMZN.WEB-DL.DDP.5.1.HDR.x265-SiGMA",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.5,
+            "expect_pass": True,
+            "min_band": 1500,
+            "max_band": 1750
         }
     ]
     
