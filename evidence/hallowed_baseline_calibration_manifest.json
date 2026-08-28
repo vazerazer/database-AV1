@@ -1,0 +1,249 @@
+{
+  "campaign": "OP 943A: Hallowed x265 Quality-Baseline Calibration",
+  "date": "2026-08-28",
+  "purpose": "Establish whether the existing trusted 2160p Hallowed x265 fallback is good enough relative to credible same-master UHD reference material (Remux / transparent master), then measure how much additional loss AV1 introduces relative to that accepted baseline.",
+  "acceptance_premise": "Hallowed 2160p x265 is an accepted practical quality baseline for this library. AV1 is evaluated by whether it is materially worse than that baseline in high-risk conditions (shadow detail, dark gradients, smoke, 35mm grain, dust, texture, motion), not against a universal VMAF threshold.",
+  "guardrails": "Evidence-only. Zero modifications to active tiers, profile scores, Custom Formats, release restrictions, verdicts.csv, or live automation.",
+  "planned_titles": [
+    {
+      "title": "Jurassic World",
+      "year": 2015,
+      "edition": "Theatrical UHD BluRay",
+      "reference_identity": "Jurassic.World.2015.MULTi.iNTERNAL.UHD.BluRay.2160p.TrueHD.Atmos.7.1.DV.HDR10.REMUX-seedpool (64.86 GB)",
+      "hallowed_identity": "Jurassic.World.2015.PROPER.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (17.59 GB)",
+      "av1_identity": null,
+      "resolution": "3840x1920 (2.00:1 active crop)",
+      "runtime_minutes": 124.4,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Exact same-master 2160p UHD BluRay release; 1:1 lossless Remux compared against Hallowed x265 encode with crop normalization (crop=3840:1920:0:120).",
+      "alignment_method": "Temporal PSNR probe with crop normalization and bicubic scaling to 3840x1920",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["REFERENCE_TO_HALLOWED"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "High-budget modern action/CGI blockbuster with pristine digital capture, complex particle dynamics, night lighting, and heavy motion.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:36:10",
+          "duration_sec": 10,
+          "rationale": "Indominus Rex paddock night escape with dynamic flashlight beams and dark jungle shadows.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High Motion Action & Particles",
+          "start_timestamp": "01:21:40",
+          "duration_sec": 10,
+          "rationale": "Raptor motorcycle forest chase with rapid camera panning and foliage motion.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Clean Modern Digital Detail",
+          "start_timestamp": "00:15:30",
+          "duration_sec": 10,
+          "rationale": "Main Street visitor center architectural glass, crowd textures, and bright daylight clarity.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "T-Rex Final Battle Rain & Flare Stress (Optional)",
+          "category": "High-Risk Rain / Smoke / Flare Gradient Stress",
+          "start_timestamp": "01:47:20",
+          "duration_sec": 10,
+          "rationale": "Climactic battle with heavy rain droplets, orange road flare atmospheric haze, and dark wet asphalt reflections.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Bourne Supremacy",
+      "year": 2004,
+      "edition": "Theatrical UHD BluRay",
+      "reference_identity": "The.Bourne.Supremacy.2004.2160p.BluRay.DTS-X.7.1.DV.HDR10.x265-MainFrame (23.18 GB, 28.5 Mbps)",
+      "hallowed_identity": "The Bourne Supremacy 2004 UHD BluRay 2160p DDP 7 1 DV HDR x265-hallowed (15.34 GB, 18.9 Mbps)",
+      "av1_identity": "The.Bourne.Supremacy.2004-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H (7.34 GB, 8.63 Mbps)",
+      "resolution": "3840x1632",
+      "runtime_minutes": 108.5,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Full 3-way same-master 2160p comparison chain. All three encodes match 3840x1632 native pixel dimensions and 23.976 fps.",
+      "alignment_method": "Temporal PSNR probe with bicubic scaling to 3840x1632",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["REFERENCE_TO_HALLOWED", "HALLOWED_TO_AV1", "REFERENCE_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Gritty handheld Super 35 film stock with organic film grain, high-velocity shaky cam action, and dark European urban environments.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:07:30",
+          "duration_sec": 10,
+          "rationale": "Goa beach night invasion with deep shadows, moonlit ocean surf, and interior low-light gradations.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Extreme Motion & Shaky Cam",
+          "start_timestamp": "01:31:00",
+          "duration_sec": 10,
+          "rationale": "Moscow tunnel car chase with rapid cuts, high-speed vehicle impacts, and motion blur.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "35mm Film Grain & Interior Detail",
+          "start_timestamp": "00:27:10",
+          "duration_sec": 10,
+          "rationale": "Munich safehouse interior dialogue with distinct 35mm grain pattern and period furnishings.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Berlin Rain & Dark Urban Mist (Optional)",
+          "category": "High-Risk Rain / Smoke / Dark Gradient Stress",
+          "start_timestamp": "00:58:20",
+          "duration_sec": 10,
+          "rationale": "Berlin train bridge pursuit with cold blue-gray color palette, overcast mist, and rain-slicked concrete.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "Jurassic Park III",
+      "year": 2001,
+      "edition": "Theatrical UHD BluRay",
+      "reference_identity": "Jurassic.Park.III.2001.MULTi.iNTERNAL.UHD.BluRay.2160p.TrueHD.Atmos.7.1.DV.HDR10.REMUX-seedpool (61.61 GB)",
+      "hallowed_identity": "Jurassic.Park.III.2001.PROPER.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (13.03 GB)",
+      "av1_identity": null,
+      "resolution": "3840x2076 (1.85:1 active crop)",
+      "runtime_minutes": 92.2,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Exact same-master 2160p UHD BluRay release; 1:1 lossless Remux compared against Hallowed x265 with crop normalization (crop=3840:2076:0:42).",
+      "alignment_method": "Temporal PSNR probe with crop normalization and bicubic scaling to 3840x2076",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["REFERENCE_TO_HALLOWED"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Classic 35mm optical film stock combined with practical animatronics, atmospheric jungle fog, and heavy monster action.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:32:40",
+          "duration_sec": 10,
+          "rationale": "InGen breeding compound night exploration with rusted metal textures and deep shadow crevices.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High Motion Action & Explosions",
+          "start_timestamp": "00:19:10",
+          "duration_sec": 10,
+          "rationale": "Spinosaurus runway attack and plane crash with high-velocity fire and debris.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "35mm Grain & Jungle Foliage",
+          "start_timestamp": "00:14:20",
+          "duration_sec": 10,
+          "rationale": "Isla Sorna aerial canyon flyover with dense canopy foliage and natural film grain.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Aviary Fog & Mist Stress (Optional)",
+          "category": "High-Risk Dense Fog / Dark Gradient Stress",
+          "start_timestamp": "00:54:30",
+          "duration_sec": 10,
+          "rationale": "Pteranodon giant bird cage sequence with dense volumetric fog, suspended steel cables, and low-contrast mist.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Drama",
+      "year": 2026,
+      "edition": "Theatrical UHD BluRay",
+      "reference_identity": "The.Drama.2026.iNTERNAL.UHD.BluRay.2160p.TrueHD.Atmos.7.1.DV.HDR10.REMUX-seedpool (72.35 GB)",
+      "hallowed_identity": "The.Drama.2026.UHD.BluRay.2160p.DDP.Atmos.5.1.DV.HDR.x265-hallowed (15.13 GB)",
+      "av1_identity": null,
+      "resolution": "3840x2076 (1.85:1 active crop)",
+      "runtime_minutes": 105.5,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Exact same-master 2160p UHD BluRay release; 1:1 lossless Remux compared against Hallowed x265 with crop normalization (crop=3840:2076:0:42).",
+      "alignment_method": "Temporal PSNR probe with crop normalization and bicubic scaling to 3840x2076",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["REFERENCE_TO_HALLOWED"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "State-of-the-art modern digital HDR capture with ultra-clean sensor detail, rich color grading, and subtle low-light nuance.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:41:10",
+          "duration_sec": 10,
+          "rationale": "Intimate low-light interior conversation with subtle lamp gradations and dark wooden textures.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High Motion Transit",
+          "start_timestamp": "00:23:40",
+          "duration_sec": 10,
+          "rationale": "Urban transit vehicle movement with smooth lateral tracking and changing lighting.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Modern Digital 8K Fine Detail",
+          "start_timestamp": "00:11:50",
+          "duration_sec": 10,
+          "rationale": "Daylight architecture, crisp wardrobe textile patterns, and skin pore resolution.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Evening Rain & Streetlight Glow (Optional)",
+          "category": "High-Risk Rain / Glow / Dark Gradient Stress",
+          "start_timestamp": "01:18:20",
+          "duration_sec": 10,
+          "rationale": "Evening street scene with wet reflections, halogen streetlamp halos, and dark atmospheric gradients.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    }
+  ]
+}

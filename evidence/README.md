@@ -68,6 +68,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Pre-Registered Manifest: [`av1_stratified_calibration_manifest.json`](av1_stratified_calibration_manifest.json)
   * Campaign Report: [`av1_stratified_calibration_campaign_report.md`](av1_stratified_calibration_campaign_report.md)
   * Raw Metrics: [`av1_stratified_calibration_campaign_raw.json`](av1_stratified_calibration_campaign_raw.json)
+* **Op 943A Hallowed x265 Quality-Baseline Calibration:**
+  * Pre-Registered Manifest: [`hallowed_baseline_calibration_manifest.json`](hallowed_baseline_calibration_manifest.json)
+  * Calibration Report: [`hallowed_baseline_calibration_report.md`](hallowed_baseline_calibration_report.md)
+  * Raw Metrics: [`hallowed_baseline_calibration_raw.json`](hallowed_baseline_calibration_raw.json)
 
 ---
 

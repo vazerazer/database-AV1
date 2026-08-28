@@ -875,3 +875,26 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 37. Hallowed x265 Quality-Baseline Calibration (Op 943A)
+
+1. **Campaign Scope & Objective:**
+   * **Purpose:** Empirically quantify the similarity of the accepted Hallowed 2160p x265 baseline relative to higher-quality reference material, and measure the direct incremental quality delta introduced by AV1 on a verified triple.
+   * **Corpus Design ($n=4$ Titles, 16 Scenes):** Three parity-verified UHD remux-reference pairs and one parity-verified higher-bitrate MainFrame x265 reference pair (The Bourne Supremacy).
+   * **Comparison Chains:** Reference $\rightarrow$ Hallowed (Baseline Similarity), Higher-bitrate MainFrame x265 reference $\rightarrow$ Hallowed x265 $\rightarrow$ RandH AV1 (Incremental), Reference $\rightarrow$ AV1 (Direct Comparison).
+
+2. **Empirical Findings:**
+   * **Hallowed Baseline Finding ($n=4$, 16 Scenes, Objective Metrics Only):**
+     * **Mean Core VMAF:** **`95.56`** | **Median Core VMAF:** **`95.51`** | **Min Scene Floor:** **`90.62`** (on *Jurassic World* rain/flare stress; 15 of 16 scenes $\ge 92.4$).
+     * **Mean PSNR-Y:** **`46.39 dB`** | **Mean SSIM:** **`0.9944`**.
+     * **Conclusion:** Within this four-title, 16-scene, parity-verified objective-metric corpus, Hallowed 2160p x265 showed strong similarity to the selected higher-quality references (mean 95.56 VMAF; observed minimum 90.62). This supports its use as the user's practical quality baseline, but does not establish universal reference transparency or replace display-side subjective review.
+   * **RandH Incremental AV1 Finding (*The Bourne Supremacy* 3-Way Triple, 1 Title / 4 Scenes Only):**
+     * Higher-bitrate MainFrame x265 reference $\rightarrow$ Hallowed: `97.30` mean ($18.85\text{ Mbps}$).
+     * Hallowed $\rightarrow$ RandH AV1: `94.49` mean ($9.02\text{ Mbps}$, $-2.81\text{ VMAF}$ incremental delta for $52\%$ bitrate reduction).
+     * Higher-bitrate MainFrame x265 reference $\rightarrow$ RandH AV1: `95.31` mean ($92.78$ min scene floor).
+     * **Scope Limitation:** The AV1 incremental-loss finding applies only to the measured RandH / The Bourne Supremacy pair. It is not a cross-group AV1 baseline and does not revise RandH's existing review classification, which remains driven by the valid John Wick (2014) core-texture result (83.52 VMAF minimum).
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, `evidence/verdicts.csv` records, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.
