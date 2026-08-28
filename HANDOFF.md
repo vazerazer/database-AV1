@@ -1023,3 +1023,19 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational configurations, Custom Formats, profile scores, tier assignments, release restrictions, download rules, media files, or running containers were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 44. Live Hybrid AV1 Profile Rule Application (Op 950A)
+
+1. **Deployment Scope & Production Verification:**
+   * Implemented and verified the hybrid AV1→x265 selection rule (Option A — Group-Level Scoring) in live Radarr4k (Profile 64 `Movies 2160p AV1 HQ`) and Profilarr.
+   * Documented in [`evidence/hybrid_av1_profile_apply_950a_report.md`](evidence/hybrid_av1_profile_apply_950a_report.md) and [`evidence/hybrid_av1_profile_apply_950a_raw.json`](evidence/hybrid_av1_profile_apply_950a_raw.json).
+
+2. **Live Arbitration Validation:**
+   * Validated live release searches across production movies (*X-Men*, *The Bourne Supremacy*, *Gladiator*, *Fury*).
+   * Confirmed that Tier 1 candidate AV1 (`ChopperHitler`, `CoSMiCSuRFeR`) achieves top priority ($4900–5450$ score), Tier 2 review AV1 (`RandH`, `Smokindevil`) scores secondarily ($4000–4500$), and sub-threshold/lean releases are automatically penalized ($-3400$) to yield to reference x265 fallbacks.
+
+3. **Operational Confirmation:**
+   * Live changes are strictly constrained to Radarr4k/Profilarr Custom Format scoring rules and Profile 64 matching weights.
+   * Zero media files, download clients, indexers, or running storage containers were modified.
