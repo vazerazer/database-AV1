@@ -19,7 +19,15 @@ Op 950A completes the live deployment of the **Hybrid AV1→x265 Release-Selecti
 
 ---
 
-## 2. Live Profile & Custom Format Configuration Reference
+## 2. Profile Scope & Resolution Behavior
+
+* **2160p Profile Scope:** All tests, evaluations, and active score configurations described herein apply exclusively to the 4K quality profile (`Movies 2160p AV1 HQ`, ID `64`).
+* **Resolution Precedence:** Within Radarr, quality resolution definitions take precedence over Custom Format scores. While 1080p releases (e.g. 1080p WhiskeyJack AV1) may receive elevated Custom Format scores in search result lists, they are inherently rejected when a qualifying 2160p release is present.
+* **Release Arbitration Reality:** In the 4K profile, a 1080p release will never win release selection over a qualifying 2160p release (such as a 2160p Tier 3 x265 reference encode at score $\ge 1000$). The *Bourne Supremacy* resolution arbitration (documented in Section 4) exemplifies this behavior.
+
+---
+
+## 3. Live Profile & Custom Format Configuration Reference
 
 * **Target Profile:** `Movies 2160p AV1 HQ` (ID `64`) | **Cutoff Format Score:** `6000` | **Upgrades:** Enabled
 
@@ -33,7 +41,7 @@ Op 950A completes the live deployment of the **Hybrid AV1→x265 Release-Selecti
 
 ---
 
-## 3. Live Interactive Search Validation Results
+## 4. Live Interactive Search Validation Results
 
 Live interactive release searches across the Radarr4k library confirmed exact adherence to the hybrid decision hierarchy:
 
@@ -57,7 +65,7 @@ Live interactive release searches across the Radarr4k library confirmed exact ad
 
 ---
 
-## 4. Governance & Safety Confirmation
+## 5. Governance & Safety Confirmation
 
 * Live changes are strictly constrained to Radarr4k/Profilarr Custom Format score weights and Profile 64 matching rules.
 * Zero indexers, download clients, storage directories, symlinks, or media files were touched.

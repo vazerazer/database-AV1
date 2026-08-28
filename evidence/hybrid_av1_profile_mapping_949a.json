@@ -4,6 +4,8 @@
     "operation": "OP 949A",
     "rule_name": "Hybrid AV1→x265 Release-Selection Rule",
     "date": "2026-08-28",
+    "profile_scope": "2160p-only (Movies 2160p AV1 HQ, ID 64)",
+    "resolution_precedence": "In the 2160p profile, Radarr prefers 2160p over 1080p qualities. 1080p releases are out of scope for primary release arbitration and cannot win over qualifying 2160p releases.",
     "purpose": "Final release-selection architecture combining candidate AV1 priority, guarded review AV1 fallback, high-quality x265 fallback, and unmeasured AV1 quarantine"
   },
   "tier_definitions": {

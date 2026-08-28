@@ -1039,3 +1039,12 @@ All 6 development phases from architecture extraction through E2E live synchroni
 3. **Operational Confirmation:**
    * Live changes are strictly constrained to Radarr4k/Profilarr Custom Format scoring rules and Profile 64 matching weights.
    * Zero media files, download clients, indexers, or running storage containers were modified.
+
+---
+
+## 45. Clarification of 2160p-Only Scope and 1080p Behavior (Op 950C)
+
+1. **Resolution Hierarchy & Scope Clarification:**
+   * Updated [`evidence/hybrid_av1_profile_rule_949a.md`](evidence/hybrid_av1_profile_rule_949a.md), [`evidence/hybrid_av1_profile_apply_950a_report.md`](evidence/hybrid_av1_profile_apply_950a_report.md), and associated JSON datasets to explicitly codify that the hybrid AV1→x265 rule applies exclusively to the 4K profile (`Movies 2160p AV1 HQ`, ID `64`).
+   * Codified that in the 2160p profile, Radarr enforces resolution precedence over Custom Format scores: a 1080p release (even matching AV1 Custom Formats) will not win release selection when a qualifying 2160p release exists.
+   * Zero live configuration changes were made.

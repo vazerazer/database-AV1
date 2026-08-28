@@ -32,7 +32,16 @@ graph TD
 
 ---
 
-## 2. 4-Tier Release-Selection Hierarchy
+## 2. Profile Scope & Resolution Hierarchy
+
+* **Profile-Specific Scope:** The hybrid AV1→x265 release-selection rule is strictly defined and evaluated for the 2160p UHD quality profile (`Movies 2160p AV1 HQ`, ID `64`).
+* **1080p Releases Out of Primary Scope:** 1080p releases are out of scope for this rule's primary release arbitration.
+* **Radarr Resolution Precedence:** In the `Movies 2160p AV1 HQ` profile, Radarr enforces quality resolution rankings ahead of Custom Format scoring. Any qualifying 2160p release (such as a 2160p Tier 3 x265 reference encode at score $\ge 1000$) will automatically win over a 1080p release, regardless of whether the 1080p release matches AV1 Custom Formats.
+* **Fallback Precedence:** A 1080p release may only be considered as a last-resort fallback when zero qualifying 2160p releases exist in the indexer pool for that title.
+
+---
+
+## 3. 4-Tier Release-Selection Hierarchy
 
 ### Tier 1: Preferred AV1 (Candidate Groups)
 * **Eligible Groups:** `ChopperHitler`, `CoSMiCSuRFeR`
@@ -62,7 +71,7 @@ graph TD
 
 ---
 
-## 3. Concrete Numeric Thresholds & Ledger Justification
+## 4. Concrete Numeric Thresholds & Ledger Justification
 
 The Tier 2 guardrails are derived directly from the empirical metric distributions in `evidence/verdicts.csv` ($N=32$ rows):
 
@@ -77,7 +86,7 @@ The Tier 2 guardrails are derived directly from the empirical metric distributio
 
 ---
 
-## 4. Mapping to Radarr / Profilarr Objects
+## 5. Mapping to Radarr / Profilarr Objects
 
 | Tier Level | Target Quality Profile | Associated Custom Formats (CF ID & Name) | Target Score |
 | :--- | :--- | :--- | :---: |
@@ -89,7 +98,7 @@ The Tier 2 guardrails are derived directly from the empirical metric distributio
 
 ---
 
-## 5. Scenario Walkthroughs
+## 6. Scenario Walkthroughs
 
 1. **Scenario A (Both Candidate AV1 and x265 available):**
    * *Incoming:* `X-Men (2000)` ChopperHitler AV1 vs Hallowed x265.
@@ -112,6 +121,6 @@ The Tier 2 guardrails are derived directly from the empirical metric distributio
 
 ---
 
-## 6. Governance Statement
+## 7. Governance Statement
 
 * Zero active operational configurations, Custom Formats, profile scores, tier assignments, release restrictions, download rules, media files, or running containers were modified. All thresholds remain non-enforcing DRAFT.

@@ -5,6 +5,8 @@
     "date": "2026-08-28",
     "target_system": "Radarr4k (Host Port 7879) / Profilarr (Host Port 5656)",
     "scope": "Live profile and custom format verification and scoring arbitration in Radarr4k",
+    "profile_scope": "2160p-only",
+    "resolution_behavior": "1080p releases only win when no qualifying 2160p release exists for the title",
     "status": "LIVE_VERIFIED"
   },
   "live_profile_configuration": {
