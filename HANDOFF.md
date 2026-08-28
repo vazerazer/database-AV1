@@ -738,6 +738,38 @@ All 6 development phases from architecture extraction through E2E live synchroni
 4. **Queued Operations:**
    * **Op 938 — AV1 Calibration Study:** Empirical study on active library scoring margins, bitrate bounds, and quality profile tier alignment.
 
+---
+
+## 32. AV1 Fidelity Calibration Study (Op 938)
+
+1. **Tooling & Environment:**
+   * **Engine:** `FFmpeg 9.0.1` statically linked with `libvmaf`, `libdav1d`, and `libzimg`.
+   * **VMAF Models:** Netflix `vmaf_4k_v0.6.1.json` and `vmaf_v0.6.1.json`.
+   * **Tooling Gap:** `ssimulacra2` missing on host / deferred to future operations; measured via libvmaf integrated `float_ssim` and `psnr_y` in single-pass alignment.
+
+2. **Calibrated Anchor Pairs (Identical 4K UHD BluRay Transfer Masters):**
+   * `John Wick: Chapter 4 (2023)`: `CoSMiCSuRFeR` (Quality Tier 1) vs `hallowed` (x265 HDR/DV).
+   * `Interstellar (2014)`: `RandH` (Compact Tier) vs `hallowed` (x265 HDR/DV).
+   * `The Shawshank Redemption (1994)`: `Smokindevil` (Quality Tier 2) vs `hallowed` (x265 HDR/DV).
+   * `Fury (2014)`: `Smokindevil` (Quality Tier 2) vs `BHDStudio` (x265 HDR/DV).
+
+3. **Empirical Findings:**
+   * **Tier 1 Transparency:** `CoSMiCSuRFeR` achieved Mean VMAF of **`97.06`**, PSNR **`48.43 dB`**, SSIM **`0.9980`** at 15.02 Mbps ($0.1014\text{ bpp}$).
+   * **Compact Tier Efficiency:** `RandH` achieved Mean VMAF of **`95.61`**, PSNR **`47.27 dB`**, SSIM **`0.9968`** at 14.05 Mbps ($0.0707\text{ bpp}$).
+   * **Catalog Compression Frontier:** `Smokindevil` achieved Mean VMAF of **`93.78`** at 5.07 Mbps ($0.0265\text{ bpp}$), delivering an efficiency ratio of **`18.50 VMAF/Mbps`**.
+   * **35mm Grain Stress Vector:** *Fury* dark scenes demonstrated VMAF of `66.77` due to heavy 35mm grain compression, rising to `80.77` in bright scenes.
+
+4. **Data-Driven Promotion Thresholds (DRAFT):**
+   * **`AV1 Quality Tier 1`:** Mean VMAF $\ge 95.0$, PSNR $\ge 45.0\text{ dB}$, Bitrate $\ge 14.0\text{ Mbps}$ on $\ge 2$ sampled titles.
+   * **`AV1 Quality Tier 2`:** Mean VMAF $\ge 85.0$ ($\ge 75.0$ on heavy 35mm grain), PSNR $\ge 40.0\text{ dB}$, Bitrate $8.0 - 15.0\text{ Mbps}$.
+   * **`AV1 Compact Tier`:** Mean VMAF $\ge 90.0$, PSNR $\ge 44.0\text{ dB}$, Efficiency $\ge 6.5\text{ VMAF/Mbps}$.
+   * **`AV1 Storage Savers`:** Mean VMAF $< 75.0$, PSNR $< 38.0\text{ dB}$.
+
+5. **Queued Operations for Op 939+:**
+   * Extend verdict ledger schema (`evidence/verdicts.csv`) with measured fidelity fields (`vmaf_mean`, `psnr_mean`, `vmaf_per_mbps`).
+   * Wire calibration thresholds into automated explorer promotion gates.
+
+
 
 
 
