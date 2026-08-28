@@ -930,3 +930,26 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, `evidence/verdicts.csv` records, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 39. Evidence-Led Verdict Ledger Consolidation (Op 945A)
+
+1. **Schema Extension (`evidence_basis`):**
+   * Extended `evidence/verdicts.csv` schema to 25 columns by adding `evidence_basis`.
+   * Standardized allowed values: `same-master-reference`, `hallowed-relative`, `insufficient-parity`, `none`.
+   * Programmatically validated via `scripts/validate_verdict_ledger_945a.py`.
+
+2. **Ledger Breakdown & Invariants ($n=30$ Rows):**
+   * **`same-master-reference` ($n=12$):** Credible multi-title candidate/reference evidence. `title_count` strictly populated and consistent across each group:
+     - `ChopperHitler`: 3 titles (*X-Men*, *DOFP*, *Apocalypse*), `candidate`
+     - `CoSMiCSuRFeR`: 2 titles (*JW3*, *JW4*), `candidate`
+     - `RandH`: 3 titles (*John Wick 1*, *Interstellar*, *Gladiator*), `review`
+     - `Smokindevil`: 2 titles (*Fury*, *The Shawshank Redemption*), `review`
+     - `Rob74K`: 2 titles (*John Wick 1*, *John Wick 2*), `review`
+   * **`hallowed-relative` ($n=5$):** Descriptive Hallowed→AV1-only observations from Op 944A (*Dark Phoenix*, *Bourne Ultimatum RandH*, *The Sixth Sense*, *Bourne Ultimatum Bi0hazard*, *John Wick 2 Waldek*). `title_count` left strictly blank; non-promoting.
+   * **`insufficient-parity` ($n=1$):** *LOTR: Fellowship of the Ring* (CoSMiCSuRFeR) transfer color grading mismatch. `title_count` blank, `confidence_state=insufficient-parity`.
+   * **`none` ($n=12$):** Historical audit, shadow probe, unmeasured, pending, exception, and void entries. `title_count` blank, metrics blank, `confidence_state=unmeasured`.
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. Hallowed remains a practical quality baseline, not an AV1 release group. All thresholds remain non-enforcing DRAFT.

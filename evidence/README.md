@@ -29,8 +29,9 @@ This directory stores empirical fidelity measurements, release verdicts, and cal
 | `bpp` | Float | Bits per pixel ($\frac{\text{bitrate}}{\text{width} \times \text{height} \times \text{fps}}$). |
 | `reference_master` | String | Reference encode/edition used for parity testing (e.g. `hallowed 2160p x265 HDR/DV`). |
 | `scene_count` | Integer | Number of measured scenes contributing to metrics for this title. |
-| `title_count` | Integer | Number of distinct titles measured for this release group. |
+| `title_count` | Integer | Number of distinct same-master-reference titles measured for this release group. |
 | `confidence_state` | String | Evidence confidence classification (see definitions below). |
+| `evidence_basis` | String | Basis of empirical evidence (`same-master-reference`, `hallowed-relative`, `insufficient-parity`, `none`). |
 | `measurement_date` | ISO 8601 Date | Date of most recent empirical calibration measurement. |
 | `evidence_doc` | String | Path to associated calibration report document. |
 | `notes` | String | Operational and content-specific notes (e.g. grain/dark stress observations). |
@@ -50,7 +51,16 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 
 ---
 
-## 3. Calibration Reports & Datasets
+## 3. Evidence Basis Definitions
+
+* **`same-master-reference`**: A credible candidate/reference pairing with confirmed same title, edition/cut, source/master parity, runtime, resolution, frame rate, aspect ratio, HDR/DV metadata behavior, and spatial/temporal alignment. Directly supports group-level `title_count` increments and group confidence-state evaluation.
+* **`hallowed-relative`**: A credible Hallowed→AV1 comparison with confirmed parity between Hallowed and AV1, but where no higher-quality reference was available in the selected pair. Provides descriptive evidence regarding incremental loss relative to the user's accepted practical Hallowed baseline. Does not count toward same-master `title_count` and does not independently promote group confidence state.
+* **`insufficient-parity`**: A measurement was attempted or recorded, but transfer remastering, color grading, HDR/DV curves, theatrical cut, or runtime divergence rendered the comparison technically invalid. Preserved for auditability with blank `title_count` and `confidence_state=insufficient-parity`.
+* **`none`**: No usable empirical calibration evidence exists (historical audit rows, shadow probes, unmeasured entries, pending, or exception rows). Populated with blank measurement metrics, blank `title_count`, and `confidence_state=unmeasured`.
+
+---
+
+## 4. Calibration Reports & Datasets
 
 * **Op 938 Baseline Study:**
   * Report: [`av1_calibration_report.md`](av1_calibration_report.md)
@@ -77,10 +87,15 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Pre-Registered Manifest: [`av1_expanded_three_way_manifest_944a.json`](av1_expanded_three_way_manifest_944a.json)
   * Campaign Report: [`av1_expanded_three_way_campaign_report_944a.md`](av1_expanded_three_way_campaign_report_944a.md)
   * Raw Metrics: [`av1_expanded_three_way_campaign_raw_944a.json`](av1_expanded_three_way_campaign_raw_944a.json)
+* **Op 945A Evidence-Led Verdict Ledger Consolidation:**
+  * Consolidated Ledger: [`verdicts.csv`](verdicts.csv)
+  * Consolidation Report: [`verdict_ledger_consolidation_945a_report.md`](verdict_ledger_consolidation_945a_report.md)
+  * Raw Metrics: [`verdict_ledger_consolidation_945a_raw.json`](verdict_ledger_consolidation_945a_raw.json)
+  * Validator: [`../scripts/validate_verdict_ledger_945a.py`](../scripts/validate_verdict_ledger_945a.py)
 
 ---
 
-## 4. Governance & Human-in-the-Loop Principles
+## 5. Governance & Human-in-the-Loop Principles
 
 1. **Evidence-Only:** Metrics and confidence states provide structured data to guide future manual decisions. They do not alter active Custom Formats, profile scores, or tier membership automatically.
 2. **Fidelity-First:** Promotion evaluations require repeated same-master multi-title fidelity (minimum scene floor and mean VMAF) before any tier changes are considered.
