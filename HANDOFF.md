@@ -689,6 +689,36 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * External vetting widens **ONLY** the fallback bands (`WEB-DL Tier 2`, `Legacy Trusted x264`, `2160p Quality/Balanced Tiers`).
    * AV1 tier membership remains strictly **evidence-earned** via explorer auditing and verified test verdicts.
 
+---
+
+## 30. Hygiene Edge Cases: Hardsub Trap + FLAC Lossless + Boutique Labels (Op 936)
+
+1. **Hardcoded Foreign Subtitles Rejection (`-10,000 pts`):**
+   * **Problem:** Early digital leaks and VOD screeners with hardcoded foreign subtitles (`KORSUB`, `HC`, `HARDSUB`, `SUBBED`) previously scored $+4200$ and cleared the $+1000$ cutoff.
+   * **Solution:** Created Custom Format `Hardcoded Subtitles` (`-10,000 pts`) with regex `(?i)\b(KORSUB|HARDSUB(BED)?|HC|HDCAM[ ._-]?SUBBED|SUBBED(?=[\W_]+(?:1080p|2160p|720p|WEB|BluRay)))\b`. Word-boundary anchored to prevent false positives on titles (e.g. *Catch Me If You Can*, *Hitchcock*).
+   * **Proof:** `Gladiator.II.2024.2160p.KORSUB.HDR.AV1-Group` drops from $+4200$ to $-5800$ (hard-rejected).
+
+2. **FLAC Audio Completeness (`+100 pts`):**
+   * **Condition Addition:** Added `\b(FLAC)\b` to the `Lossless Audio` custom format condition list.
+   * **Proof:** Archival/boutique 24-bit lossless FLAC releases (`Akira.1988.1080p.BluRay.FLAC.x264-CtrlHD`) earn the $+100$ lossless audio bonus.
+
+3. **Boutique Restoration Labels (`+50 pts`):**
+   * **Custom Format:** Created `Boutique Label` (`+50 pts`) targeting `\b(Criterion([ ._-]?Collection)?|Arrow[ ._-]?Video|Kino[ ._-]?Lorber|Shout[ ._-]?Factory|Masters[ ._-]?of[ ._-]?Cinema)\b`.
+   * **Mandatory Pairs Anchor:** Uses mandatory pair tokens (`Arrow Video`, `Kino Lorber`, `Shout Factory`, `Masters of Cinema`) to guarantee zero false positives on common movie titles (e.g. *Broken Arrow*, *Shout at the Devil*).
+   * **Proof:** `Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-Waldek` earns $+50$ bonus ($5250$ total score).
+
+4. **Mathematical Boundary Stack Proof:**
+   * **Worst-case Stack on Fallback Tier:**
+     $\text{Tier 2 Base } (2750) + \text{Remaster } (25) + \text{Boutique } (50) = 2825$.
+     $\text{Tier 1 Base } (2850) > 2825$ (Gap preserved: $25\text{ pts}$ margin).
+   * Even when a Tier 2 release stacks every micro-bonus, Tier 1 is guaranteed to win under identical audio conditions.
+   * **Standing Architectural Rule:** Boundary margin is now 25 points. Any future micro-bonus Custom Format triggers a mandatory mathematical boundary re-proof before adoption.
+
+5. **Design Rule Restated:**
+   * Changes apply strictly to Profile 64 (`Movies 2160p AV1 HQ`) and Profile 67 (`Movies SHADOW Explorer`).
+   * Sonarr / Sonarr4k profiles remain 100% untouched.
+
+
 
 
 

@@ -50,7 +50,13 @@ REGEX_PATTERNS = {
     "Audio Description": r"(?i)\b(DVS|Audio[ ._-]?Description|Descriptive[ ._-]?Audio|Descriptive[ ._-]?Video[ ._-]?Service|ASL|BASL|BSL)\b",
 
     # 13. Line Audio Reject (Op 935: Hygiene Line Audio & ProRes in CAM)
-    "Line Audio": r"(?i)\b(LINE[ ._-]?Audio|HQ[ ._-]?LINE|LINE(?=[\W_]+(?:AC3|DDP|AAC|5\.1|2\.0))|ProRes|PRORES)\b"
+    "Line Audio": r"(?i)\b(LINE[ ._-]?Audio|HQ[ ._-]?LINE|LINE(?=[\W_]+(?:AC3|DDP|AAC|5\.1|2\.0))|ProRes|PRORES)\b",
+
+    # 14. Hardcoded Subtitles (Op 936: Burned-in subtitle reject)
+    "Hardcoded Subtitles": r"(?i)\b(KORSUB|HARDSUB(BED)?|HC|HDCAM[ ._-]?SUBBED|SUBBED(?=[\W_]+(?:1080p|2160p|720p|WEB|BluRay)))\b",
+
+    # 15. Boutique Label (Op 936: Criterion, Arrow, Kino, Shout, Masters of Cinema)
+    "Boutique Label": r"\b(Criterion([ ._-]?Collection)?|Arrow[ ._-]?Video|Kino[ ._-]?Lorber|Shout[ ._-]?Factory|Masters[ ._-]?of[ ._-]?Cinema)\b"
 }
 
 TEST_CASES = {
@@ -352,6 +358,38 @@ TEST_CASES = {
             "The.Thin.Red.Line.1998.2160p.HDR.AV1-dAV1nci",
             "Line.of.Duty.S01E01.1080p.AV1-Group",
             "Movie.Title.2024.2160p.AV1.TrueHD.Atmos-Waldek"
+        ]
+    },
+    "Hardcoded Subtitles": {
+        "positive": [
+            "Gladiator.II.2024.2160p.KORSUB.HDR.AV1-Group",
+            "Movie.Title.2024.1080p.HC.HDR.AV1-Group",
+            "Movie.Title.2024.1080p.HARDSUB.AV1-Group",
+            "Movie.Title.2024.1080p.HARDSUBBED.AV1-Group",
+            "Movie.Title.2024.SUBBED.1080p.AV1-Group",
+            "Movie.Title.2024.1080p.HDCAM.SUBBED.x264-Group"
+        ],
+        "adversarial_negatives": [
+            "Catch.Me.If.You.Can.2002.1080p.BluRay.x264-CtrlHD",
+            "Hitchcock.2012.1080p.BluRay.x264-Group",
+            "The.Sub.2017.1080p.BluRay.x265-Group",
+            "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH"
+        ]
+    },
+    "Boutique Label": {
+        "positive": [
+            "Seven.Samurai.1954.2160p.Criterion.Collection.AV1-Group",
+            "Stalker.1979.1080p.Criterion.AV1-PRL",
+            "RoboCop.1987.2160p.Arrow.Video.HDR.AV1-Group",
+            "Nosferatu.1922.1080p.Masters.of.Cinema.AV1-Group",
+            "The.Good.the.Bad.and.the.Ugly.1966.2160p.Kino.Lorber.HDR.AV1-Group",
+            "The.Thing.1982.2160p.Shout.Factory.HDR.AV1-Group"
+        ],
+        "adversarial_negatives": [
+            "Broken.Arrow.1996.1080p.BluRay.x264-CtrlHD",
+            "Shout.At.The.Devil.1976.1080p.BluRay.x264-Group",
+            "A.Shot.in.the.Dark.1964.1080p.BluRay.x264-Group",
+            "John.Wick.Chapter.4.2023.2160p.AV1-Rob74K"
         ]
     }
 }

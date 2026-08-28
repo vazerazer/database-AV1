@@ -1371,6 +1371,36 @@ def run_simulation_battery():
             "expect_pass": True,
             "min_band": 1500,
             "max_band": 1750
+        },
+        {
+            "category": "Op 936: Hardcoded Subtitles Reject (KORSUB -10000 Trap Eliminated)",
+            "title": "Gladiator.II.2024.2160p.KORSUB.HDR.AV1-Group",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 14.5,
+            "expect_pass": False,
+            "min_band": -10000,
+            "max_band": -5000
+        },
+        {
+            "category": "Op 936: FLAC Lossless Audio Bonus (+100 pts on 1080p Archival)",
+            "title": "Akira.1988.1080p.BluRay.FLAC.x264-CtrlHD",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 12.1,
+            "expect_pass": True,
+            "min_band": 1200,
+            "max_band": 1300
+        },
+        {
+            "category": "Op 936: Boutique Label Criterion Bonus (+50 pts on 4K Master)",
+            "title": "Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-Waldek",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 19.5,
+            "expect_pass": True,
+            "min_band": 5200,
+            "max_band": 5300
         }
     ]
     
