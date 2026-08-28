@@ -1034,7 +1034,7 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 2. **Live Arbitration Validation:**
    * Validated live release searches across production movies (*X-Men*, *The Bourne Supremacy*, *Gladiator*, *Fury*).
-   * Confirmed that Tier 1 candidate AV1 (`ChopperHitler`, `CoSMiCSuRFeR`) achieves top priority ($4900–5450$ score), Tier 2 review AV1 (`RandH`, `Smokindevil`) scores secondarily ($4000–4500$), and sub-threshold/lean releases are automatically penalized ($-3400$) to yield to reference x265 fallbacks.
+   * Confirmed that Tier 1 candidate AV1 (`ChopperHitler`, `CoSMiCSuRFeR`) achieves top priority ($4900–5450$ score), Tier 2 review AV1 (`RandH`, `Smokindevil`) scores secondarily ($4000–4500$), and in the absence of an unpenalized 2160p AV1 candidate, the 4K profile falls back seamlessly to Tier 3 reference x265 (*The Bourne Supremacy* MainFrame / BYNDR at score $2200$), properly rejecting 1080p AV1 releases.
 
 3. **Operational Confirmation:**
    * Live changes are strictly constrained to Radarr4k/Profilarr Custom Format scoring rules and Profile 64 matching weights.

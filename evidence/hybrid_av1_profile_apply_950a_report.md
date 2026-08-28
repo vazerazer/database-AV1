@@ -42,9 +42,10 @@ Live interactive release searches across the Radarr4k library confirmed exact ad
    * *Score:* **`4900`** (`10-bit Depth`, `AV1`, `AV1 Quality Encoders`, `Dolby Digital`)
    * *Arbitration:* **Tier 1 Candidate AV1 wins release selection automatically.**
 2. **`The Bourne Supremacy (2004)` (Movie ID 915):**
-   * *Top Match:* `The.Bourne.Supremacy.2004.1080p.Bluray.OPUS.5.1.AV1-WhiskeyJack`
-   * *Score:* **`4250`** (`AV1`, `AV1 Compact Encoders`, `Opus 5.1 / 7.1`)
-   * *Arbitration:* **Tier 2 Review AV1 scores above standard fallbacks.**
+   * *Winning 2160p Release:* `The.Bourne.Supremacy.2004.2160p.BluRay.DTS-X.7.1.DV.HDR10.x265-MainFrame` (or `BYNDR` WEB-DL)
+   * *Score:* **`2200`** (`10-bit Depth`, `2160p Quality Tier 2`, `Dolby Vision`, `DTS-X`, `HDR`, `Not AV1`)
+   * *Resolution & Tier Context:* In the 4K profile (`Movies 2160p AV1 HQ`), 1080p releases (such as 1080p WhiskeyJack AV1) are rejected by resolution hierarchy.
+   * *Arbitration:* **Tier 3 x265 Reference Fallback successfully wins release selection (Score 2200) when no 2160p AV1 candidate is present.**
 3. **`Gladiator (2000)` (Movie ID 700):**
    * *Top Match:* `Gladiator.2000.Bluray.2160p.AV1.HDR10.OPUS.7.1-UH`
    * *Score:* **`5450`** (`10-bit Depth`, `AV1`, `AV1 Quality Encoders`, `HDR`, `Opus 5.1 / 7.1`)

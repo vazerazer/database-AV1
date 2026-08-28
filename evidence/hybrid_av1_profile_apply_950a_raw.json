@@ -66,11 +66,12 @@
     {
       "movie_title": "The Bourne Supremacy (2004)",
       "movie_id": 915,
-      "top_release": "The.Bourne.Supremacy.2004.1080p.Bluray.OPUS.5.1.AV1-WhiskeyJack",
-      "top_release_score": 4250,
-      "matched_custom_formats": ["AV1", "AV1 Compact Encoders", "Opus 5.1 / 7.1"],
-      "tier_evaluated": "Tier 2",
-      "arbitration_outcome": "Tier 2 Review AV1 successfully scores above fallback ladder."
+      "winning_2160p_release": "The.Bourne.Supremacy.2004.2160p.BluRay.DTS-X.7.1.DV.HDR10.x265-MainFrame",
+      "winning_release_score": 2200,
+      "matched_custom_formats": ["10-bit Depth", "2160p Quality Tier 2", "Dolby Vision", "DTS-X", "HDR", "Not AV1"],
+      "tier_evaluated": "Tier 3 (x265 Reference Fallback)",
+      "note_on_1080p_av1": "1080p AV1 releases (e.g. WhiskeyJack at score 4250) are rejected due to resolution requirements in the Movies 2160p AV1 HQ profile (ID 64).",
+      "arbitration_outcome": "In the absence of an available 2160p AV1 candidate, the 2160p x265 reference fallback (MainFrame / BYNDR) cleanly wins release selection (Score 2200)."
     },
     {
       "movie_title": "Gladiator (2000)",
