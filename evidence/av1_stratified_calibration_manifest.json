@@ -1,0 +1,189 @@
+{
+  "campaign": "OP 942: AV1 Multi-Group Stratified Calibration Campaign",
+  "date": "2026-08-28",
+  "objective": "Build a broader, reproducible same-master AV1 evidence corpus across CoSMiCSuRFeR, RandH, and ChopperHitler to reach 3 credible measured titles per target group.",
+  "guardrails": "Evidence-only. No modifications to active tiers, profile scores, Custom Formats, release restrictions, or live automation.",
+  "target_groups": ["CoSMiCSuRFeR", "RandH", "ChopperHitler"],
+  "planned_titles": [
+    {
+      "group": "CoSMiCSuRFeR",
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": 2001,
+      "edition": "Extended Cut UHD BluRay",
+      "candidate_release": "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.UHD.BluRay.2160p.TrueHD.Atmos.7.1.DV.HDR.AV1-CoSMiCSuRFeR",
+      "reference_release": "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.UHD.BluRay.2160p.DDP.Atmos.5.1.DV.HDR.x265-hallowed",
+      "candidate_resolution": "3840x1608",
+      "reference_resolution": "3840x1608",
+      "runtime_minutes": 228.2,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "aspect_ratio": "2.39:1",
+      "hdr_format": "Dolby Vision / HDR10 PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Exact same-master 2160p Extended Cut UHD BluRay remaster; matching pixel dimensions and HDR transfers.",
+      "alignment_method": "Temporal PSNR probe with bicubic scaling to 3840x1608",
+      "alignment_offset_ms": 0,
+      "pre_measurement_status": "ACCEPTED_FOR_MEASUREMENT",
+      "planned_scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "01:47:30",
+          "duration_sec": 10,
+          "rationale": "Mines of Moria tomb entry with low-key torchlight shadows and dark stone textures.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High Motion Action",
+          "start_timestamp": "01:54:10",
+          "duration_sec": 10,
+          "rationale": "Bridge of Khazad-dûm Balrog fight with rapid camera movement, flames, and crumbling stone.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Texture & 35mm Grain",
+          "start_timestamp": "00:18:20",
+          "duration_sec": 10,
+          "rationale": "Hobbiton Shire party with lush greenery, fabric weave on Gandalf robes, and organic film grain.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Nazgûl Water & Fog Stress (Optional)",
+          "category": "High-Risk Water / Fog / Dark Gradient Stress",
+          "start_timestamp": "01:05:40",
+          "duration_sec": 10,
+          "rationale": "Flight to the Ford night river confrontation with fast water splashes, atmospheric fog, and deep dark gradients.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "group": "RandH",
+      "title": "John Wick",
+      "year": 2014,
+      "edition": "Theatrical UHD BluRay",
+      "candidate_release": "John.Wick.2014-2160p.BluRay.DV.HDR.10.bit.Encode.AV1.DTS.5.1-R&H.mkv",
+      "reference_release": "John.Wick.2014.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed",
+      "candidate_resolution": "3840x2160 (16:9 letterbox encoded)",
+      "reference_resolution": "3838x1600 (active crop)",
+      "runtime_minutes": 101.2,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "aspect_ratio": "2.40:1",
+      "hdr_format": "Dolby Vision / HDR10 PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Same 2160p Theatrical UHD BluRay master; AV1 retains black letterbox canvas which is normalized via crop=3840:1600:0:280.",
+      "alignment_method": "Temporal PSNR probe with letterbox crop normalization and bicubic scaling to 3840x1600",
+      "alignment_offset_ms": 0,
+      "pre_measurement_status": "ACCEPTED_FOR_MEASUREMENT",
+      "planned_scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:14:30",
+          "duration_sec": 10,
+          "rationale": "Home break-in sequence in dark hallway with dynamic flashlight beams and deep black shadows.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High Motion Action",
+          "start_timestamp": "00:52:40",
+          "duration_sec": 10,
+          "rationale": "Red Circle nightclub bathhouse gun-fu shootout with rapid camera pans, strobe lighting, and physical combat.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Clean Modern Digital & Texture",
+          "start_timestamp": "00:36:20",
+          "duration_sec": 10,
+          "rationale": "Continental hotel lobby gold coin exchange with fine fabric textures and crisp architectural lines.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Red Circle Neon Gradient & Haze (Optional)",
+          "category": "High-Risk Neon Gradient & Smoke / Haze Stress",
+          "start_timestamp": "00:54:30",
+          "duration_sec": 10,
+          "rationale": "Main dancefloor with heavy atmospheric nightclub smoke, saturated red/blue neon lighting, and smooth color gradients.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "group": "ChopperHitler",
+      "title": "X-Men: Apocalypse",
+      "year": 2016,
+      "edition": "Theatrical UHD BluRay",
+      "candidate_release": "X-Men Apocalypse-2016-UHD BluRay AV1 10bit HDR10 AC3 5.1 AV1-ChopperHitler",
+      "reference_release": "X-Men.Apocalypse.2016.UHD.BluRay.2160p.DDP.7.1.HDR.x265-hallowed",
+      "candidate_resolution": "3840x1600",
+      "reference_resolution": "3840x1600",
+      "runtime_minutes": 144.0,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "aspect_ratio": "2.40:1",
+      "hdr_format": "HDR10 PQ (BT.2020 smpte2084)",
+      "parity_assessment": "Exact same-master 2160p UHD BluRay release with identical 3840x1600 dimensions and 0.00s duration parity.",
+      "alignment_method": "Temporal PSNR probe with bicubic scaling to 3840x1600",
+      "alignment_offset_ms": 0,
+      "pre_measurement_status": "ACCEPTED_FOR_MEASUREMENT",
+      "planned_scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:19:10",
+          "duration_sec": 10,
+          "rationale": "Cairo underground vault tomb awakening with subtle shadow gradations and ancient stone carvings.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Extreme Motion & Particle Dynamics",
+          "start_timestamp": "01:14:40",
+          "duration_sec": 10,
+          "rationale": "Quicksilver mansion explosion rescue with fast multi-object trajectory tracking and high particle velocity.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Modern Digital 6K Fine Detail",
+          "start_timestamp": "00:31:00",
+          "duration_sec": 10,
+          "rationale": "Xavier mansion garden lawn with complex tree foliage, 1980s period clothing texture, and clear skin tones.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Psychic Realm Particle & Glow Stress (Optional)",
+          "category": "High-Risk CGI Particle & Glowing Gradient Stress",
+          "start_timestamp": "02:04:10",
+          "duration_sec": 10,
+          "rationale": "Climactic astral battle with intense purple energy disintegration, floating debris, and high-frequency CGI glows.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    }
+  ]
+}

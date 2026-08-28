@@ -853,3 +853,25 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Group Aggregate:** **`Mean VMAF 93.43`** | **`Min Floor 90.02`** | **`Mean PSNR-Y 45.72 dB`** | **`Mean SSIM 0.9957`**.
    * **Confidence State:** Transitioned from `single-title` $\rightarrow$ **`candidate`**.
    * **Tier Status:** Preserved in existing operational configuration without score or profile modifications.
+
+---
+
+## 36. AV1 Multi-Group Stratified Calibration Campaign (Op 942)
+
+1. **Campaign Scope & Pre-Registration:**
+   * **Target Groups:** `CoSMiCSuRFeR`, `RandH`, `ChopperHitler`.
+   * **Pre-Registered Manifest:** `evidence/av1_stratified_calibration_manifest.json` across 3 candidate titles covering near-black shadow detail, high-motion action, 35mm grain/dust, modern 6K digital, and high-risk stress scenes.
+
+2. **Empirical Findings by Group:**
+   * **`ChopperHitler` ($n=3$ Titles, 11 Scenes — *X-Men 2000*, *Days of Future Past*, *Apocalypse*):**
+     * **Group Aggregate:** **`Mean VMAF 95.77`** | **`Median VMAF 96.93`** | **`Min Floor 91.10`** | **`Mean PSNR-Y 48.66 dB`** | **`Mean SSIM 0.9975`**.
+     * **Outcome:** High consistency across both 35mm catalog grain and modern 6K CGI particles. Retained as **`candidate`** ($n=3$).
+   * **`RandH` ($n=3$ Titles, 11 Scenes — *Interstellar*, *Gladiator*, *John Wick 1*):**
+     * **Group Aggregate:** **`Mean VMAF 91.34`** | **`Median VMAF 91.33`** | **`Min Floor 83.52`** | **`Mean PSNR-Y 42.72 dB`** | **`Mean SSIM 0.9948`**.
+     * **Outcome:** Classified as **`review`** ($n=3$): the John Wick (2014) required fine-texture core scene reached 83.52 VMAF at 8.66 Mbps / 0.0588 BPP with material spatial smoothing.
+   * **`CoSMiCSuRFeR` ($n=2$ Valid Titles, 7 Scenes — *JW4*, *JW3*):**
+     * *LOTR: Fellowship of the Ring* exhibited uniform 26–28 dB PSNR-Y indicative of transfer/color grading remaster divergence; rigorously classified as **`insufficient-parity`** and excluded from group promotion aggregates.
+     * **Group Aggregate:** **`Mean VMAF 94.94`** | **`Median VMAF 94.27`** | **`Min Floor 88.85`** | **`Mean PSNR-Y 45.09 dB`** | **`Mean SSIM 0.9969`**. Retained as **`candidate`** ($n=2$).
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.

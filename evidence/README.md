@@ -64,6 +64,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 941A Targeted Candidate Calibration (RandH Gladiator):**
   * Report: [`av1_calibration_randh_gladiator_report.md`](av1_calibration_randh_gladiator_report.md)
   * Raw Metrics: [`av1_calibration_randh_gladiator_raw.json`](av1_calibration_randh_gladiator_raw.json)
+* **Op 942 Multi-Group Stratified Calibration Campaign:**
+  * Pre-Registered Manifest: [`av1_stratified_calibration_manifest.json`](av1_stratified_calibration_manifest.json)
+  * Campaign Report: [`av1_stratified_calibration_campaign_report.md`](av1_stratified_calibration_campaign_report.md)
+  * Raw Metrics: [`av1_stratified_calibration_campaign_raw.json`](av1_stratified_calibration_campaign_raw.json)
 
 ---
 
