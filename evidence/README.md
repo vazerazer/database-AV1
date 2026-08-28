@@ -102,6 +102,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Summary Report: [`av1_targeted_expansion_report_947a.md`](av1_targeted_expansion_report_947a.md)
   * Raw Expansion Data: [`av1_targeted_expansion_raw_947a.json`](av1_targeted_expansion_raw_947a.json)
   * Validator: [`../scripts/plan_av1_targeted_expansion_947a.py`](../scripts/plan_av1_targeted_expansion_947a.py)
+* **Op 948A Targeted Expansion Measurements:**
+  * Campaign Report: [`av1_targeted_expansion_measurements_948a_report.md`](av1_targeted_expansion_measurements_948a_report.md)
+  * Raw Metrics: [`av1_targeted_expansion_measurements_948a_raw.json`](av1_targeted_expansion_measurements_948a_raw.json)
+  * Runner: [`../scripts/run_av1_targeted_expansion_measurements_948a.py`](../scripts/run_av1_targeted_expansion_measurements_948a.py)
 
 ---
 

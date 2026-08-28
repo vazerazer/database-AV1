@@ -988,3 +988,20 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 42. Targeted Expansion Measurements (Op 948A)
+
+1. **Measurement Scope & Results:**
+   * Executed targeted measurements planned in Op 947A, generating [`evidence/av1_targeted_expansion_measurements_948a_report.md`](evidence/av1_targeted_expansion_measurements_948a_report.md) and [`evidence/av1_targeted_expansion_measurements_948a_raw.json`](evidence/av1_targeted_expansion_measurements_948a_raw.json).
+   * **`RandH` (*The Bourne Supremacy 2004*):** Same-master 2160p UHD BluRay calibration against MainFrame x265 reference (from Op 943A baseline) $\rightarrow$ Mean VMAF **`95.31`** | Min **`93.85`** | PSNR-Y **`48.95 dB`** | SSIM **`0.9972`** ($8.63\text{ Mbps}$, $0.0586\text{ BPP}$).
+   * **`RandH` (*Blade Runner: The Final Cut 1982*):** Hallowed-relative 2160p measurement $\rightarrow$ Mean VMAF **`83.96`** | Min **`74.55`** | PSNR-Y **`39.62 dB`** | SSIM **`0.9817`** ($8.23\text{ Mbps}$, $0.0558\text{ BPP}$). Demonstrates heavy optical grain & smoke stress floor in Scene 2 ($74.55\text{ VMAF}$).
+   * Appended both measured rows to [`evidence/verdicts.csv`](evidence/verdicts.csv) ($n=32$ total rows).
+
+2. **Acquisition & Exhaustion Status for Transition Groups:**
+   * `Smokindevil` (*The Sixth Sense 1999*), `Bi0hazard` (*The Bourne Ultimatum 2007*), and `Waldek` (*John Wick 2 2017*): 1:1 UHD Remux master acquisition remains pending to establish ground-truth reference calibrations.
+   * `Rob74K`: Local library inventory exhausted ($n=2$ releases already evaluated in `verdicts.csv`).
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, release restrictions, or download rules were modified. Group confidence states and title counts remain unchanged. All thresholds remain non-enforcing DRAFT.

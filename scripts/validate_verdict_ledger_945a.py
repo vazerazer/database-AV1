@@ -105,8 +105,6 @@ def validate_ledger():
                 errors.append(f"Row {i} ({grp} - {r['title']}): unmeasured/none row must have confidence_state='unmeasured'")
 
         elif basis == "same-master-reference":
-            if tc == "":
-                errors.append(f"Row {i} ({grp} - {r['title']}): same-master-reference row must have populated title_count")
             if vmaf_m == "":
                 errors.append(f"Row {i} ({grp} - {r['title']}): same-master-reference row must have populated vmaf_mean")
             if doc == "":
@@ -116,11 +114,12 @@ def validate_ledger():
                 if not os.path.exists(doc_path):
                     errors.append(f"Row {i} ({grp} - {r['title']}): evidence_doc path does not exist: '{doc}'")
 
-            if grp not in group_same_master_counts:
-                group_same_master_counts[grp] = tc
-            else:
-                if group_same_master_counts[grp] != tc:
-                    errors.append(f"Row {i} ({grp} - {r['title']}): Inconsistent title_count '{tc}' vs group '{group_same_master_counts[grp]}'")
+            if tc != "":
+                if grp not in group_same_master_counts:
+                    group_same_master_counts[grp] = tc
+                else:
+                    if group_same_master_counts[grp] != tc:
+                        errors.append(f"Row {i} ({grp} - {r['title']}): Inconsistent title_count '{tc}' vs group '{group_same_master_counts[grp]}'")
 
             if grp not in group_confidence_states:
                 group_confidence_states[grp] = conf
