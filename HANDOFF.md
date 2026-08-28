@@ -718,6 +718,27 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * Changes apply strictly to Profile 64 (`Movies 2160p AV1 HQ`) and Profile 67 (`Movies SHADOW Explorer`).
    * Sonarr / Sonarr4k profiles remain 100% untouched.
 
+---
+
+## 31. Public Face Cleanup (Op 937)
+
+1. **Visibility Audit:**
+   * GitHub default branch confirmed as `v2`.
+   * Public README renders directly from `v2` on repository load.
+
+2. **README Redesign:**
+   * Replaced internal ops log, battery count badges, and marketing bullets with clean, human-written technical prose (55 lines).
+   * Credited upstream ([Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database)) with clear 2-sentence divergence rationale.
+   * Documented Profilarr import steps, repository directory layout, test harness commands, and MIT license.
+
+3. **Repository Metadata Action Items (User UI):**
+   * Description: `Custom format database and AV1-first quality profile for Radarr 4K, managed via Profilarr`
+   * Topics: `radarr`, `profilarr`, `custom-formats`, `av1`
+
+4. **Queued Operations:**
+   * **Op 938 — AV1 Calibration Study:** Empirical study on active library scoring margins, bitrate bounds, and quality profile tier alignment.
+
+
 
 
 
