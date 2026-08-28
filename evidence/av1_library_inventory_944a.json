@@ -1,0 +1,153 @@
+{
+  "inventory_metadata": {
+    "operation": "OP 944A",
+    "campaign_name": "AV1 Library Group Inventory and Expanded Hallowed-Relative Baseline Campaign",
+    "date": "2026-08-28",
+    "scope": "All locally available 2160p AV1 movie release groups across active library and calibration media",
+    "governance_notice": "Evidence-only discovery and measurement artifact. Zero modifications to active operational tiers, profile scores, Custom Formats, release restrictions, or evidence/verdicts.csv."
+  },
+  "summary_statistics": {
+    "total_unique_2160p_av1_groups_discovered": 8,
+    "total_unique_2160p_av1_titles_discovered": 28,
+    "groups_with_ledger_entries": 6,
+    "groups_unmeasured_in_ledger": 2,
+    "groups_with_eligible_calibration_chains": 5,
+    "total_eligible_calibration_titles": 6
+  },
+  "groups": [
+    {
+      "group_name": "ChopperHitler",
+      "titles_available_2160p": 4,
+      "titles_in_verdict_ledger": 3,
+      "current_ledger_confidence_state": "candidate",
+      "current_evidence_depth": "Committed ledger evidence: 3 titles / 11 scenes (mean VMAF 95.77, floor 91.10). Op 944A adds descriptive Hallowed→AV1-only observation on Dark Phoenix (4 scenes).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "eligible-hallowed-av1-only",
+      "available_titles_2160p": [
+        "X-Men (2000)",
+        "X-Men: Days of Future Past (2014)",
+        "X-Men: Apocalypse (2016)",
+        "X-Men: Dark Phoenix (2019)"
+      ],
+      "rationale": "High-fidelity AV1 group holding candidate status. X-Men: Dark Phoenix (2019) provides a clean same-master chain against Hallowed 2160p x265 (46.46 dB PSNR-Y baseline)."
+    },
+    {
+      "group_name": "CoSMiCSuRFeR",
+      "titles_available_2160p": 5,
+      "titles_in_verdict_ledger": 3,
+      "current_ledger_confidence_state": "candidate",
+      "current_evidence_depth": "Committed ledger evidence: 2 candidate titles / 7 scenes (mean VMAF 94.94, floor 88.85); 1 title excluded for transfer parity.",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "insufficient-parity",
+      "available_titles_2160p": [
+        "John Wick: Chapter 3 - Parabellum (2019)",
+        "John Wick: Chapter 4 (2023)",
+        "The Lord of the Rings: The Fellowship of the Ring (2001) Extended",
+        "The Lord of the Rings: The Two Towers (2002) Extended",
+        "The Lord of the Rings: The Return of the King (2003) Extended"
+      ],
+      "rationale": "All candidate titles (JW3, JW4) measured in Op 940B/942. Remaining LOTR Extended releases exhibit transfer color grading remaster divergence against standard references (~28 dB PSNR-Y)."
+    },
+    {
+      "group_name": "RandH",
+      "titles_available_2160p": 11,
+      "titles_in_verdict_ledger": 3,
+      "current_ledger_confidence_state": "review",
+      "current_evidence_depth": "Committed ledger evidence: 3 titles / 11 scenes (mean VMAF 91.34, floor 83.52 on John Wick core texture). Op 944A adds descriptive Hallowed→AV1-only observation on The Bourne Ultimatum (4 scenes).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": true,
+      "availability_status": "eligible-hallowed-av1-only",
+      "available_titles_2160p": [
+        "Blade Runner (1982) The Final Cut",
+        "F1 (2025)",
+        "Gladiator (2000) Extended",
+        "Interstellar (2014)",
+        "Jack Reacher (2012)",
+        "John Wick (2014)",
+        "John Wick: Chapter 3 - Parabellum (2019)",
+        "Predator: Badlands (2025)",
+        "The Bourne Supremacy (2004)",
+        "The Bourne Ultimatum (2007)",
+        "The Deer Hunter (1978)",
+        "The Wolverine (2013)"
+      ],
+      "rationale": "Classified as review after Op 942. The Bourne Ultimatum (2007) offers a 100% verified same-master chain against Hallowed 2160p x265 (48.05 dB PSNR-Y baseline)."
+    },
+    {
+      "group_name": "Smokindevil",
+      "titles_available_2160p": 4,
+      "titles_in_verdict_ledger": 2,
+      "current_ledger_confidence_state": "review",
+      "current_evidence_depth": "Committed ledger evidence: 2 measured titles / 6 scenes (Fury and The Shawshank Redemption). Op 944A adds descriptive Hallowed→AV1-only observations for The Shawshank Redemption and The Sixth Sense (8 scenes total).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "eligible-hallowed-av1-only",
+      "available_titles_2160p": [
+        "Fury (2014)",
+        "Jurassic Park (1993)",
+        "The Shawshank Redemption (1994)",
+        "The Sixth Sense (1999)"
+      ],
+      "rationale": "Smokindevil ledger evidence remains review, based on two prior measured titles and six scenes (Fury and The Shawshank Redemption). Op 944A adds descriptive Hallowed→AV1-only observations for The Shawshank Redemption and The Sixth Sense; these do not revise the committed ledger classification."
+    },
+    {
+      "group_name": "Bi0hazard",
+      "titles_available_2160p": 1,
+      "titles_in_verdict_ledger": 1,
+      "current_ledger_confidence_state": "unmeasured",
+      "current_evidence_depth": "Committed ledger evidence: 0 measured titles / 0 scenes. Op 944A adds descriptive Hallowed→AV1-only observation on The Bourne Ultimatum (4 scenes).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "eligible-hallowed-av1-only",
+      "available_titles_2160p": [
+        "Das Bourne Ultimatum (2007) [German DUBBED DL / English Video]"
+      ],
+      "rationale": "Discovered 2160p AV1 encode of The Bourne Ultimatum (2007) sharing English theatrical video stream with German dubbed secondary audio; verified same-master parity against Hallowed (38.05 dB PSNR-Y)."
+    },
+    {
+      "group_name": "Waldek",
+      "titles_available_2160p": 1,
+      "titles_in_verdict_ledger": 0,
+      "current_ledger_confidence_state": "unmeasured",
+      "current_evidence_depth": "Committed ledger evidence: 0 measured titles / 0 scenes (new discovery). Op 944A adds descriptive Hallowed→AV1-only observation on John Wick 2 (4 scenes).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "eligible-hallowed-av1-only",
+      "available_titles_2160p": [
+        "John Wick: Chapter 2 (2017) [PRL.Waldek]"
+      ],
+      "rationale": "Newly discovered unmeasured release group represented by John Wick: Chapter 2 (2017). Parity verified against Hallowed 2160p x265 at -41.7 ms (-1 frame) offset (42.98 dB PSNR-Y)."
+    },
+    {
+      "group_name": "Rob74K",
+      "titles_available_2160p": 2,
+      "titles_in_verdict_ledger": 1,
+      "current_ledger_confidence_state": "review",
+      "current_evidence_depth": "Committed ledger evidence: 1 title / 3 scenes (John Wick 2014, shadow/contrast concerns).",
+      "has_hallowed_counterpart": true,
+      "has_reference_counterpart": false,
+      "availability_status": "insufficient-parity",
+      "available_titles_2160p": [
+        "John Wick (2014)",
+        "John Wick: Chapter 2 (2017)"
+      ],
+      "rationale": "John Wick 2 exhibits custom gamma/SDR dynamic range mapping relative to UHD BluRay references (<27 dB PSNR-Y); excluded from baseline calibration due to transfer divergence."
+    },
+    {
+      "group_name": "SHADOW",
+      "titles_available_2160p": 1,
+      "titles_in_verdict_ledger": 1,
+      "current_ledger_confidence_state": "unmeasured",
+      "current_evidence_depth": "Committed ledger evidence: 0 measured titles / 0 scenes (Op 918 shadow probe row).",
+      "has_hallowed_counterpart": false,
+      "has_reference_counterpart": true,
+      "availability_status": "missing-hallowed",
+      "available_titles_2160p": [
+        "The Rip (2026) [WEBRip]"
+      ],
+      "rationale": "Netflix 2160p WebRip release; lacks a 4K Hallowed BluRay counterpart in library (only FLUX/Kitsune x265 Web-DLs available)."
+    }
+  ]
+}

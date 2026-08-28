@@ -1,0 +1,436 @@
+{
+  "manifest_metadata": {
+    "operation": "OP 944A",
+    "campaign_name": "AV1 Library Group Inventory and Expanded Baseline Campaign",
+    "date": "2026-08-28",
+    "framework_notice": "The filename reflects the broader campaign framework; the included results are Hallowed→AV1-only comparisons due to reference availability.",
+    "purpose": "Extend empirical quality-baseline evidence for discovered unmeasured, candidate, and review AV1 release groups against the accepted Hallowed 2160p x265 baseline.",
+    "acceptance_premise": "Within this multi-group objective-metric corpus, Hallowed 2160p x265 is evaluated as the user's practical quality baseline. AV1 encodes are assessed for incremental quality loss in difficult content (near-black shadows, 35mm grain, high motion, textures, smoke/fog) without universal numeric thresholds or unverified claims of source transparency.",
+    "explicit_limitation": "All six included Op 944A measurements are Hallowed→AV1-only comparisons. No higher-quality reference was available for these selected pairs, so Op 944A does not add new three-way baseline evidence or establish direct reference→AV1 performance.",
+    "guardrails": "Strict evidence-only scope. Zero changes to active tiers, profile scores, Custom Formats, release restrictions, or evidence/verdicts.csv."
+  },
+  "planned_titles": [
+    {
+      "title": "X-Men: Dark Phoenix",
+      "year": 2019,
+      "edition": "Theatrical UHD BluRay",
+      "group": "ChopperHitler",
+      "av1_identity": "X-Men Dark Phoenix-2019-UHD BluRay AV1 10bit HDR10 AC3 5.1 AV1-ChopperHitler (6.32 GB, 7.40 Mbps)",
+      "hallowed_identity": "X-Men.Dark.Phoenix.2019.UHD.BluRay.2160p.DDP.7.1.HDR10Plus.x265-hallowed (16.04 GB, 18.78 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x1604",
+      "runtime_minutes": 113.9,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / HDR10+ PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity. Both files match 3840x1604 active canvas and 23.976 fps. Peak PSNR-Y 46.46 dB at 0 ms offset.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Extends ChopperHitler evidence beyond the initial 3 catalog titles (X-Men 1, DOFP, Apocalypse) into a modern 2019 Arri Alexa 6.5K digital capture with complex volumetric cosmic particles and space darkness.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:09:40",
+          "duration_sec": 10,
+          "rationale": "Space shuttle rescue interior darkness, astronaut visor reflections, and deep black cosmos.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Extreme Motion & CGI Particles",
+          "start_timestamp": "01:28:10",
+          "duration_sec": 10,
+          "rationale": "Military train assault mutant battle with rapid cuts, flying debris, and high-velocity kinetic energy.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Organic Foliage & Surface Texture",
+          "start_timestamp": "00:37:20",
+          "duration_sec": 10,
+          "rationale": "Genosha island settlement with dense forest foliage, weathered timber, and cloth textures.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Cosmic Flare & Volumetric Energy Absorption (Optional)",
+          "category": "High-Risk Solar Particle & Dark Gradient Stress",
+          "start_timestamp": "00:11:15",
+          "duration_sec": 10,
+          "rationale": "Solar flare energy absorption inside shuttle cockpit with intense glowing particles on deep shadow background.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Bourne Ultimatum",
+      "year": 2007,
+      "edition": "Theatrical UHD BluRay",
+      "group": "RandH",
+      "av1_identity": "The.Bourne.Ultimatum.2007-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H (7.78 GB, 9.00 Mbps)",
+      "hallowed_identity": "The.Bourne.Ultimatum.2007.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (16.31 GB, 18.86 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x1600",
+      "runtime_minutes": 115.3,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity. Both files match 3840x1600 active canvas and 23.976 fps. Peak PSNR-Y 48.05 dB at 0 ms offset.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Evaluates RandH at 9.00 Mbps on high-tempo Super 35 grain, intense handheld shaky cam, and dense crowd surveillance.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:06:20",
+          "duration_sec": 10,
+          "rationale": "Moscow winter night streets with deep alleyway shadows, snow contrast, and low-light skin tones.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Extreme Motion & Shaky Cam",
+          "start_timestamp": "00:54:10",
+          "duration_sec": 10,
+          "rationale": "Tangier rooftop sprint, window plunge, and intense close-quarters handheld combat.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / 35mm Grain",
+          "category": "35mm Film Grain & Crowd Detail",
+          "start_timestamp": "00:23:40",
+          "duration_sec": 10,
+          "rationale": "Waterloo station surveillance crowd with complex architectural metalwork, glass, and clothing textures.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "New York Tunnel Impact & Smoke (Optional)",
+          "category": "High-Risk Collision Motion & Smoke Gradient Stress",
+          "start_timestamp": "01:31:30",
+          "duration_sec": 10,
+          "rationale": "High-speed police cruiser ramming into barrier in dark subway tunnel with airbag smoke.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Bourne Ultimatum",
+      "year": 2007,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Bi0hazard",
+      "av1_identity": "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard (18.70 GB, 21.63 Mbps)",
+      "hallowed_identity": "The.Bourne.Ultimatum.2007.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (16.31 GB, 18.86 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x1600",
+      "runtime_minutes": 115.3,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity with English video track. Both match 3840x1600 active canvas and 23.976 fps. Peak PSNR-Y 38.05 dB at 0 ms offset.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Measures unmeasured group Bi0hazard on a high-bitrate AV1 encode (21.63 Mbps) on identical Bourne Ultimatum content to compare directly against RandH's 9.00 Mbps encode.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:06:20",
+          "duration_sec": 10,
+          "rationale": "Moscow winter night streets with deep alleyway shadows, snow contrast, and low-light skin tones.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Extreme Motion & Shaky Cam",
+          "start_timestamp": "00:54:10",
+          "duration_sec": 10,
+          "rationale": "Tangier rooftop sprint, window plunge, and intense close-quarters handheld combat.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / 35mm Grain",
+          "category": "35mm Film Grain & Crowd Detail",
+          "start_timestamp": "00:23:40",
+          "duration_sec": 10,
+          "rationale": "Waterloo station surveillance crowd with complex architectural metalwork, glass, and clothing textures.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "New York Tunnel Impact & Smoke (Optional)",
+          "category": "High-Risk Collision Motion & Smoke Gradient Stress",
+          "start_timestamp": "01:31:30",
+          "duration_sec": 10,
+          "rationale": "High-speed police cruiser ramming into barrier in dark subway tunnel with airbag smoke.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Shawshank Redemption",
+      "year": 1994,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Smokindevil",
+      "av1_identity": "The.Shawshank.Redemption.1994.2160p.UHD.BluRay.DD+5.1.HDR.AV1-Smokindevil (5.42 GB, 5.07 Mbps)",
+      "hallowed_identity": "The.Shawshank.Redemption.1994.UHD.BluRay.2160p.DDP.5.1.DV.HDR.x265-hallowed (17.93 GB, 16.77 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x2076",
+      "runtime_minutes": 142.5,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity. Both match 3840x2076 active canvas and 23.976 fps. Peak PSNR-Y 44.94 dB at 0 ms offset.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Evaluates review group Smokindevil on an ultra-low bitrate 2160p encode (5.07 Mbps) on 35mm film stock, testing if the severe degradation seen on Fury (66.77 VMAF) generalizes to clean 35mm dramatic material.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:19:10",
+          "duration_sec": 10,
+          "rationale": "Cellblock night darkness, flashlight beams on prison bars, and deep cell shadows.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High-Motion Water & Thunderstorm",
+          "start_timestamp": "01:42:30",
+          "duration_sec": 10,
+          "rationale": "Torrential rainstorm sewage tunnel escape with fast running water and lightning flashes.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / 35mm Grain",
+          "category": "35mm Film Grain & Prison Brick Texture",
+          "start_timestamp": "00:46:10",
+          "duration_sec": 10,
+          "rationale": "Prison yard stone walls, brick dust, and outdoor natural sunlight on fabric.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Rain-Drenched River Lightning Strike (Optional)",
+          "category": "High-Risk Rain Gradient & Lightning Flash Stress",
+          "start_timestamp": "01:44:00",
+          "duration_sec": 10,
+          "rationale": "Andy Dufresne arms outstretched in pouring rain with lightning illumination across night sky.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "The Sixth Sense",
+      "year": 1999,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Smokindevil",
+      "av1_identity": "The.Sixth.Sense.1999.2160p.UHD.BluRay.HDR10.DD+5.1.AV1-Smokindevil (15.02 GB, 18.65 Mbps)",
+      "hallowed_identity": "The.Sixth.Sense.1999.UHD.BluRay.2160p.DDP.5.1.DV.HDR.x265-hallowed (15.12 GB, 18.77 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x2076",
+      "runtime_minutes": 107.4,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity. Both match 3840x2076 active canvas and 23.976 fps. Peak PSNR-Y 41.35 dB at 0 ms offset.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe",
+      "alignment_offset_ms": 0,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Tests Smokindevil at a standard high bitrate (18.65 Mbps) matching Hallowed's exact file size to isolate whether Smokindevil's compression engine performs well when unconstrained by extreme low bitrates.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:09:10",
+          "duration_sec": 10,
+          "rationale": "Dark basement staircase, single swinging lightbulb, and deep pitch-black cellar corners.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "High-Motion Vehicle Traffic",
+          "start_timestamp": "00:58:40",
+          "duration_sec": 10,
+          "rationale": "Panicked street traffic jam, emergency vehicles, and rapid camera panning.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Church Interior & Wood Grain Texture",
+          "start_timestamp": "00:26:30",
+          "duration_sec": 10,
+          "rationale": "Church sanctuary interior with wooden pew grain, stained glass illumination, and clothing fabrics.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Cold Breath Vapor & Flashlight Fog (Optional)",
+          "category": "High-Risk Vapor & Volumetric Mist Stress",
+          "start_timestamp": "00:41:20",
+          "duration_sec": 10,
+          "rationale": "Tent interior ghost encounter with cold breath vapor in flashlight beam and dark bedroom shadows.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    },
+    {
+      "title": "John Wick: Chapter 2",
+      "year": 2017,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Waldek",
+      "av1_identity": "John.Wick.Chapter.2.2017.BluRay.2160p.UHD.AV1.HDR10.TrueHD.7.1.Atmos.PRL.Waldek (16.03 GB, 17.46 Mbps)",
+      "hallowed_identity": "John.Wick.Chapter.2.2017.UHD.BluRay.2160p.DDP.7.1.DV.HDR.x265-hallowed (15.46 GB, 16.85 Mbps)",
+      "reference_identity": null,
+      "reference_source_type": null,
+      "resolution": "3840x1600",
+      "runtime_minutes": 122.4,
+      "frame_rate": "24000/1001 (23.976 fps)",
+      "hdr_format": "HDR10 / Dolby Vision PQ (BT.2020 smpte2084)",
+      "parity_assessment": "100% same-master UHD BluRay parity with -41.7 ms (-1 frame) offset. Both match 3840x1600 active canvas and 23.976 fps. Peak PSNR-Y 42.98 dB.",
+      "alignment_method": "Temporal bicubic PSNR-Y frame probe with -41.7 ms offset normalization",
+      "alignment_offset_ms": -41.7,
+      "planned_comparisons": ["HALLOWED_TO_AV1"],
+      "pre_measurement_status": "ELIGIBLE",
+      "rationale": "Evaluates newly discovered unmeasured group Waldek on modern high-contrast 3.4K Arri Alexa digital cinematography with extreme neon specular highlights, complex dark gradients, and tailored wool suit textures.",
+      "scenes": [
+        {
+          "scene_number": 1,
+          "name": "Near-Black / Shadow-Detail",
+          "category": "Near-Black Shadow Detail",
+          "start_timestamp": "00:04:10",
+          "duration_sec": 10,
+          "rationale": "Chop shop warehouse motorcycle chase in pitch-black industrial setting with spotlight beams.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 2,
+          "name": "High-Motion",
+          "category": "Tactical Gunfight & Muzzle Flash Motion",
+          "start_timestamp": "00:57:30",
+          "duration_sec": 10,
+          "rationale": "Rome ancient catacombs tactical shootout with rapid gun movements, muzzle flashes, and stone dust.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 3,
+          "name": "Texture / Fine-Detail",
+          "category": "Tailored Suit Fabric & Architectural Texture",
+          "start_timestamp": "00:36:20",
+          "duration_sec": 10,
+          "rationale": "Rome tailor shop interior with fine wool suit weave, tactical lining stitching, and marble counters.",
+          "is_optional": false,
+          "status": "ACCEPTED"
+        },
+        {
+          "scene_number": 4,
+          "name": "Reflections of the Soul Neon Hall of Mirrors (Optional)",
+          "category": "High-Risk Neon Specular & Mirror Reflection Stress",
+          "start_timestamp": "01:44:10",
+          "duration_sec": 10,
+          "rationale": "Museum modern art exhibit with infinite mirror reflections, intense RGB neon lighting, and high-frequency specular flares.",
+          "is_optional": true,
+          "status": "ACCEPTED"
+        }
+      ]
+    }
+  ],
+  "excluded_titles": [
+    {
+      "title": "The Lord of the Rings: The Two Towers",
+      "year": 2002,
+      "edition": "Extended UHD BluRay",
+      "group": "CoSMiCSuRFeR",
+      "exclusion_reason": "insufficient-parity",
+      "technical_detail": "Remaster color grading transfer divergence resulting in uniform 28.2 dB PSNR-Y floor across core scenes relative to Hallowed/reference master."
+    },
+    {
+      "title": "The Lord of the Rings: The Return of the King",
+      "year": 2003,
+      "edition": "Extended UHD BluRay",
+      "group": "CoSMiCSuRFeR",
+      "exclusion_reason": "insufficient-parity",
+      "technical_detail": "Remaster color grading transfer divergence identical to Fellowship and Two Towers (~28 dB PSNR-Y)."
+    },
+    {
+      "title": "Jurassic Park",
+      "year": 1993,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Smokindevil",
+      "exclusion_reason": "insufficient-parity",
+      "technical_detail": "Smokindevil encode originates from the 2018 25th Anniversary 4K master while Hallowed PROPER originates from the 2023 30th Anniversary 4K remaster (24.8 dB PSNR-Y)."
+    },
+    {
+      "title": "The Deer Hunter",
+      "year": 1978,
+      "edition": "Theatrical UHD BluRay",
+      "group": "RandH",
+      "exclusion_reason": "insufficient-parity",
+      "technical_detail": "StudioCanal UK 4K restoration vs Shout Factory US 4K restoration transfer divergence (17.9 dB PSNR-Y)."
+    },
+    {
+      "title": "John Wick: Chapter 2",
+      "year": 2017,
+      "edition": "Theatrical UHD BluRay",
+      "group": "Rob74K",
+      "exclusion_reason": "insufficient-parity",
+      "technical_detail": "Rob74K release applies custom SDR/gamma mapping relative to standard UHD BluRay HDR10 pipeline (26.7 dB PSNR-Y)."
+    },
+    {
+      "title": "The Rip",
+      "year": 2026,
+      "edition": "Netflix WEBRip",
+      "group": "SHADOW",
+      "exclusion_reason": "missing-hallowed",
+      "technical_detail": "No 4K Hallowed release exists in the library or distribution channels (only FLUX/Kitsune x265 Web-DLs)."
+    }
+  ]
+}

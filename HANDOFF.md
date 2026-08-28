@@ -898,3 +898,35 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance Statement:**
    * Zero active operational policies, tier memberships, Custom Formats, profile scores, `evidence/verdicts.csv` records, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.
+
+---
+
+## 38. AV1 Library Group Inventory & Expanded Baseline Campaign (Op 944A)
+
+1. **Inventory Scope & Campaign Architecture:**
+   * **Discovered 2160p AV1 Groups ($n=8$):** `ChopperHitler` (4 titles), `CoSMiCSuRFeR` (5 titles), `RandH` (11 titles), `Smokindevil` (4 titles), `Bi0hazard` (1 title), `Waldek` (1 title), `Rob74K` (2 titles), `SHADOW` (1 title).
+   * **Inventory Artifact:** [`evidence/av1_library_inventory_944a.json`](evidence/av1_library_inventory_944a.json) mapping all 28 discovered 2160p titles, ledger status, evidence depth, and parity availability.
+   * **Campaign Framework & Explicit Limitation:** All six included Op 944A measurements are Hallowed→AV1-only comparisons. No higher-quality reference was available for these selected pairs, so Op 944A does not add new three-way baseline evidence or establish direct reference→AV1 performance. The artifact filenames reflect the broader campaign framework while included results are Hallowed→AV1-only.
+
+2. **Empirical Measurement Findings ($n=6$ Titles, 24 Scenes):**
+   * **`ChopperHitler` (*X-Men: Dark Phoenix 2019*):**
+     * **Metrics:** Mean VMAF **`95.45`** | Median **`95.24`** | Min **`94.22`** at $7.40\text{ Mbps}$ ($0.0501\text{ BPP}$); no display-side visual review was performed.
+     * **Cumulative Corpus ($n=4$ Titles, 15 Scenes):** Mean VMAF **`95.69`** | Median **`96.12`** | Min Floor **`91.10`**. ChopperHitler has additional strong Hallowed-relative evidence but remains candidate until separately reviewed.
+   * **`RandH` (*The Bourne Ultimatum 2007*):**
+     * **Metrics:** Mean VMAF **`97.06`** | Median **`96.45`** | Min **`96.12`** at $9.00\text{ Mbps}$ ($0.0611\text{ BPP}$); no display-side visual review was performed.
+     * **Scope & Status:** RandH remains review despite a strong Bourne Ultimatum Hallowed-relative result, as its committed ledger classification remains governed by the valid *John Wick (2014)* fine-texture result ($83.52\text{ VMAF}$).
+   * **`Bi0hazard` (*The Bourne Ultimatum 2007*):**
+     * **Metrics:** Mean VMAF **`98.55`** | Median **`98.87`** | Min **`97.06`** at $21.63\text{ Mbps}$ ($0.1469\text{ BPP}$); no display-side visual review was performed. Bi0hazard is a single-title Hallowed-relative observation only and requires more credible evidence before any group-level conclusion.
+   * **`Smokindevil` (*The Shawshank Redemption 1994* & *The Sixth Sense 1999*):**
+     * **Evidence Depth & Observations:** Smokindevil ledger evidence remains review, based on two prior measured titles and six scenes (Fury and The Shawshank Redemption). Op 944A adds descriptive Hallowed→AV1-only observations for The Shawshank Redemption and The Sixth Sense; these do not revise the committed ledger classification.
+     * *Shawshank* ($5.07\text{ Mbps}$): Mean VMAF **`92.16`** | Min **`89.85`**.
+     * *The Sixth Sense* ($18.65\text{ Mbps}$): Mean VMAF **`86.25`** | Min **`83.92`** in dark basement shadows.
+     * **Status:** Smokindevil remains review.
+   * **`Waldek` (*John Wick: Chapter 2 2017*):**
+     * **Metrics:** Mean VMAF **`70.71`** | Median **`69.24`** | Min **`63.31`** at $17.46\text{ Mbps}$ ($0.1185\text{ BPP}$). Very low Hallowed→AV1 similarity on fine suit texture (63.31 VMAF) and low similarity in near-black shadows (69.24 VMAF) indicate high risk of material degradation; no display-side visual review was performed. Waldek is a single-title Hallowed-relative observation only and requires more credible evidence before any group-level conclusion.
+   * **`CoSMiCSuRFeR` & `SHADOW`:**
+     * CoSMiCSuRFeR remains candidate with no new valid comparison.
+     * SHADOW remains unmeasured because no Hallowed comparator was available.
+
+3. **Governance Statement:**
+   * Zero active operational policies, tier memberships, Custom Formats, profile scores, `evidence/verdicts.csv` records, or download restrictions were modified. All thresholds remain non-enforcing DRAFT.
