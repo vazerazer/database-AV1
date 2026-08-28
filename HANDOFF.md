@@ -628,6 +628,40 @@ All 6 development phases from architecture extraction through E2E live synchroni
 5. **Queued Operations:**
    * **OP 934:** Dumpstarr Bake-Off *(simulation only)* — Comparative evaluation of Dumpstarr 4K profile vs PCD AV1 Master profile across library corpus.
 
+---
+
+## 28. Dumpstarr 2160p Bake-Off Comparative Simulation (Op 934)
+
+1. **Extraction Metadata & Upstream Target:**
+   * **Upstream Target:** Dumpstarr Database (`https://github.com/Dumpstarr/Database`)
+   * **Upstream Commit:** `96ae7394a52e8671ffbce4620d103b82f08129a5` (2026-08-26T23:58:41Z)
+   * **Snapshot Date:** `2026-08-28`
+   * **Raw Extract:** Stored at [`evidence/dumpstarr_2160p_extract.json`](evidence/dumpstarr_2160p_extract.json).
+   * **Comparative Report:** Stored at [`evidence/dumpstarr_bakeoff_report.md`](evidence/dumpstarr_bakeoff_report.md).
+
+2. **Core Architectural & Scoring Divergence:**
+   * **AV1 Stance:** PCD Profile 64 prioritizes AV1 (`AV1` +3500, quality tiers +500 to +1000, sizing penalties -2800 to -3400); Dumpstarr 2160p hard-bans AV1 (`AV1` -10000) to cater to legacy playback hardware.
+   * **HD Lossless Audio Stance:** PCD rewards lossless surround (`TrueHD` +150, `DTS-X` +150, `Opus 5.1/7.1` +250); Dumpstarr hard-bans HD audio (`TrueHD` -10000, `DTS-HD MA` -10000, `DTS-X` -10000) to minimize CPU transcode risk on low-end clients.
+   * **Scoring Structure:** PCD uses a discrete 6-band ladder with +1000 cutoff; Dumpstarr uses additive stacking with extensive micro-bonuses (repacks +5 to +7, services +10 to +75, editions +25 to +125).
+
+3. **Group Steal List Analysis:**
+   * **2160p x265 Fallback Band:** 100% of physical UHD BluRay groups are present in PCD (`CtrlHD`, `MainFrame`, `DON`, `W4NK3R`, `HiDt`, `HQMUX`, `RandomBytes`, `BHDStudio`, `hallowed`, `HONE`, `PTer`, `SPHD`). Only `WEBDV` (WEB-only) was omitted from BluRay rungs.
+   * **Legacy x264 Trust Band:** 100% of physical HD BluRay groups are present in PCD (`LEGACY_TRUSTED_X264` 43-group union).
+   * **WEB-DL Tiers Candidate Menu:** Identified ~50 streaming groups from Dumpstarr WEB Tier 01-03 (`SiGMA`, `JETIX`, `CEBEX`, `RTN`, `SDCC`, `GNOME`, `CRUD`, `DRACULA`, `PHOENiX`, `PSiG`, `DEEP`, `orbitron`, `APEX`, `BLOOM`, `KiNGS`, `ETHiCS`, `Cinefeel`, `ViSUM`, `XEPA`, `MiU`, `PEXA`).
+
+4. **Custom Format Gap Menu Assessment:**
+   * **Repack / Proper Integrity (`Repack3` +7, `Repack2` +6, `Repack1` +5, `Proper` +5):** Highly recommended for Op 935 to resolve identical-release repack collisions deterministically.
+   * **Streaming Services & Editions:** Harmless micro-bonuses; PCD already handles core streaming services cleanly at +50.
+
+5. **Simulation Outcome on Library Titles (75-81 Titles):**
+   * **PCD Profile 64 Favored (>):** 100% of library titles. AV1 masters score +1450 to +5950 in PCD vs -9370 to -28465 in Dumpstarr due to AV1 and HD audio bans.
+   * **Fallback & Archival Titles:** Non-AV1 x264/x265 archival titles (`Hoosiers`, `Melancholia`, `City of God`, `Blue Valentine`, `The Right Stuff`, `Sisu`, `Greenland`) clear PCD's +1000 cutoff deterministically.
+
+6. **Recommendations for Op 935:**
+   * Adopt `Proper / Repack` micro-tiers (+5 to +7 pts).
+   * Expand `WEB-DL Tier 1-3` with vetted streaming scene/P2P groups (`FLUX`, `SiGMA`, `KiNGS`, `ETHiCS`, `Cinefeel`, `ViSUM`, `DEEP`).
+
+
 
 
 
