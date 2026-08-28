@@ -803,7 +803,30 @@ All 6 development phases from architecture extraction through E2E live synchroni
      * `Tier 2 Grain Floor`: **DRAFT — provisional proposal** (Provisional proposal: minimum-scene VMAF $\ge 80.0$ for grain-heavy 4K material, pending validation on at least two additional grain-heavy same-master reference pairs across at least two independent AV1 release groups).
      * `Compact Tier Fidelity $\text{Mean VMAF} \ge 90.0$`: **DRAFT — retain for validation.**
 
-5. **Proposed Op 940 Options:**
-   * **940A:** Add measured result fields (`vmaf_mean`, `min_vmaf`, `psnr_mean`, `bpp`, `confidence_state`) to the AV1 verdict ledger (`evidence/verdicts.csv`), with zero tier changes.
-   * **940B:** Acquire/measure a targeted reference for a particular candidate group (e.g. `Bi0hazard`, `TiZU`, or `WhiskeyJack`).
-   * **940C:** Install and validate SSIMULACRA2 as a secondary metric after operational assessment.
+5. **Completed & Queued Op 940 Operations:**
+   * **940A (Completed):** Extended verdict ledger schema (`evidence/verdicts.csv`) to 24 columns with confidence states and empirical metric fields; documented in `evidence/README.md`.
+   * **940B (Completed):** Targeted second-title calibration for `CoSMiCSuRFeR` on *John Wick: Chapter 3 - Parabellum* (2019).
+   * **940C (Queued):** Secondary metric tooling evaluation for SSIMULACRA2.
+
+---
+
+## 34. Targeted Candidate Calibration: CoSMiCSuRFeR JW3 (Op 940B)
+
+1. **Calibration Title & Parity:**
+   * **Title:** *John Wick: Chapter 3 - Parabellum* (2019)
+   * **AV1 Candidate:** `CoSMiCSuRFeR` (37.69 Mbps, 0.2558 bpp, 2160p DV/HDR10, TrueHD Atmos 7.1).
+   * **Reference Master:** `hallowed` (18.86 Mbps, 2160p DV/HDR10, DDP 7.1).
+   * **Parity:** 100% transfer parity verified ($3840 \times 1600$, $23.976\text{ fps}$, BT.2020 PQ, $+0\text{ ms}$ offset).
+
+2. **Empirical Results (4 Scenes):**
+   * Scene 1 (Near-Black / Shadow-Detail, `00:08:30`): **`VMAF 94.27`** | **`42.44 dB`** | **`0.9960`**
+   * Scene 2 (High-Motion Knife Fight, `00:15:20`): **`VMAF 92.46`** | **`40.68 dB`** | **`0.9953`**
+   * Scene 3 (Texture / Fine-Detail Mosaic, `00:54:10`): **`VMAF 91.69`** | **`42.11 dB`** | **`0.9957`**
+   * Scene 4 (Optional Near-Black Glass Gradient, `01:46:30`): **`VMAF 88.85`** | **`33.02 dB`** | **`0.9899`**
+   * **Title Aggregate (Core):** **`Mean VMAF 92.81`** | **`Min VMAF 88.85`** | **`Mean PSNR-Y 41.74 dB`** | **`Mean SSIM 0.9957`**
+
+3. **Multi-Title Confidence Transition:**
+   * **Combined Corpus ($n=2$, 7 Scenes):** *JW4* (`97.06` mean, `96.79` min) + *JW3* (`92.81` mean, `88.85` min).
+   * **Group Aggregate:** **`Mean VMAF 94.94`** | **`Min Floor 88.85`** | **`Mean PSNR-Y 45.09 dB`** | **`Mean SSIM 0.9969`**.
+   * **Confidence State:** Transitioned from `single-title` $\rightarrow$ **`candidate`**.
+   * **Tier Status:** Preserved in active Quality Tier 1 without score or profile modifications.

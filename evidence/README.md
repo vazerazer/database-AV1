@@ -58,6 +58,9 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 939 Calibration Expansion (Grain, Dark HDR & Group Diversity):**
   * Report: [`av1_calibration_expansion_report.md`](av1_calibration_expansion_report.md)
   * Raw Metrics: [`av1_calibration_expansion_raw.json`](av1_calibration_expansion_raw.json)
+* **Op 940B Targeted Candidate Calibration (CoSMiCSuRFeR JW3):**
+  * Report: [`av1_calibration_cosmicsurfer_jw3_report.md`](av1_calibration_cosmicsurfer_jw3_report.md)
+  * Raw Metrics: [`av1_calibration_cosmicsurfer_jw3_raw.json`](av1_calibration_cosmicsurfer_jw3_raw.json)
 
 ---
 
