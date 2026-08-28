@@ -35,8 +35,16 @@ This document defines the permanent operational rules and execution guardrails f
 
 6. **Post-Push Verification:**
    * After push, run `git ls-remote` to verify the remote ref.
-   * Dispatch CI manually if the webhook is delayed.
    * Verify and report the CI run outcome.
+
+7. **Mandatory Live Positive Case Verification:**
+   * Every new or modified Custom Format MUST be proven with at least one live positive case in Radarr interactive release search.
+   * If indexers do not surface a natural candidate, simulate it via a manual search preview or test against an archival release fixture.
+   * *Rationale:* Test batteries verify the PCD SQL schema and Python regex engine; only live release search proves that Radarr's daemon actually holds, parses, and matches the Custom Format in its scoring pipeline.
+
+8. **Radarr API JSON String Escaping Rule:**
+   * When creating or updating Custom Formats via raw Radarr API JSON payloads, regex word-boundaries (`\b`) and special sequences must be explicitly escaped (`r'\b'` or `\\b`).
+   * Unescaped `\b` strings are parsed by JSON decoders as the ASCII backspace character (`\x08`), silently causing Custom Formats to fail matching in Radarr without raising API errors.
 
 ---
 
