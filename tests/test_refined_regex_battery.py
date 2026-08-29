@@ -30,8 +30,8 @@ REGEX_PATTERNS = {
     # 5. Banned Groups
     "Banned ENTROPY": r"(?i)(?<![a-zA-Z0-9])ENTROPY\b",
 
-    # 6. Plausible Release Group (Op 920: Provenance detection for nameless penalty)
-    "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|HDR|DV|10bit|8bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|2160p|1080p|720p|AAC|DDP|AC3|TrueHD|Atmos|DTS|DTS-HD|Opus)(?:[\[\].\s-]|$)|\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01)(?:[\[\].\s-]|$)|\[(?:N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)",
+    # 6. Plausible Release Group (Op 920: Provenance detection for nameless penalty; Op 960: Technical token immunity)
+    "Plausible Release Group": r"(?i)(?:^\[[A-Za-z0-9._ -]+\]|-(?:\s*\[(?!(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|AVC|H\.?264|H\.?265|HDR10\+|HDR10|HDR|DV|DoVi|10[- .]?bit|8[- .]?bit|bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|Remux|HDTV|DL|Rip|2160p|1080p|720p|480p|AAC|DDP|AC3|EAC3|TrueHD|Atmos|DTS[- .]?(?:HD(?:[- .]?MA)?|X|ES)?|HD(?:[- .]?MA)?|MA|HRA|X|Opus|FLAC|MP3|5\.1|7\.1|2\.0|1\.0|PROPER|REPACK(?:[0-9]+)?|RERIP|N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)\])[A-Za-z0-9_.-]+\]|(?!\s*(?:NL[- .]?sub|NL|DUTCH|GERMAN|FRENCH|ITA|SPANISH|SWE|DK|NOR|Fi|xpost|AV1|AV01|HEVC|x265|x264|AVC|H\.?264|H\.?265|HDR10\+|HDR10|HDR|DV|DoVi|10[- .]?bit|8[- .]?bit|bit|BRRip|BDRip|WEB[- .]?DL|WEBRip|BluRay|UHD|Remux|HDTV|DL|Rip|2160p|1080p|720p|480p|AAC|DDP|AC3|EAC3|TrueHD|Atmos|DTS[- .]?(?:HD(?:[- .]?MA)?|X|ES)?|HD(?:[- .]?MA)?|MA|HRA|X|Opus|FLAC|MP3|5\.1|7\.1|2\.0|1\.0|PROPER|REPACK(?:[0-9]+)?|RERIP|N-Z-B|TGx|rarbg|eztv|EtHD|YTS|ettv|rartv)(?:[\[\].\s-]|$))\s*[A-Za-z0-9_&]+(?:[-. ][A-Za-z0-9_&]+)*(?:\[[a-zA-Z0-9_.-]+\])?)(?:\.[a-zA-Z0-9]{2,4})?$)",
 
     # 7. Foreign Dub (Op 922: Explicit foreign dub tags demotion)
     "Foreign Dub": r"(?i)\b(?:(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)[._ -]+(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)|(?:DUBBED|DUB|SYNCHRONISIERT|SYNCHRO)[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|CASTELLANO|RUSSIAN|POLISH|TURKISH|HINDI|DUTCH|DANISH|SWEDISH|NORWEGIAN|FINNISH|CZECH|HUNGARIAN|GER|FRE|FRA|ITA|ESP|SPA|RUS|POL|TUR|HIN)|(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB)[._ -]+DL|DL[._ -]+(?:GERMAN|FRENCH|ITALIAN|SPANISH|RUSSIAN|POLISH|TURKISH|HINDI)[._ -]+(?:DUBBED|DUB))\b",
@@ -214,6 +214,11 @@ TEST_CASES = {
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1-UnknownGroup.mkv"
         ],
         "adversarial_negatives": [
+            "Star.Wars.Episode.IX.The.Rise.Of.Skywalker.2019.BluRay.2160p.AV1.HDR10.DTS-HD",
+            "The.Matrix.1999.2160p.AV1.HDR10.10-bit.mkv",
+            "Movie.2024.2160p.AV1.HDR.WEB-DL.mkv",
+            "Movie.2024.2160p.AV1.DTS-X.mkv",
+            "Movie.2024.2160p.AV1.HDR.DTS-HD.MA.mkv",
             "The Bourne Supremacy (2004) - 2160p HDR - AV1 BRRip - NLsub",
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1.BRRip-NLsub.mkv",
             "The.Bourne.Supremacy.2004.2160p.HDR.AV1-NLsub",
