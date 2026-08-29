@@ -886,24 +886,24 @@ def run_simulation_battery():
             "max_band": -5000
         },
         {
-            "category": "Op 918 Floor: 5.5GB Compact-tier 2160p AV1 (Score -5750 -> Micro Ban Hard Rejected)",
+            "category": "Op 918 Floor: 5.5GB Compact-tier 2160p AV1 (Lean Band Score 1750 Clears Cutoff)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.AV1.Opus.5.1-onlyfaffs",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 5.5,
-            "expect_pass": False,
-            "min_band": -6500,
-            "max_band": -5000
+            "expect_pass": True,
+            "min_band": 1650,
+            "max_band": 1850
         },
         {
-            "category": "Op 921 Lean Floor: 6.5GB Quality-tier 2160p AV1 (Lean Band Penalty -> Score 1400, Loses to x265)",
+            "category": "Op 921 Lean Floor: 6.5GB Quality-tier 2160p AV1 (Lean Band Penalty -> Score 2700 Beats x265)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.HDR.AV1-CoSMiCSuRFeR",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 6.5,
             "expect_pass": True,
-            "min_band": 1300,
-            "max_band": 1500
+            "min_band": 2600,
+            "max_band": 2800
         },
         {
             "category": "Op 918 Audio Retune: hallowed-class 13GB 2160p x265 with EAC3 5.1 (Scores 1550)",
@@ -947,14 +947,14 @@ def run_simulation_battery():
             "max_band": 1900
         },
         {
-            "category": "Op 920: R&H Bourne 7.8GB (Named Group in Lean Band -> Score 900)",
+            "category": "Op 920: R&H Bourne 7.8GB (Named Group in Lean Band -> Score 2200)",
             "title": "The.Bourne.Supremacy.2004-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 7.78,
-            "expect_pass": False,
-            "min_band": 800,
-            "max_band": 1000
+            "expect_pass": True,
+            "min_band": 2100,
+            "max_band": 2300
         },
         {
             "category": "Op 920: BYNDR x265 Bourne 24.2GB (Score 2200, Beats NLsub 1700)",
@@ -967,14 +967,14 @@ def run_simulation_battery():
             "max_band": 2400
         },
         {
-            "category": "Op 920: Smokindevil Shawshank (5.05GB Micro Ban Hard Rejected)",
+            "category": "Op 920: Smokindevil Shawshank (5.05GB Lean Band -> Score 2200)",
             "title": "The.Shawshank.Redemption.1994.2160p.HDR.AV1-Smokindevil.mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 5.05,
-            "expect_pass": False,
-            "min_band": -6000,
-            "max_band": -4500
+            "expect_pass": True,
+            "min_band": 2100,
+            "max_band": 2300
         },
         {
             "category": "Op 920: anomoomin Cast Away 1080p (1080p Unaffected -> Score 4250)",
@@ -986,26 +986,26 @@ def run_simulation_battery():
             "min_band": 4100,
             "max_band": 4400
         },
-        # --- 15. OP 921: AV1 LEAN BAND BATTERY (6.0 - 11.0 GB) ---
+        # --- 15. OP 921: AV1 LEAN BAND BATTERY (5.0 - 11.0 GB) ---
         {
-            "category": "Op 921: Blade Runner 7.11GB R&H (Lean Band -> -3800 Penalty -> Score 1500, Loses to x265)",
+            "category": "Op 921: Blade Runner 7.11GB R&H (Lean Band -> -2500 Penalty -> Score 2800)",
             "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 7.11,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 1600
+            "min_band": 2700,
+            "max_band": 2900
         },
         {
-            "category": "Op 921: The Deer Hunter 10.75GB R (Lean Band -> -3800 Penalty -> Score 550)",
+            "category": "Op 921: The Deer Hunter 10.75GB R (Lean Band -> -2500 Penalty -> Score 1850)",
             "title": "The.Deer.Hunter.1978.2160p.UHD.BluRay.EAC3.5.1.HDR.AV1-R",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 10.75,
-            "expect_pass": False,
-            "min_band": 450,
-            "max_band": 650
+            "expect_pass": True,
+            "min_band": 1750,
+            "max_band": 1950
         },
         {
             "category": "Op 921: Gladiator 11.88GB R&H (Size > 11GB -> Unpenalized Score 5300)",
@@ -1028,24 +1028,24 @@ def run_simulation_battery():
             "max_band": 4400
         },
         {
-            "category": "Op 921: Boundary 6.0GB AV1 (Micro/Lean Boundary -> Micro Hard Ban -> Score -5750)",
+            "category": "Op 921: Boundary 5.0GB AV1 (Micro/Lean Boundary -> Micro Hard Ban -> Score -5750)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.AV1.Opus.5.1-onlyfaffs",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 6.0,
+            "size_gb": 5.0,
             "expect_pass": False,
             "min_band": -6500,
             "max_band": -5000
         },
         {
-            "category": "Op 921: Boundary 11.0GB AV1 (Lean/Free Boundary -> Lean Penalty -> Score 1500)",
+            "category": "Op 921: Boundary 11.0GB AV1 (Lean/Free Boundary -> Lean Penalty -> Score 2800)",
             "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 11.0,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 1600
+            "min_band": 2700,
+            "max_band": 2900
         },
         {
             "category": "Op 921: Boundary 11.01GB AV1 (Free/Unpenalized -> Score 5300)",
@@ -1140,14 +1140,14 @@ def run_simulation_battery():
             "max_band": 5550
         },
         {
-            "category": "Op 925: Lean dAV1nci 2160p (Quality +1000 & Lean -3800 -> Score 1400 in Lean Band)",
+            "category": "Op 925: Lean dAV1nci 2160p (Quality +1000 & Lean -2500 -> Score 2700 in Lean Band)",
             "title": "The.Matrix.1999.2160p.HDR.AV1-dAV1nci",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 8.5,
             "expect_pass": True,
-            "min_band": 1300,
-            "max_band": 1500
+            "min_band": 2600,
+            "max_band": 2800
         },
         {
             "category": "Op 925: Fat Toasty 2160p (Compact +500 -> Score 5300)",
@@ -1191,14 +1191,14 @@ def run_simulation_battery():
             "max_band": 5000
         },
         {
-            "category": "Op 927: Anti-Junk Bands Active (Lean -3800 Penalty Fires -> Score 1500)",
+            "category": "Op 927: Anti-Junk Bands Active (Lean -2500 Penalty Fires -> Score 2800)",
             "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 7.11,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 1600
+            "min_band": 2700,
+            "max_band": 2900
         },
         # --- 19. OP 930: SIZE FLOOR & LEGACY TRUSTED X264 BATTERY ---
         {
