@@ -1097,3 +1097,16 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Schema Integrity:** 0 foreign key violations, 0 circular references, 0 missing migrations.
    * **End-to-End Arbitration ($N=8$ Benchmark Titles):** 100% pass across all decision tiers.
    * **Zero Configuration Drift:** Full stack is 100% operational, healthy, and unified.
+
+---
+
+## 49. AV1 Profile Project — Closed & Frozen (Op 954A)
+
+1. **Project Close-Out Declaration:**
+   * The AV1 Quality Profile Project is formally completed and closed.
+   * Comprehensive project summary documented in [`evidence/av1_profile_project_closeout_954a_report.md`](evidence/av1_profile_project_closeout_954a_report.md).
+
+2. **Evidence Freeze Manifest:**
+   * All empirical ledgers, VMAF datasets, policy simulation outputs, mapping schemas, and validation test reports in `evidence/` are permanently frozen per [`evidence/av1_profile_evidence_freeze_954a.md`](evidence/av1_profile_evidence_freeze_954a.md).
+   * GitHub `origin/v2` serves as the authoritative source of truth.
+   * Zero active operational configurations or running services were modified during closeout.

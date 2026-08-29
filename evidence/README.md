@@ -126,6 +126,9 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 953A Full Stack & Profile Integrity Audit:**
   * Audit Report: [`full_stack_audit_953a_report.md`](full_stack_audit_953a_report.md)
   * Raw Audit Dataset: [`full_stack_audit_953a_raw.json`](full_stack_audit_953a_raw.json)
+* **Op 954A AV1 Profile Project Close-Out & Evidence Freeze:**
+  * Close-Out Report: [`av1_profile_project_closeout_954a_report.md`](av1_profile_project_closeout_954a_report.md)
+  * Evidence Freeze Manifest: [`av1_profile_evidence_freeze_954a.md`](av1_profile_evidence_freeze_954a.md)
 
 ---
 
