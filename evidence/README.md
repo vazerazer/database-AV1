@@ -129,6 +129,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
 * **Op 954A AV1 Profile Project Close-Out & Evidence Freeze:**
   * Close-Out Report: [`av1_profile_project_closeout_954a_report.md`](av1_profile_project_closeout_954a_report.md)
   * Evidence Freeze Manifest: [`av1_profile_evidence_freeze_954a.md`](av1_profile_evidence_freeze_954a.md)
+* **Op 955A Local Server Cleanup & Stack-Only Audit:**
+  * Cleanup Plan: [`server_cleanup_955a_plan.md`](server_cleanup_955a_plan.md)
+  * Cleanup Report: [`server_cleanup_955a_report.md`](server_cleanup_955a_report.md)
+  * Raw Inventory Dataset: [`server_cleanup_955a_raw.json`](server_cleanup_955a_raw.json)
 
 ---
 

@@ -1110,3 +1110,15 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * All empirical ledgers, VMAF datasets, policy simulation outputs, mapping schemas, and validation test reports in `evidence/` are permanently frozen per [`evidence/av1_profile_evidence_freeze_954a.md`](evidence/av1_profile_evidence_freeze_954a.md).
    * GitHub `origin/v2` serves as the authoritative source of truth.
    * Zero active operational configurations or running services were modified during closeout.
+
+---
+
+## 50. Local Server Cleanup & Stack-Only Baseline (Op 955A)
+
+1. **Host Server Clean-up:**
+   * Purged 22 obsolete temporary scratch directories, standalone measurement binaries (`scratch/bin`), build checkouts, and ephemeral VMAF frame telemetry JSON files (~350 MB reclaimed).
+   * Documented in [`evidence/server_cleanup_955a_plan.md`](evidence/server_cleanup_955a_plan.md), [`evidence/server_cleanup_955a_report.md`](evidence/server_cleanup_955a_report.md), and [`evidence/server_cleanup_955a_raw.json`](evidence/server_cleanup_955a_raw.json).
+
+2. **Stack-Only Operational State:**
+   * Local server is in a pristine, stack-only production operational baseline with zero residual scratch files.
+   * All media stack services (Radarr4k, Profilarr, Altmount, Silo, Plex, MergerFS) remain 100% functional and actively enforcing the frozen 4-tier hybrid profile.

@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0.0",
+  "cleanup_metadata": {
+    "operation": "OP 955A",
+    "plan_name": "Local Server Cleanup & Stack-Only Audit",
+    "date": "2026-08-29",
+    "scope": "Local server host (Media Stack Root) and database-AV1 workspace",
+    "purpose": "Return local server to clean, stack-only state by purging obsolete scratch directories, temporary measurement logs, and build artifacts, while preserving all media stack operational infrastructure"
+  },
+  "inventory_and_categorization": [
+    {
+      "path": "scratch/bin",
+      "size_mb": 269.0,
+      "category": "DELETE",
+      "reason": "Standalone temporary ffmpeg/vmaf measurement binaries from Ops 939–948; no longer needed now that empirical measurements are frozen."
+    },
+    {
+      "path": "scratch/profilarr-src",
+      "size_mb": 53.0,
+      "category": "DELETE",
+      "reason": "Temporary upstream source clone used for code auditing; not used at runtime."
+    },
+    {
+      "path": "scratch/dictionarry-db-src",
+      "size_mb": 5.7,
+      "category": "DELETE",
+      "reason": "Temporary upstream source clone used for schema verification; not used at runtime."
+    },
+    {
+      "path": "scratch/ci-proof-loop-op925",
+      "size_mb": 8.2,
+      "category": "DELETE",
+      "reason": "Temporary cleanroom proof loop clone from Op 925."
+    },
+    {
+      "path": "scratch/ci-proof-loop-op938",
+      "size_mb": 6.7,
+      "category": "DELETE",
+      "reason": "Temporary cleanroom proof loop clone from Op 938."
+    },
+    {
+      "path": "scratch/ci-proof-loop-op940a",
+      "size_mb": 6.7,
+      "category": "DELETE",
+      "reason": "Temporary cleanroom proof loop clone from Op 940A."
+    },
+    {
+      "path": "scratch/calibration*",
+      "size_mb": 0.03,
+      "category": "DELETE",
+      "reason": "Empty/temporary calibration execution folders from Ops 939–944."
+    },
+    {
+      "path": "scratch/vmaf_*.json",
+      "size_mb": 0.8,
+      "category": "DELETE",
+      "reason": "One-off local VMAF sample dumps; all final metrics are consolidated and frozen in database-AV1/evidence/verdicts.csv."
+    },
+    {
+      "path": "scratch/replace_indexers.txt",
+      "size_mb": 0.01,
+      "category": "DELETE",
+      "reason": "One-off text scratchpad from indexer setup."
+    },
+    {
+      "path": "scratch/models",
+      "size_mb": 0.05,
+      "category": "DELETE",
+      "reason": "Temporary VMAF libvmaf model directory."
+    },
+    {
+      "path": "docker-compose.yml, start.sh, stop.sh, reset_stack.sh, mount_mergerfs.sh, switch_altmount.sh, optimize_all_dbs.py",
+      "category": "KEEP",
+      "reason": "Core stack lifecycle helpers, database maintenance, and container definitions."
+    },
+    {
+      "path": "config/, library/, metadata/",
+      "category": "KEEP",
+      "reason": "Active runtime configuration, FUSE mount layers, and metadata storage."
+    },
+    {
+      "path": "database-AV1/ops/*.sql",
+      "category": "KEEP",
+      "reason": "Authoritative PCD migration history (341 files)."
+    },
+    {
+      "path": "database-AV1/evidence/*",
+      "category": "KEEP_AND_FROZEN",
+      "reason": "Authoritative frozen evidence suite, verdict ledgers, and audit reports tracked in Git on GitHub origin/v2."
+    }
+  ],
+  "summary_metrics": {
+    "total_temporary_items_identified": 22,
+    "reclaimable_disk_space_mb": 350.28,
+    "operational_stack_services_impacted": 0
+  }
+}
