@@ -815,24 +815,24 @@ def run_simulation_battery():
             "max_band": 2600
         },
         {
-            "category": "Op 917: 27GB non-AV1 2160p (Heavy Band: -400 Penalty -> Score 1900)",
+            "category": "Op 961: 27GB non-AV1 2160p (Unpenalized Sweet Spot -> Score 2300)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 27.0,
             "expect_pass": True,
-            "min_band": 1800,
-            "max_band": 2200
+            "min_band": 2100,
+            "max_band": 2500
         },
         {
-            "category": "Op 917: 33GB non-AV1 2160p (Oversized Band: -1500 Penalty -> Score 800 < 1000 Cutoff)",
+            "category": "Op 961: 33GB non-AV1 2160p (Heavy Band: -400 Penalty -> Score 1900)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 33.0,
-            "expect_pass": False,
-            "min_band": 600,
-            "max_band": 999
+            "expect_pass": True,
+            "min_band": 1800,
+            "max_band": 2100
         },
         {
             "category": "Op 917: 35GB AV1 2160p (AV1 Exempt, Zero Penalty -> Score 5950)",
@@ -845,31 +845,31 @@ def run_simulation_battery():
             "max_band": 6200
         },
         {
-            "category": "Op 917 Boundary: 24.9GB non-AV1 2160p (No Penalty -> Score 2300)",
+            "category": "Op 961 Boundary: 29.9GB non-AV1 2160p (No Penalty -> Score 2300)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 24.9,
+            "size_gb": 29.9,
             "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 2600
+            "min_band": 2100,
+            "max_band": 2500
         },
         {
-            "category": "Op 917 Boundary: 25.1GB non-AV1 2160p (-400 Penalty -> Score 1900)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 25.1,
-            "expect_pass": True,
-            "min_band": 1800,
-            "max_band": 2200
-        },
-        {
-            "category": "Op 917 Boundary: 30.1GB non-AV1 2160p (-1500 Penalty -> Score 800 < 1000 Cutoff)",
+            "category": "Op 961 Boundary: 30.1GB non-AV1 2160p (-400 Penalty -> Score 1900)",
             "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 30.1,
+            "expect_pass": True,
+            "min_band": 1800,
+            "max_band": 2100
+        },
+        {
+            "category": "Op 961 Boundary: 39.0GB non-AV1 2160p (-1500 Penalty -> Score 800 < 1000 Cutoff)",
+            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 39.0,
             "expect_pass": False,
             "min_band": 600,
             "max_band": 999
