@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "operation": "OP 957A",
+  "operation_name": "Deprecate All Unused Profiles & Streamline to Movies 2160p AV1 HQ",
+  "date": "2026-08-29",
+  "deprecated_profiles": [
+    "Movies SHADOW Explorer",
+    "Anime 1080p AV1",
+    "TV 2160p AV1",
+    "TV 1080p AV1 HQ",
+    "TV 1080p AV1 Storage",
+    "Movies 1080p AV1 HQ",
+    "Movies 1080p AV1 Storage"
+  ],
+  "retained_flagship_profile": {
+    "name": "Movies 2160p AV1 HQ",
+    "arr_instance": "radarr4k (Instance 2)",
+    "profile_id": 64,
+    "min_score": 1000,
+    "upgrade_until": 6000,
+    "scored_custom_formats": 69,
+    "status": "ACTIVE_PRODUCTION"
+  },
+  "database_state": {
+    "total_custom_profiles": 1,
+    "total_scored_rules": 69,
+    "drift_status": "ZERO_DRIFT"
+  }
+}

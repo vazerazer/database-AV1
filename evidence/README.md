@@ -137,6 +137,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Alignment Report: [`profilarr_alignment_956a_report.md`](profilarr_alignment_956a_report.md)
   * Raw Alignment Dataset: [`profilarr_alignment_956a_raw.json`](profilarr_alignment_956a_raw.json)
   * PCD SQL Migration: [`../ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql`](../ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql)
+* **Op 957A Profile Streamlining & Deprecation:**
+  * Streamlining Report: [`profile_streamlining_957a_report.md`](profile_streamlining_957a_report.md)
+  * Raw Streamlining Dataset: [`profile_streamlining_957a_raw.json`](profile_streamlining_957a_raw.json)
+  * PCD SQL Migration: [`../ops/957.deprecate-all-unused-profiles.sql`](../ops/957.deprecate-all-unused-profiles.sql)
 
 ---
 

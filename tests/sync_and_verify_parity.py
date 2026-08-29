@@ -47,7 +47,7 @@ def send_profilarr_post(endpoint, body):
     headers = {"Content-Type": "application/json"}
     if PROFILARR_COOKIE:
         headers["Cookie"] = PROFILARR_COOKIE
-        
+
     for attempt in range(5):
         try:
             req = urllib.request.Request(
@@ -76,15 +76,13 @@ def sync_entities():
         "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers", "AV1 Quality Encoders",
         "Legacy x265 Codec", "Legacy x264 Codec", "CAM", "Banned Groups"
     ]
-    
+
     profiles_radarr = [
         "Movies 2160p AV1 HQ"
     ]
-    
-    profiles_sonarr = [
-        "TV 2160p AV1"
-    ]
-    
+
+    profiles_sonarr = []
+
     print("=== SYNCING TO RADARR4K (Instance 2) ===")
     for cf in cfs:
         res = send_profilarr_post("/arr/2/resync", {
@@ -97,7 +95,7 @@ def sync_entities():
             return
         print(f"  CF '{cf}': {res}")
         time.sleep(5.5)
-        
+
     for p in profiles_radarr:
         res = send_profilarr_post("/arr/2/resync", {
             "databaseId": 9, "entityType": "qualityProfile", "entityName": p
@@ -112,7 +110,7 @@ def sync_entities():
         })
         print(f"  CF '{cf}': {res}")
         time.sleep(5.5)
-        
+
     for p in profiles_sonarr:
         res = send_profilarr_post("/arr/4/resync", {
             "databaseId": 9, "entityType": "qualityProfile", "entityName": p
@@ -124,20 +122,20 @@ def verify_byte_for_byte_parity():
     get_required_api_keys()
     conn = build_compiled_db()
     all_match = True
-    
+
     # 1. RADARR4K
     print("\n=== VERIFYING BYTE-FOR-BYTE PATTERN PARITY (RADARR4K API vs PCD DB) ===")
     req = urllib.request.Request(f"{RADARR_URL}/api/v3/customformat", headers={"X-Api-Key": RADARR_API_KEY})
     with urllib.request.urlopen(req) as resp:
         radarr_cfs = json.loads(resp.read().decode("utf-8"))
     radarr_cfs_by_name = {cf["name"]: cf for cf in radarr_cfs}
-    
+
     cfs_to_check = [
         "AV1", "10-bit Depth", "8-bit Depth", "Opus 5.1 / 7.1", "Opus Stereo",
         "AV1 Anime Encoders", "AV1 Compact Encoders", "AV1 Storage Savers", "AV1 Quality Encoders",
         "Legacy x265 Codec", "Legacy x264 Codec", "CAM"
     ]
-    
+
     for cf_name in cfs_to_check:
         pcd_pat = conn.execute("""
             SELECT re.pattern FROM custom_formats cf
@@ -146,13 +144,13 @@ def verify_byte_for_byte_parity():
             JOIN regular_expressions re ON cp.regular_expression_name = re.name
             WHERE cf.name = ?
         """, (cf_name,)).fetchone()[0]
-        
+
         radarr_cf = radarr_cfs_by_name.get(cf_name)
         if not radarr_cf:
             print(f"[FAIL] Missing in Radarr4k: {cf_name}")
             all_match = False
             continue
-            
+
         deployed_pat = radarr_cf["specifications"][0]["fields"][0]["value"]
         if pcd_pat == deployed_pat:
             print(f"[MATCH] {cf_name:<25}")
@@ -198,13 +196,13 @@ def verify_byte_for_byte_parity():
             JOIN regular_expressions re ON cp.regular_expression_name = re.name
             WHERE cf.name = ?
         """, (cf_name,)).fetchone()[0]
-        
+
         sonarr_cf = sonarr_cfs_by_name.get(cf_name)
         if not sonarr_cf:
             print(f"[FAIL] Missing in Sonarr4k: {cf_name}")
             all_match = False
             continue
-            
+
         deployed_pat = sonarr_cf["specifications"][0]["fields"][0]["value"]
         if pcd_pat == deployed_pat:
             print(f"[MATCH] {cf_name:<25}")

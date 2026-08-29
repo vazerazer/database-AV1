@@ -1135,3 +1135,15 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Full Parity & Drift-Free State:**
    * PCD `Movies 2160p AV1 HQ` profile scoring count is exactly 69, achieving 100% parity with live Radarr4k (69/69).
    * Snapshot hashes and drift verification in [`tests/test_profile_drift.py`](tests/test_profile_drift.py) pass 100%.
+
+---
+
+## 52. Profile Streamlining & Deprecation (Op 957A)
+
+1. **Deprecated Profiles Purged:**
+   * Permanently removed 7 unused/redundant profiles (`Movies SHADOW Explorer`, `Anime 1080p AV1`, `TV 2160p AV1`, `TV 1080p AV1 HQ`, `TV 1080p AV1 Storage`, `Movies 1080p AV1 HQ`, `Movies 1080p AV1 Storage`) via [`ops/957.deprecate-all-unused-profiles.sql`](ops/957.deprecate-all-unused-profiles.sql).
+   * Documented in [`evidence/profile_streamlining_957a_report.md`](evidence/profile_streamlining_957a_report.md) and [`evidence/profile_streamlining_957a_raw.json`](evidence/profile_streamlining_957a_raw.json).
+
+2. **Dedicated Pure Flagship Repository:**
+   * `database-AV1` is now 100% focused on a single flagship profile: **`Movies 2160p AV1 HQ`**.
+   * Live Radarr4k daemon cleaned via API; test suites and profile drift guards updated and 100% green.

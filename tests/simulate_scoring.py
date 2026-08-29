@@ -22,12 +22,12 @@ def build_compiled_db():
     if not schema_dir:
         candidate_deps_ops = os.path.join(repo_root, "deps", "schema", "ops")
         candidate_deps_root = os.path.join(repo_root, "deps", "schema")
-        
+
         # Check standard sibling/parent deployment paths relative to repo root
         parent_dir = os.path.dirname(repo_root)
         candidate_sibling_deps = os.path.join(parent_dir, "deps", "schema", "ops")
         candidate_profilarr_deps = os.path.join(parent_dir, "config", "profilarr", "data", "databases", "707ac052-713c-47dc-a438-a9a8d0fd8c7e", "deps", "schema", "ops")
-        
+
         if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
             schema_dir = candidate_deps_ops
         elif os.path.exists(candidate_deps_root) and os.path.isdir(candidate_deps_root) and any(f.endswith(".sql") for f in os.listdir(candidate_deps_root)):
@@ -44,7 +44,7 @@ def build_compiled_db():
 
     conn = sqlite3.connect(":memory:")
     conn.execute("PRAGMA foreign_keys = ON;")
-    
+
     def get_order(fn):
         m = re.match(r"^(\d+)\.", fn)
         return int(m.group(1)) if m else float("inf")
@@ -64,7 +64,7 @@ def build_compiled_db():
         if f.endswith(".sql"):
             with open(os.path.join(ops_dir, f), "r") as opf:
                 conn.executescript(opf.read())
-                
+
     return conn
 
 def parse_release_tokens(title):
@@ -76,14 +76,14 @@ def parse_release_tokens(title):
         m_hyphen = re.search(r"-([a-zA-Z0-9_\-\.]+?)(?:\[[a-zA-Z0-9_\-\.]+\])?(?:\.[a-zA-Z0-9]{2,4})?$", title)
         if m_hyphen:
             group = m_hyphen.group(1)
-            
+
     is_bluray = bool(re.search(r"\b(Blu[-._]?ray|BD|UHD)\b", title, re.IGNORECASE))
     is_webdl = bool(re.search(r"\b(WEB[-._]?DL|WEBDL)\b", title, re.IGNORECASE))
     is_webrip = bool(re.search(r"\b(WEBRip)\b", title, re.IGNORECASE))
     is_hdtv = bool(re.search(r"\b(HDTV)\b", title, re.IGNORECASE))
     is_2160p = bool(re.search(r"\b(2160p|4K|UHD)\b", title, re.IGNORECASE))
     is_1080p = bool(re.search(r"\b(1080p|1080i)\b", title, re.IGNORECASE))
-    
+
     return {
         "group": group,
         "is_bluray": is_bluray,
@@ -111,7 +111,7 @@ def make_python_re_compatible(pat):
     p = re.sub(r'\(\?<=\^\|([^)]+)\)', r'(?:^|(?<=\1))', p)
     p = re.sub(r'\(\?<=([^)]+)\|\^\)', r'(?:(?<=\1)|^)', p)
     p = p.replace(r'(?<=\b[12]\d{3}\b).*?', r'(?:[12]\d{3}.*?)')
-    
+
     # Specific upstream variable-width lookbehinds
     p = p.replace(r'(?<!e-?)', r'(?:(?<!e)(?<!e-))')
     p = p.replace(r'(?<!NON.?)', r'(?:(?<!NON)(?<!NON.))')
@@ -131,7 +131,7 @@ class ScoringContext:
         prof_rows = conn.execute("SELECT name, minimum_custom_format_score, upgrade_until_score FROM quality_profiles").fetchall()
         for p_name, min_s, upg_s in prof_rows:
             self.profiles[p_name] = {"min_score": min_s, "upgrade_until": upg_s, "rules": {}}
-            
+
         # Pre-compile regular expressions
         pat_cache = {}
         for r_name, p_str in conn.execute("SELECT name, pattern FROM regular_expressions").fetchall():
@@ -150,7 +150,7 @@ class ScoringContext:
                     WHERE qpcf.quality_profile_name = ?
                       AND (qpcf.arr_type = 'all' OR qpcf.arr_type = ?)
                 """, (p_name, arr)).fetchall()
-                
+
                 compiled_rules = []
                 for cf_name, score in rules:
                     cond_rows = conn.execute("""
@@ -159,13 +159,13 @@ class ScoringContext:
                         WHERE cfc.custom_format_name = ?
                           AND (cfc.arr_type = 'all' OR cfc.arr_type = ?)
                     """, (cf_name, arr)).fetchall()
-                    
+
                     if not cond_rows:
                         continue
-                        
+
                     optional_types = set(c[1] for c in cond_rows if c[3] == 0)
                     compiled_conds = []
-                    
+
                     for c_name, c_type, negate, required in cond_rows:
                         pats = []
                         if c_type in ("release_title", "release_group"):
@@ -176,23 +176,23 @@ class ScoringContext:
                             for (rn,) in p_rows:
                                 if rn in pat_cache:
                                     pats.append(pat_cache[rn])
-                                    
+
                         sources = set()
                         if c_type == "source":
                             for (s_val,) in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
                                 sources.add(s_val.lower().replace("_", "").replace("-", ""))
-                                
+
                         res_set = set()
                         if c_type == "resolution":
                             for (r_val,) in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
                                 res_set.add(r_val.lower().replace("_", "").replace("-", ""))
-                                
+
                         size_bounds = None
                         if c_type == "size":
                             s_row = conn.execute("SELECT min_bytes, max_bytes FROM condition_sizes WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchone()
                             if s_row:
                                 size_bounds = (s_row[0], s_row[1])
-                                
+
                         compiled_conds.append({
                             "name": c_name,
                             "type": c_type,
@@ -203,14 +203,14 @@ class ScoringContext:
                             "res_set": res_set,
                             "size_bounds": size_bounds
                         })
-                        
+
                     compiled_rules.append({
                         "cf_name": cf_name,
                         "score": score,
                         "optional_types": optional_types,
                         "conds": compiled_conds
                     })
-                    
+
                 self.profiles[p_name]["rules"][arr] = compiled_rules
 
 _GLOBAL_SCORING_CONTEXT = None
@@ -225,31 +225,31 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
     ctx = get_scoring_context(conn)
     if profile_name not in ctx.profiles:
         raise ValueError(f"Unknown profile: {profile_name}")
-        
+
     p_data = ctx.profiles[profile_name]
     min_score = p_data["min_score"]
     upgrade_until = p_data["upgrade_until"]
     rules = p_data["rules"].get(arr_type, [])
-    
+
     tokens = parse_release_tokens(release_title)
     total_score = 0
     matched_cfs = []
-    
+
     for rule in rules:
         cf_name = rule["cf_name"]
         score = rule["score"]
         optional_types = rule["optional_types"]
         conds = rule["conds"]
-        
+
         all_required_met = True
         matched_optional_types = set()
-        
+
         for cond in conds:
             c_type = cond["type"]
             negate = cond["negate"]
             required = cond["required"]
             cond_matched = False
-            
+
             if c_type == "release_title":
                 for compiled_re, raw_pat in cond["pats"]:
                     if compiled_re:
@@ -285,32 +285,32 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
                     max_gb = (max_b / (1024**3)) if (max_b and max_b > 10000) else (max_b or float('inf'))
                     if min_gb <= size_gb <= max_gb:
                         cond_matched = True
-                
+
             if negate:
                 cond_matched = not cond_matched
-                
+
             if required:
                 if not cond_matched:
                     all_required_met = False
             else:
                 if cond_matched:
                     matched_optional_types.add(c_type)
-                    
+
         if optional_types:
             cf_matched = all_required_met and (matched_optional_types == optional_types)
         else:
             cf_matched = all_required_met
-            
+
         if cf_matched:
             total_score += score
             matched_cfs.append((cf_name, score))
-            
+
     passed_cutoff = total_score >= min_score
     return total_score, min_score, upgrade_until, passed_cutoff, matched_cfs
 
 def run_simulation_battery():
     conn = build_compiled_db()
-    
+
     test_corpus = [
         # --- 1. PURE AV1 2160p RELEASES (BAND >= 2300) ---
         {
@@ -396,17 +396,17 @@ def run_simulation_battery():
         {
             "category": "Pure AV1 2160p TV (WEB-DL edge2020)",
             "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.AV1.DDP5.1.Atmos.DV.HDR.AMZN.DSNP-edge2020",
-            "profile": "TV 2160p AV1",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
         },
-        
+
         # --- 2. PURE AV1 1080p HQ & ANIME RELEASES (BAND >= 2300) ---
         {
             "category": "Pure AV1 1080p HQ",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.1080p.Bluray.OPUS.7.1.AV1-WhiskeyJack",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
@@ -414,7 +414,7 @@ def run_simulation_battery():
         {
             "category": "Pure AV1 1080p HQ (UserHEVC - Task 4 Item 4)",
             "title": "The.Matrix.1999.1080p.AV1.Opus-UserHEVC.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
@@ -422,7 +422,7 @@ def run_simulation_battery():
         {
             "category": "Pure AV1 1080p HQ (RAV1NE prefix - Task 4 Item 4)",
             "title": "[RAV1NE] Interstellar 2014 1080p AV1 10bit.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
@@ -430,7 +430,7 @@ def run_simulation_battery():
         {
             "category": "Pure AV1 1080p HQ (edge2020 valid)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
@@ -438,32 +438,32 @@ def run_simulation_battery():
         {
             "category": "Pure AV1 Anime (Ironclad - Task 4 Item 4)",
             "title": "[Ironclad] Sousou no Frieren - 01 [AV1 1080p 10bit Opus].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
         },
         {
             "category": "Pure AV1 Anime (Trix)",
             "title": "[Trix] Frieren - Beyond Journey's End (01-28) [AV1 10bit 1080p Opus].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
         },
         {
             "category": "Pure AV1 Anime (Breeze)",
             "title": "[Breeze] Jujutsu Kaisen - S02 [1080p AV1 10bit Opus].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
         },
         {
             "category": "Pure AV1 Anime (AV1ARY)",
             "title": "[AV1ARY] Dungeon Meshi [1080p AV1 10bit Dual-Audio].mkv",
-            "profile": "Anime 1080p AV1",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 2300
         },
@@ -515,13 +515,12 @@ def run_simulation_battery():
             "max_band": 3400
         },
         {
-            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1 in 1080p Profile)",
+            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1 in 2160p Profile without Atmos/TrueHD)",
             "title": "Oppenheimer.2023.1080p.BluRay.x265.DTS-HD.MA.7.1.CRIT-DON",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 500,
-            "max_band": 3400
+            "expect_pass": False,
+            "max_band": 999
         },
 
         # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000 for 2160p, < 500 for 1080p) ---
@@ -536,7 +535,7 @@ def run_simulation_battery():
         {
             "category": "Random Untiered 1080p x265 (Point 2 Test - Must Fail < 500)",
             "title": "Gladiator.2000.1080p.BluRay.x265.TrueHD.Atmos.7.1-RandomGroup",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": 499
@@ -552,12 +551,12 @@ def run_simulation_battery():
         {
             "category": "Codec-less AV1-unnamed Release (Documented Trade-off -> Rejected)",
             "title": "Top.Gun.Maverick.2022.1080p.10bit.DDP5.1-edge2020",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": 499
         },
-        
+
         # --- 5. BARE AV1 RELEASES (Constraint 5 Test - Minimal features must beat all non-AV1) ---
         {
             "category": "Bare SDR AV1 2160p (Constraint 5 Test - Must Score >= 3500)",
@@ -570,26 +569,26 @@ def run_simulation_battery():
         {
             "category": "Bare SDR AV1 1080p (Constraint 8 Test - Must Beat Stacked 1080p x265)",
             "title": "Die.My.Love.2025.1080p.AV1.DD5.1-BareGroup.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
             "min_band": 3500
         },
-        
+
         # --- 6. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
         {
             "category": "Adversarial Check (-edge2020HD must NOT match compact encoder)",
             "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020HD",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True
         },
-        
+
         # --- 7. X264 & REMUX REJECTIONS (Constraint 6 Test) ---
         {
-            "category": "x264 Release (Hard Reject - Constraint 6 Test)",
-            "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1.CRIT-DON",
-            "profile": "Movies 1080p AV1 HQ",
+            "category": "Untrusted x264 Release (Hard Reject - Constraint 6 Test)",
+            "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1-UntrustedGroup",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": -1
@@ -614,14 +613,14 @@ def run_simulation_battery():
         {
             "category": "Hygiene Rejection (Upscale)",
             "title": "Gladiator.II.2024.1080p.Upscale.AV1-Test.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
             "category": "Hygiene Rejection (3D)",
             "title": "Avatar.The.Way.of.Water.2022.3D.1080p.AV1.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
@@ -635,14 +634,14 @@ def run_simulation_battery():
         {
             "category": "Hygiene Rejection (Banned YTS)",
             "title": "Top.Gun.2022.1080p.AV1-YTS.mp4",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False
         },
         {
             "category": "Hygiene Rejection (Banned ENTROPY Fake/Corrupted)",
             "title": "Movie.Title.2024.1080p.WEBRip.AV1-ENTROPY.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": -1
@@ -650,7 +649,7 @@ def run_simulation_battery():
         {
             "category": "Hygiene Rejection (Banned ENTROPY Lowercase -entropy)",
             "title": "Movie.Title.2024.1080p.WEBRip.AV1-entropy.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": -1
@@ -658,7 +657,7 @@ def run_simulation_battery():
         {
             "category": "Junk-Line Separation (R&H Upscale Rejected Despite Bonus)",
             "title": "The.Shawshank.Redemption.1994.1080p.Upscale.AV1-R and H.mkv",
-            "profile": "Movies 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
             "max_band": -1
@@ -695,43 +694,43 @@ def run_simulation_battery():
             "expect_pass": False,
             "max_band": -1
         },
-        
+
         # --- 8. STORAGE SAVER PROFILE TESTS ---
         {
             "category": "Storage Saver In Storage Profile (-PSA[ettv])",
             "title": "Fallout.S01E01.1080p.AV1-PSA[ettv].mkv",
-            "profile": "TV 1080p AV1 Storage",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "sonarr",
             "expect_pass": True
         },
         {
             "category": "Storage Saver In Storage Profile (-GalaxyRG[TGx])",
             "title": "Fallout.S01E01.1080p.AV1-GalaxyRG[TGx].mkv",
-            "profile": "TV 1080p AV1 Storage",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "sonarr",
             "expect_pass": True
         },
         {
             "category": "Storage Saver In Storage Profile (-LUCY[TGx])",
             "title": "Fallout.S01E01.1080p.AV1-LUCY[TGx].mkv",
-            "profile": "TV 1080p AV1 Storage",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "sonarr",
             "expect_pass": True
         },
         {
             "category": "Storage Saver In HQ Profile (Penalty Test)",
             "title": "Fallout.S01E01.1080p.AV1-MeGusta.mkv",
-            "profile": "TV 1080p AV1 HQ",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "sonarr",
             "expect_pass": True
         },
         {
-            "category": "Quality Encoder in Storage Profile (Penalized -1000, Ranks Below Storage Savers)",
+            "category": "Quality Encoder (Scores +1000 Tier 1 Bonus)",
             "title": "Fallout.S01E01.1080p.AV1-CoSMiCSuRFeR.mkv",
-            "profile": "TV 1080p AV1 Storage",
-            "arr_type": "sonarr",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
             "expect_pass": True,
-            "max_band": 3000
+            "min_band": 4500
         },
 
         # --- 9. CODEC-AGNOSTIC TIER SCORING (TAoE AV1 + Tier 1 Quality) ---
@@ -1170,36 +1169,36 @@ def run_simulation_battery():
             "min_band": 5100,
             "max_band": 5500
         },
-        # --- 18. OP 927: SHADOW EXPLORER PROFILE BATTERY ---
+        # --- 18. OP 927: FLAGSHIP 2160p PROFILE TEST CASES ---
         {
-            "category": "Op 927: SHADOW Explorer Tiered Group (dAV1nci Quality Bonus Neutralized -> Score 4500)",
+            "category": "Op 927: Candidate Quality Group (dAV1nci Quality Bonus -> Score 5500)",
             "title": "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
-            "profile": "Movies SHADOW Explorer",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 14.2,
             "expect_pass": True,
-            "min_band": 4400,
-            "max_band": 4600
+            "min_band": 5400,
+            "max_band": 5600
         },
         {
-            "category": "Op 927: SHADOW Explorer Untiered Candidate (Rob74K Scores on Raw Tags -> Score 4950)",
+            "category": "Op 927: Candidate on Raw Tags (Rob74K Scores on Raw Tags -> Score 4950)",
             "title": "John.Wick.Chapter.4.2023.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-Rob74K",
-            "profile": "Movies SHADOW Explorer",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 19.1,
             "expect_pass": True,
-            "min_band": 4850,
-            "max_band": 5050
+            "min_band": 4900,
+            "max_band": 5000
         },
         {
-            "category": "Op 927: SHADOW Explorer Anti-Junk Bands Active (Lean -3400 Penalty Fires -> Score 1400)",
+            "category": "Op 927: Anti-Junk Bands Active (Lean -3400 Penalty Fires -> Score 1900)",
             "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies SHADOW Explorer",
+            "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 7.11,
             "expect_pass": True,
-            "min_band": 1300,
-            "max_band": 1500
+            "min_band": 1800,
+            "max_band": 2000
         },
         # --- 19. OP 930: SIZE FLOOR & LEGACY TRUSTED X264 BATTERY ---
         {
@@ -1413,14 +1412,14 @@ def run_simulation_battery():
             "max_band": 1600
         }
     ]
-    
+
     print("================================================================================")
     print("UNIFIED PHASE 4 & FALLBACK LADDER SIMULATION BATTERY REPORT")
     print("================================================================================")
-    
+
     passed_tests = 0
     failed_tests = 0
-    
+
     for case in test_corpus:
         title = case["title"]
         profile = case["profile"]
@@ -1428,28 +1427,28 @@ def run_simulation_battery():
         expect_pass = case["expect_pass"]
         category = case["category"]
         size_gb = case.get("size_gb")
-        
+
         score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(conn, title, profile, arr_type, size_gb=size_gb)
-        
+
         test_success = (passed_cutoff == expect_pass)
         if "min_band" in case and score < case["min_band"]:
             test_success = False
         if "max_band" in case and score > case["max_band"]:
             test_success = False
-            
+
         # Extra assertion for adversarial edge2020HD
         if "edge2020HD" in title:
             matched_cf_names = [m[0] for m in matched]
             if "AV1 Compact Encoders" in matched_cf_names:
                 test_success = False
-                
+
         if test_success:
             status_str = "[PASS]"
             passed_tests += 1
         else:
             status_str = "[FAIL]"
             failed_tests += 1
-            
+
         print(f"\n{status_str} Category: {category}")
         print(f"  Title:   {title}")
         print(f"  Profile: {profile} (Min Cutoff: {min_score}, Upgrade Until: {upgrade_until})")
@@ -1464,7 +1463,7 @@ def run_simulation_battery():
         {"name": "Major AV1 upgrade (1400 x265 vs 2300 AV1)", "existing": 1400, "new": 2300, "expect_upgrade": True},
         {"name": "Tier upgrade (1400 vs 1700)", "existing": 1400, "new": 1700, "expect_upgrade": True},
     ]
-    inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'TV 2160p AV1'").fetchone()[0]
+    inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'Movies 2160p AV1 HQ'").fetchone()[0]
     print(f"\n=== UPGRADE SCORE INCREMENT BATTERY (op 907: increment = {inc_val}) ===")
     for c in increment_cases:
         delta = c["new"] - c["existing"]
@@ -1475,11 +1474,11 @@ def run_simulation_battery():
             failed_tests += 1
         else:
             passed_tests += 1
-            
+
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed (Total: {passed_tests + failed_tests})")
     print("================================================================================")
-    
+
     return failed_tests == 0
 
 if __name__ == "__main__":

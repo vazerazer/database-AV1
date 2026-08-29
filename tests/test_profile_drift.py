@@ -24,31 +24,21 @@ class TestProfileDriftGuard(unittest.TestCase):
             cls.snapshot = json.load(f)
 
     def test_snapshot_invariants(self):
-        """Validates snapshot integrity and profile isolation invariants."""
+        """Validates snapshot integrity and flagship profile invariants."""
         self.assertIn('Movies 2160p AV1 HQ', self.snapshot)
-        self.assertIn('Movies SHADOW Explorer', self.snapshot)
 
         prod = self.snapshot['Movies 2160p AV1 HQ']
-        shad = self.snapshot['Movies SHADOW Explorer']
 
         self.assertEqual(prod['min_score'], 1000)
         self.assertEqual(prod['upgrade_until_score'], 6000)
-        self.assertEqual(shad['min_score'], 1000)
-        self.assertEqual(shad['upgrade_until_score'], 6000)
 
-        # Invariants: Prod has active tier bonuses, Shadow has them neutralized (omitted/0)
+        # Invariants: Prod has active tier bonuses
         self.assertEqual(prod['custom_formats'].get('AV1 Quality Encoders'), 1000)
         self.assertEqual(prod['custom_formats'].get('AV1 Compact Encoders'), 500)
-        self.assertNotIn('AV1 Quality Encoders', shad['custom_formats'])
-        self.assertNotIn('AV1 Compact Encoders', shad['custom_formats'])
 
-        # Both profiles have identical anti-trash hygiene and sizing penalties
+        # Anti-trash hygiene and sizing penalties
         for cf in ['CAM', '3D', 'Upscale', 'AV1 Micro 2160p', 'AV1 Lean 2160p', 'AV1 Nameless', 'Foreign Dub']:
-            self.assertEqual(
-                prod['custom_formats'].get(cf),
-                shad['custom_formats'].get(cf),
-                f"Hygiene/sizing CF '{cf}' differs between Prod and Shadow Explorer."
-            )
+            self.assertIn(cf, prod['custom_formats'], f"Hygiene/sizing CF '{cf}' missing in Prod.")
 
         # Definition hashes present and populated
         self.assertIn('custom_format_definitions', self.snapshot)
@@ -80,7 +70,7 @@ class TestProfileDriftGuard(unittest.TestCase):
 
         live_prof_map = {p['name']: p for p in live_profiles}
 
-        for p_name in ['Movies 2160p AV1 HQ', 'Movies SHADOW Explorer']:
+        for p_name in ['Movies 2160p AV1 HQ']:
             expected = self.snapshot[p_name]
             self.assertIn(p_name, live_prof_map, f"Live profile '{p_name}' not found in Radarr4k.")
             live_p = live_prof_map[p_name]
@@ -113,7 +103,7 @@ class TestProfileDriftGuard(unittest.TestCase):
         for cf_name, expected_hash in self.snapshot.get('custom_format_definitions', {}).items():
             self.assertIn(cf_name, live_cf_map, f"Expected Custom Format '{cf_name}' not found in live Radarr4k!")
             live_cf = live_cf_map[cf_name]
-            
+
             specs = []
             for s in sorted(live_cf.get('specifications', []), key=lambda x: x.get('name', '')):
                 field_val = s.get('fields', [{}])[0].get('value') if s.get('fields') else None
