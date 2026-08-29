@@ -1083,3 +1083,17 @@ All 6 development phases from architecture extraction through E2E live synchroni
 3. **Live Verification:**
    * Validated *The Bourne Ultimatum (2007)* in Radarr4k: MainFrame x265 (Tier 3) scores `2200` and wins, while Bi0hazard AV1 (Tier 4) scores `1200` (subordinate but grabbable).
    * Validated *John Wick: Chapter 2 (2017)*: Rob74K Review AV1 (Tier 2) scores `3650` and wins over MainFrame x265 at `2200`.
+
+---
+
+## 48. Full Stack & Profile Integrity Audit (Op 953A)
+
+1. **System-Wide Audit Scope & Health Verification:**
+   * Executed a complete four-pillar audit of PCD schema migrations (341 files), live Radarr4k Custom Formats (68 scored rules in Profile 64), test harnesses, and release arbitration.
+   * Documented in [`evidence/full_stack_audit_953a_report.md`](evidence/full_stack_audit_953a_report.md) and [`evidence/full_stack_audit_953a_raw.json`](evidence/full_stack_audit_953a_raw.json).
+
+2. **Audit Findings & System Health:**
+   * **Live Custom Format Alignment:** 100% match with intended 4-tier ladder (Tier 1 `+1000`, Tier 2 `+500`, Tier 2 Lean `-3400`, Tier 3 `+2850/+2750`, Tier 4 `-2400`, Universal Hygiene `-10000`).
+   * **Schema Integrity:** 0 foreign key violations, 0 circular references, 0 missing migrations.
+   * **End-to-End Arbitration ($N=8$ Benchmark Titles):** 100% pass across all decision tiers.
+   * **Zero Configuration Drift:** Full stack is 100% operational, healthy, and unified.

@@ -123,6 +123,9 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Report: [`av1_tier4_scoring_fix_952a_report.md`](av1_tier4_scoring_fix_952a_report.md)
   * Raw Snapshot & Verification: [`av1_tier4_scoring_fix_952a_raw.json`](av1_tier4_scoring_fix_952a_raw.json)
   * PCD SQL Migration: [`../ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql`](../ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql)
+* **Op 953A Full Stack & Profile Integrity Audit:**
+  * Audit Report: [`full_stack_audit_953a_report.md`](full_stack_audit_953a_report.md)
+  * Raw Audit Dataset: [`full_stack_audit_953a_raw.json`](full_stack_audit_953a_raw.json)
 
 ---
 
