@@ -1070,24 +1070,24 @@ def run_simulation_battery():
         },
         # --- 16. OP 922: FOREIGN DUB DEMOTION BATTERY ---
         {
-            "category": "Op 922: Das Bourne Ultimatum 18.89GB Bi0hazard German Dub (-750 Dub Penalty -> Score 3600)",
+            "category": "Op 922/952: Das Bourne Ultimatum 18.89GB Bi0hazard German Dub (Tier 4 Quarantined -> Score 1200 >= 1001)",
             "title": "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 18.89,
             "expect_pass": True,
-            "min_band": 3500,
-            "max_band": 3700
+            "min_band": 1100,
+            "max_band": 1300
         },
         {
-            "category": "Op 922: The Bourne Ultimatum 18.89GB Non-Dub AV1 (No Dub Penalty -> Score 4350)",
+            "category": "Op 922/952: The Bourne Ultimatum 18.89GB Non-Dub AV1 (Tier 4 Quarantined -> Score 1950)",
             "title": "The.Bourne.Ultimatum.2007.2160p.HDR.EAC3.5.1.BluRay.AV1-Bi0hazard",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 18.89,
             "expect_pass": True,
-            "min_band": 4250,
-            "max_band": 4450
+            "min_band": 1850,
+            "max_band": 2050
         },
         {
             "category": "Op 922: Matrix German Dub 2160p AV1 (-750 Penalty -> Score 3450 Beats x265 2200)",
@@ -1324,7 +1324,7 @@ def run_simulation_battery():
         },
         {
             "category": "Op 935: Repack1 Micro-Ladder (Score 4655 Beats Standard 4650)",
-            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-Waldek",
+            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 18.5,
@@ -1394,13 +1394,23 @@ def run_simulation_battery():
         },
         {
             "category": "Op 936: Boutique Label Criterion Bonus (+50 pts on 4K Master)",
-            "title": "Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-Waldek",
+            "title": "Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-ChopperHitler",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "size_gb": 19.5,
             "expect_pass": True,
             "min_band": 5200,
             "max_band": 5300
+        },
+        {
+            "category": "Op 952: Tier 4 Unmeasured AV1 (Waldek / Bi0hazard Scored in Tier 4 >= 1001)",
+            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-Waldek",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "size_gb": 18.5,
+            "expect_pass": True,
+            "min_band": 1100,
+            "max_band": 1600
         }
     ]
     

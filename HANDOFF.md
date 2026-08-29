@@ -1065,3 +1065,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 3. **Governance & Safety Confirmation:**
    * Purely observational field test. Zero operational configurations, Custom Formats, profile scores, media files, or running containers were modified.
+
+---
+
+## 47. Fix Unmeasured AV1 Tier 4 Scoring (Op 952A)
+
+1. **Scoring Alignment & PCD Migration:**
+   * Added migration [`ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql`](ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql) creating `AV1 Unmeasured Encoders` Custom Format (matching `Bi0hazard`, `Waldek`, `SHADOW`, etc.) with score `-2400` in `Movies 2160p AV1 HQ` (and aligned `AV1 Nameless` to `-2400`).
+   * Documented in [`evidence/av1_tier4_scoring_fix_952a_report.md`](evidence/av1_tier4_scoring_fix_952a_report.md) and [`evidence/av1_tier4_scoring_fix_952a_raw.json`](evidence/av1_tier4_scoring_fix_952a_raw.json).
+
+2. **Unified 4-Tier Ladder ($\ge 1001$ Grabbable Threshold):**
+   * **Tier 1 (Preferred AV1):** Score $4500–5950$ (Top priority).
+   * **Tier 2 (Review AV1):** Score $3800–5300$ (Allowed fallback).
+   * **Tier 3 (Reference x265):** Score $2000–2800$ (High-fidelity baseline).
+   * **Tier 4 (Unmeasured AV1):** Score $1100–1600$ (Quarantined below Tier 3, but $\ge 1001$ grabbable).
+
+3. **Live Verification:**
+   * Validated *The Bourne Ultimatum (2007)* in Radarr4k: MainFrame x265 (Tier 3) scores `2200` and wins, while Bi0hazard AV1 (Tier 4) scores `1200` (subordinate but grabbable).
+   * Validated *John Wick: Chapter 2 (2017)*: Rob74K Review AV1 (Tier 2) scores `3650` and wins over MainFrame x265 at `2200`.

@@ -119,6 +119,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Field Test Report: [`hybrid_av1_profile_field_test_951a_report.md`](hybrid_av1_profile_field_test_951a_report.md)
   * Raw Test Results: [`hybrid_av1_profile_field_test_951a_raw.json`](hybrid_av1_profile_field_test_951a_raw.json)
   * Test Runner: [`../scripts/run_hybrid_av1_field_test_951a.py`](../scripts/run_hybrid_av1_field_test_951a.py)
+* **Op 952A Fix Unmeasured AV1 Tier 4 Scoring:**
+  * Report: [`av1_tier4_scoring_fix_952a_report.md`](av1_tier4_scoring_fix_952a_report.md)
+  * Raw Snapshot & Verification: [`av1_tier4_scoring_fix_952a_raw.json`](av1_tier4_scoring_fix_952a_raw.json)
+  * PCD SQL Migration: [`../ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql`](../ops/952.add-av1-unmeasured-encoders-tier4-scoring.sql)
 
 ---
 
