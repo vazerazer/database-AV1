@@ -13,14 +13,16 @@ REGEX_PATTERNS = {
     "AV1 Anime Encoders": r"(?i)^\[(?:Trix|Breeze|INDEX|Sav1or|AV1ARY|Sokudo|RigAV1|Ironclad|Valenciano)\]",
     
     # 2. Quality Encoders: Anchored to trailing group hyphen, optional site tag, and optional extension
-    # Op 925: Promotes dAV1nci, UH, Smokindevil; consolidates PRL.Waldek & case variants (DAV1NCI, TAOE)
+    # Op 925: Promotes dAV1nci, UH; consolidates PRL.Waldek & case variants (DAV1NCI, TAOE)
     # Op 932: Tolerates trailing indexer dupe tags (_1, _2, _3, -xpost)
-    "AV1 Quality Encoders": r"(?i)(?:^\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\]|-(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil|\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|Smokindevil)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
+    # Op 958: Demotes Smokindevil to Compact Encoders
+    "AV1 Quality Encoders": r"(?i)(?:^\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH)\]|-(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH|\[(?:CoSMiCSuRFeR|Waldek|PRL(?:\.Waldek|\s+Waldek)?|CHD|CHOPPERHITLER|TAoE|dAV1nci|UH)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
 
     # 3. Compact Encoders: Anchored to trailing group hyphen, optional site tag, and optional extension
     # Op 925: Adds Toasty; consolidates R&H family (R&H, RandH, R and H, RH, extension artifacts)
     # Op 932: Tolerates trailing indexer dupe tags (_1, _2, _3, -xpost)
-    "AV1 Compact Encoders": r"(?i)(?:^\[(?:UnAV1Chain|UserHEVC|RAV1NE|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH)\]|-(?:WhiskeyJack|WhiskyJack|edge2020|UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|\[(?:UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
+    # Op 958: Demotes Smokindevil to Compact Encoders
+    "AV1 Compact Encoders": r"(?i)(?:^\[(?:UnAV1Chain|UserHEVC|RAV1NE|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|Smokindevil|SmokinDevil)\]|-(?:WhiskeyJack|WhiskyJack|edge2020|UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|Smokindevil|SmokinDevil|\[(?:UnAV1Chain|UserHEVC|RAV1NE|R[-._ ]?(?:and|&)[-._ ]?H|RandH|RH|LAZARUS|DKV|TiZU|Saon|onlyfaffs|KIMJI|heTOrico|Rosy|anomoomin|CMCT|GRiMM|Dust|DIN|GanG|Toasty|Smokindevil|SmokinDevil)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)",
     
     # 4. Storage Savers: Anchored to trailing group hyphen, optional site tag, and optional extension
     "AV1 Storage Savers": r"(?i)(?:^\[(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345)\]|-(?:PSA|GalaxyRG|MeGusta|VXT|d3g|Ghost|rartv|ELiTE|LAMA|KaKa|YAWNTIC|BONE|GZ|CART|LUCY|DKong|Rapta|GubrakZ|Retr0|SWAXXON|FELIX12345|\[PSA\]|\[GalaxyRG\]|\[MeGusta\]|\[VXT\]|\[d3g\]|\[Ghost\]|\[rartv\]|\[ELiTE\]|\[LAMA\]|\[KaKa\]|\[YAWNTIC\]|\[BONE\]|\[GZ\]|\[CART\]|\[LUCY\]|\[DKong\]|\[Rapta\]|\[GubrakZ\]|\[Retr0\]|\[SWAXXON\]|\[FELIX12345\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?$)",
@@ -95,16 +97,15 @@ TEST_CASES = {
             "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
             "The.Lord.of.the.Rings.2003.Extended.2160p.AV1-DAV1NCI.mkv",
             "[dAV1nci] The Matrix 1999 2160p UHD BluRay",
-            "Inception.2010.2160p.UHD.BluRay.AV1-UH",
-            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-Smokindevil.mkv",
-            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-SmokinDevil.mkv"
+            "Inception.2010.2160p.UHD.BluRay.AV1-UH"
         ],
         "adversarial_negatives": [
             "The.Waldek.Mystery.2020.1080p.AV1-PSA.mkv",
             "The.Thing.1982.2160p.UHD.BluRay.AV1-Toasty.mkv",
             "Blade.Runner.1982.2160p.UHD.BluRay.AV1-R and H.mkv",
             "Something.2020.2160p.AV1-FLUX.mkv",
-            "Something.2020.2160p.AV1-Bi0hazard.mkv"
+            "Something.2020.2160p.AV1-Bi0hazard.mkv",
+            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-Smokindevil.mkv"
         ]
     },
     "AV1 Compact Encoders": {
@@ -137,12 +138,13 @@ TEST_CASES = {
             "Gladiator.2000.1080p.AV1-Dust.mkv",
             "Gladiator.2000.1080p.AV1-Dust[rarbg].mkv",
             "Movie.2024.1080p.AV1-DIN.mkv",
-            "Movie.2024.1080p.AV1-GanG.mkv"
+            "Movie.2024.1080p.AV1-GanG.mkv",
+            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-Smokindevil.mkv",
+            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-SmokinDevil.mkv"
         ],
         "adversarial_negatives": [
             "The.Lord.of.the.Rings.2003.Extended.2160p.AV1-dAV1nci",     # Promoted to Quality
             "Inception.2010.2160p.UHD.BluRay.AV1-UH",                    # Promoted to Quality
-            "Fury.2014.2160p.UHD.BluRay.AV1.TrueHD.Atmos-Smokindevil",    # Promoted to Quality
             "Durham.1988.2160p.UHD.BluRay.AV1-OtherGroup.mkv",          # Mid-title 'rh'
             "The.Rhino.2020.2160p.AV1-Unknown.mkv",                      # Mid-title 'rh'
             "Movie.2020.2160p.AV1-RHGroupX.mkv",                         # Non-isolated 'RH'

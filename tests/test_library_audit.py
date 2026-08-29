@@ -74,10 +74,10 @@ class TestLibraryAuditCore(unittest.TestCase):
         self.assertEqual(classify_group_tier("PRL", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("dAV1nci", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("UH", self.tier_patterns), "Quality")
-        self.assertEqual(classify_group_tier("Smokindevil", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("Waldek", self.tier_patterns), "Untiered")
         
-        # Compact Tier (Op 925 expanded)
+        # Compact Tier (Op 925/958 expanded)
+        self.assertEqual(classify_group_tier("Smokindevil", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("Toasty", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("LAZARUS", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("DKV", self.tier_patterns), "Compact")
