@@ -1122,3 +1122,16 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Stack-Only Operational State:**
    * Local server is in a pristine, stack-only production operational baseline with zero residual scratch files.
    * All media stack services (Radarr4k, Profilarr, Altmount, Silo, Plex, MergerFS) remain 100% functional and actively enforcing the frozen 4-tier hybrid profile.
+
+---
+
+## 51. Profilarr 69/69 Alignment & Deprecated Banned Format Clean-up (Op 956A)
+
+1. **Root Cause Analysis & Fix:**
+   * Resolved Profilarr `69/71` sync discrepancy caused by deprecated upstream Dictionarry format names (`Banned Groups (Compact)` and `Banned Groups (Release Title)`) in `ops/902`.
+   * Created migration [`ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql`](ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql) removing ghost scoring rules from all AV1 profiles.
+   * Documented in [`evidence/profilarr_alignment_956a_report.md`](evidence/profilarr_alignment_956a_report.md) and [`evidence/profilarr_alignment_956a_raw.json`](evidence/profilarr_alignment_956a_raw.json).
+
+2. **Full Parity & Drift-Free State:**
+   * PCD `Movies 2160p AV1 HQ` profile scoring count is exactly 69, achieving 100% parity with live Radarr4k (69/69).
+   * Snapshot hashes and drift verification in [`tests/test_profile_drift.py`](tests/test_profile_drift.py) pass 100%.

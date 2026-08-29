@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "alignment_metadata": {
+    "operation": "OP 956A",
+    "operation_name": "Remove Deprecated Banned Group References & Align Profilarr 69/69",
+    "date": "2026-08-29",
+    "target_profiles": [
+      "Movies 2160p AV1 HQ",
+      "Movies 1080p AV1 HQ",
+      "Movies 1080p AV1 Storage",
+      "TV 2160p AV1",
+      "TV 1080p AV1 HQ",
+      "TV 1080p AV1 Storage",
+      "Anime 1080p AV1",
+      "Movies SHADOW Explorer"
+    ],
+    "status": "PASS_ALIGNED"
+  },
+  "root_cause_analysis": {
+    "issue_description": "Profilarr reported 69/71 synchronized Custom Formats when syncing Movies 2160p AV1 HQ to Radarr4k.",
+    "cause": "Early upstream Dictionarry migration ops 88 and 156 introduced Banned Groups (Compact) and Banned Groups (Release Title), which were subsequently deprecated and consolidated in ops 171 and 190 into Banned Groups, Banned Groups (Regular), Banned Groups (Efficient), and Banned Remux. Op 902 had assigned scores to the defunct format names.",
+    "resolution": "PCD migration ops/956 cleanly removed the 2 defunct format score references across all AV1 quality profiles, bringing PCD profile scoring count to exactly 69 items matching live Radarr4k."
+  },
+  "score_counts_post_migration": {
+    "Movies 2160p AV1 HQ": 69,
+    "Movies SHADOW Explorer": 68,
+    "TV 2160p AV1": 48,
+    "Movies 1080p AV1 HQ": 44,
+    "TV 1080p AV1 HQ": 42,
+    "Movies 1080p AV1 Storage": 38,
+    "TV 1080p AV1 Storage": 38,
+    "Anime 1080p AV1": 35
+  },
+  "active_banned_custom_formats": [
+    { "name": "Banned Groups", "score": -10000, "status": "ACTIVE" },
+    { "name": "Banned Groups (Regular)", "score": -10000, "status": "ACTIVE" },
+    { "name": "Banned Groups (Efficient)", "score": -10000, "status": "ACTIVE" },
+    { "name": "Banned Remux", "score": -10000, "status": "ACTIVE" }
+  ]
+}

@@ -133,6 +133,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Cleanup Plan: [`server_cleanup_955a_plan.md`](server_cleanup_955a_plan.md)
   * Cleanup Report: [`server_cleanup_955a_report.md`](server_cleanup_955a_report.md)
   * Raw Inventory Dataset: [`server_cleanup_955a_raw.json`](server_cleanup_955a_raw.json)
+* **Op 956A Profilarr 69/69 Alignment & Deprecated Banned Format Clean-up:**
+  * Alignment Report: [`profilarr_alignment_956a_report.md`](profilarr_alignment_956a_report.md)
+  * Raw Alignment Dataset: [`profilarr_alignment_956a_raw.json`](profilarr_alignment_956a_raw.json)
+  * PCD SQL Migration: [`../ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql`](../ops/956.remove-deprecated-banned-groups-from-av1-profiles.sql)
 
 ---
 
