@@ -682,10 +682,11 @@ def run_simulation_battery():
         for cf, s in matched:
             print(f"    - {cf:<30}: {s:>+6}")
 
-    # --- UPGRADE SCORE INCREMENT BATTERY (increment = 300) ---
+    # --- UPGRADE SCORE INCREMENT BATTERY (increment = 1) ---
     increment_cases = [
-        {"name": "Minor service swap (1350 HMAX vs 1400 AMZN)", "existing": 1350, "new": 1400, "expect_upgrade": False},
-        {"name": "Major AV1 upgrade (1400 x265 vs 3000 AV1)", "existing": 1400, "new": 3000, "expect_upgrade": True},
+        {"name": "Identical score swap (1400 vs 1400)", "existing": 1400, "new": 1400, "expect_upgrade": False},
+        {"name": "Positive feature upgrade (+50 pts)", "existing": 3800, "new": 3850, "expect_upgrade": True},
+        {"name": "Major AV1 upgrade (1400 x265 vs 3200 AV1)", "existing": 1400, "new": 3200, "expect_upgrade": True},
         {"name": "Tier upgrade (1400 vs 1700)", "existing": 1400, "new": 1700, "expect_upgrade": True},
     ]
     inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'Movies 2160p AV1 HQ'").fetchone()[0]

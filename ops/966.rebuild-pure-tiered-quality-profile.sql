@@ -7,8 +7,8 @@ BEGIN TRANSACTION;
 -- 1. Configure Quality Profile Parameters
 UPDATE "quality_profiles"
 SET "minimum_custom_format_score" = 1000,
-    "upgrade_until_score" = 3200,
-    "upgrade_score_increment" = 300,
+    "upgrade_until_score" = 10000,
+    "upgrade_score_increment" = 1,
     "description" = 'Flagship 4K Quality profile (AV1-First, Dumpstarr 2160p Territory) targeting transparent 4K AV1 & x265 HDR/Dolby Vision encodes with ARC-optimized bitstream audio and vetted 1080p archival fallback.'
 WHERE "name" = 'Movies 2160p AV1 HQ';
 

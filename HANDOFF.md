@@ -1235,8 +1235,15 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **IMAX (`+100 pts`):** Matches 4K Blu-ray releases with variable aspect ratio IMAX sequences (*Interstellar*, *Oppenheimer*, *Dunkirk*, *Top Gun: Maverick*).
 
 2. **Empirical Verification (*Interstellar* & *Marvel*):**
-   * **Interstellar (2014):** `hallowed` IMAX x265 DV (**`3,870 pts`** 🏆) > `RandH` AV1 DV (`3,850 pts`) > `W4NK3R` x265 DV (`3,450 pts`) > `CHD` AV1 (`3,350 pts`) > `PiRaTeS` WEB-DL (`2,280 pts`).
-   * **Avengers: Endgame (2019):** `FLUX` IMAX Enhanced DSNP DV Atmos (**`3,370 pts`** 🏆) > Standard Letterbox DSNP (`3,270 pts`).
+## 60. Upgrade Until Ceiling & Increment Normalization (Op 966-REV8)
+
+1. **Root Cause Analysis (Blocked Upgrades on Top Releases):**
+   * **`upgrade_until_score = 3200`**: Because high-quality disc releases (`hallowed`, `BHDStudio`) easily score `3,700–4,000+ pts`, Radarr saw existing files as having exceeded the upgrade threshold, refusing to upgrade to superior AV1 masters.
+   * **`upgrade_score_increment = 300`**: Required massive $+300$ differentials, blocking valid upgrades (e.g. $+80$ AV1 upgrade over x265, $+100$ Extended cut upgrade over Theatrical, $+100$ IMAX upgrade).
+
+2. **Standard Alignment (`upgrade_until_score: 10000`, `upgrade_score_increment: 1`):**
+   * Aligned with Dumpstarr / TRaSH standards: `upgrade_until_score = 10000` (unbounded ceiling) and `upgrade_score_increment = 1` (any strictly positive improvement triggers an upgrade).
+
 
 
 

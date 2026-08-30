@@ -2,8 +2,8 @@
   "Movies 2160p AV1 HQ": {
     "name": "Movies 2160p AV1 HQ",
     "min_score": 1000,
-    "upgrade_until_score": 3200,
-    "increment": 300,
+    "upgrade_until_score": 10000,
+    "increment": 1,
     "description": "Matches all 720p/1080p HD releases encoded in x265/HEVC to reject sub-4K x265 encodes",
     "custom_formats": {
       "AV1 Quality Encoders": 3200,
