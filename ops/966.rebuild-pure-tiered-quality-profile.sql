@@ -43,7 +43,8 @@ WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ'
     'Not AV1',
     'AV1',
     'Legacy x264 Codec',
-    'Legacy Trusted x264'
+    'Legacy Trusted x264',
+    '2160p Balanced Tier 1'
   );
 
 -- 5. Create x265 (HD) custom format to deny x265/HEVC below 2160p (Dumpstarr rule)
@@ -78,7 +79,6 @@ VALUES
   ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'all', 3000),
   ('Movies 2160p AV1 HQ', '2160p Quality Tier 1', 'all', 3000),
   ('Movies 2160p AV1 HQ', '2160p Quality Tier 2', 'all', 3000),
-  ('Movies 2160p AV1 HQ', '2160p Balanced Tier 1', 'all', 3000),
   ('Movies 2160p AV1 HQ', '2160p Balanced Tier 2', 'all', 3000),
   ('Movies 2160p AV1 HQ', '2160p Balanced Tier 3', 'all', 3000)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3000;
@@ -149,7 +149,7 @@ INSERT INTO "condition_patterns" ("custom_format_name", "condition_name", "regul
 VALUES ('Banned Groups', 'Saon', 'Saon')
 ON CONFLICT DO NOTHING;
 
--- 14. Deduplicate overlapping group patterns across tiers
+-- 14. Deduplicate overlapping group patterns across tiers and purge orphan conditions
 DELETE FROM "condition_patterns"
 WHERE "custom_format_name" = '2160p Balanced Tier 1'
   AND lower("regular_expression_name") = 'hone';
@@ -166,6 +166,15 @@ DELETE FROM "condition_patterns"
 WHERE "custom_format_name" = 'WEB-DL Tier 3'
   AND lower("regular_expression_name") IN ('flux', 'ntb', 'thefarm', 'byndr', 'cmrg', 'hone', 'kitsune', 'tepes', 'webdv');
 
+DELETE FROM "custom_format_conditions"
+WHERE ("custom_format_name", "name") IN (
+    ('1080p Quality Tier 3', 'CRiSC'),
+    ('1080p Quality Tier 3', 'decibeL'),
+    ('1080p Quality Tier 3', 'SbR'),
+    ('2160p Balanced Tier 1', 'HONE'),
+    ('WEB-DL Tier 2', 'NTb')
+);
+
 -- 15. Update Banned Groups Regex (Full Upstream Clean Groups, CHD & TiZU promoted to Tiers)
 UPDATE "regular_expressions"
 SET "pattern" = '(?i)(?:^\[(?:VISIONPLUSHDR|STUTTERSHIT|Feranki1980|ShieldBearer|jennaortega|COLLECTiVE|CREATiVE24|FaNGDiNG0|L0SERNIGHT|TERMiNAL|CrEwSaDe|GalaxyRG|RiffTrax|SUNSCREEN|edge2020HD|iNTENSO|HDHUB4U|KiNGDOM|BAUCKLEY|PATOMiEL|BARC0DE|C1NEM4|HDTime|HDWinG|MySiLU|NhaNc3|PRODJi|TEKNO3D|Tigole|Tofu4U|DEiMOS|EuReKA|MIRCrew|MarkII|MeGusta|RU4HD|SANTi|Scene|aXXo|beAst|iPlanet|mSD|nHD|nSD|nikt0|QxR|TGx|UTR|Judas|Ghost|Saon|41RGB|4K4U|AROMA|AZAZE|CDDHD|CHAOS|CTFOH|EPiC|FZHD|GPTHD|Leffe|LiGaS|Liber8|MTeam|PTNK|WiKi|YIFY|Zeus|24xHD|BdC|BTM|C4K|CiNE|DDR|DNL|DRX|FGT|FMD|FRDS|GHD|HDS|HDT|JFF|KIRA|LAMA|LUCY|Mesc|MuTT|OFT|Pahe|RDN|SHD|TBS|TIKO|WAF|YTS|d3g|iVy|mHD|x0r|AOC|E|KC)\]|-(?:VISIONPLUSHDR|STUTTERSHIT|Feranki1980|ShieldBearer|jennaortega|COLLECTiVE|CREATiVE24|FaNGDiNG0|L0SERNIGHT|TERMiNAL|CrEwSaDe|GalaxyRG|RiffTrax|SUNSCREEN|edge2020HD|iNTENSO|HDHUB4U|KiNGDOM|BAUCKLEY|PATOMiEL|BARC0DE|C1NEM4|HDTime|HDWinG|MySiLU|NhaNc3|PRODJi|TEKNO3D|Tigole|Tofu4U|DEiMOS|EuReKA|MIRCrew|MarkII|MeGusta|RU4HD|SANTi|Scene|aXXo|beAst|iPlanet|mSD|nHD|nSD|nikt0|QxR|TGx|UTR|Judas|Ghost|Saon|41RGB|4K4U|AROMA|AZAZE|CDDHD|CHAOS|CTFOH|EPiC|FZHD|GPTHD|Leffe|LiGaS|Liber8|MTeam|PTNK|WiKi|YIFY|Zeus|24xHD|BdC|BTM|C4K|CiNE|DDR|DNL|DRX|FGT|FMD|FRDS|GHD|HDS|HDT|JFF|KIRA|LAMA|LUCY|Mesc|MuTT|OFT|Pahe|RDN|SHD|TBS|TIKO|WAF|YTS|d3g|iVy|mHD|x0r|AOC|E|KC|\[(?:VISIONPLUSHDR|STUTTERSHIT|Feranki1980|ShieldBearer|jennaortega|COLLECTiVE|CREATiVE24|FaNGDiNG0|L0SERNIGHT|TERMiNAL|CrEwSaDe|GalaxyRG|RiffTrax|SUNSCREEN|edge2020HD|iNTENSO|HDHUB4U|KiNGDOM|BAUCKLEY|PATOMiEL|BARC0DE|C1NEM4|HDTime|HDWinG|MySiLU|NhaNc3|PRODJi|TEKNO3D|Tigole|Tofu4U|DEiMOS|EuReKA|MIRCrew|MarkII|MeGusta|RU4HD|SANTi|Scene|aXXo|beAst|iPlanet|mSD|nHD|nSD|nikt0|QxR|TGx|UTR|Judas|Ghost|Saon|41RGB|4K4U|AROMA|AZAZE|CDDHD|CHAOS|CTFOH|EPiC|FZHD|GPTHD|Leffe|LiGaS|Liber8|MTeam|PTNK|WiKi|YIFY|Zeus|24xHD|BdC|BTM|C4K|CiNE|DDR|DNL|DRX|FGT|FMD|FRDS|GHD|HDS|HDT|JFF|KIRA|LAMA|LUCY|Mesc|MuTT|OFT|Pahe|RDN|SHD|TBS|TIKO|WAF|YTS|d3g|iVy|mHD|x0r|AOC|E|KC)\])(?:\[[a-z0-9_\-\.]+\])?(?:\.[a-z0-9]{2,4})?(?:[-._ ]?(?:[0-9]+|xpost))*$)'
@@ -180,8 +189,9 @@ CREATE TEMP TABLE _pcd_assertions (
 
 INSERT INTO _pcd_assertions (name, condition)
 VALUES
-  ('Active CF Count == 59', (SELECT count(*) = 59 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
+  ('Active CF Count == 58', (SELECT count(*) = 58 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
   ('Banned Groups CF Count == 3', (SELECT count(*) = 3 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" LIKE 'Banned Groups%')),
+  ('Zero Orphan Release Group Conditions', (SELECT count(*) = 0 FROM "custom_format_conditions" cfc LEFT JOIN "condition_patterns" cp ON cfc.custom_format_name = cp.custom_format_name AND cfc.name = cp.condition_name WHERE cfc.type IN ('release_group', 'release_title') AND cp.regular_expression_name IS NULL)),
   ('Tier Regex Audio Token Immunity', (SELECT count(*) = 0 FROM "regular_expressions" r WHERE r.name IN ('AV1 Quality Encoders', 'AV1 Compact Encoders', 'Saon') AND (r.pattern LIKE '%(DTS|%' OR r.pattern LIKE '%|DTS|%' OR r.pattern LIKE '%|DTS)%' OR r.pattern LIKE '%(Atmos|%' OR r.pattern LIKE '%|Atmos|%' OR r.pattern LIKE '%|Atmos)%' OR r.pattern LIKE '%(TrueHD|%' OR r.pattern LIKE '%|TrueHD|%' OR r.pattern LIKE '%|TrueHD)%'))),
   ('Zero Tier vs Banned Collisions', (SELECT count(*) = 0 FROM "regular_expressions" r WHERE r.name = 'TRaSH Banned Groups' AND (r.pattern LIKE '%|CHD|%' OR r.pattern LIKE '%|TiZU|%' OR r.pattern LIKE '%|FLUX|%' OR r.pattern LIKE '%|dAV1nci|%')));
 
