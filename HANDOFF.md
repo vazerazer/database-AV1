@@ -1180,4 +1180,30 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`STARVED-BUT-CLEAN` (46 titles, 97.9%):** 46 out of 47 suspect titles showed near-zero dark-scene banding ($\text{CAMBI} \le 2.67 \ll 5.0$) and zero macroblocking, proving high-fidelity retention despite lean bitrates.
    * **`HDR/DoVi Profiles` (44 titles, 93.6%):** Confirmed 10-bit dynamic range and wide color gamut deliver smooth gradients even at low BPP.
 
+---
+
+---
+
+## 56. Pure Tiered Quality Profile Rebuild (Op 966-REV3-FINAL — AV1-First Dumpstarr Hybrid)
+
+1. **Architecture & Monotonic Spacing Proof:**
+   * **Tier 1 — Elite 4K Encoders (`+3000 pts`):** Authoritative AV1 ladder (`ChopperHitler`, `dAV1nci`, `RandH`, `KIMJI`, `UH`, `TAoE`, `CoSMiCSuRFeR`, `PRL`, `CHD`, `TiZU`) + Upstream elite disc encodes (`CtrlHD`, `DON`, `MainFrame`, `W4NK3R`, `BHDStudio`, `hallowed`, `REBORN`, `SA89`, `SoLaR`, `dkore`).
+   * **Tier 2 — Top 4K Encoders (`+2200 pts`):** Upstream 2160p Bluray Tier 03/04 + WEB Tier 01/02 (`FLUX`, `NTb`, `TheFarm`, `BYNDR`, `CMRG`, `Kitsune`, `playWEB`, `TEPES`, `SiGMA`, `HONE`, `AMZN`, `HMAX`, `DSNP`, etc.).
+   * **Tier 3 — Archival 1080p Blu-ray Disc (`+1400 pts`):** Upstream 1080p disc archival (`c0kE`, `ATELiER`, `SA89`, `CtrlHD`, `EbP`, `LoRD`, `HiFi`, `VietHD`, etc.).
+   * **Feature Stacking Cap ($< 800 \text{ pts}$):** Total visual + audio feature bonuses cap at **`+775 pts`**, guaranteeing $\text{Bare Tier 1 (3000)} > \text{Max Tier 2 (2975)} > \text{Max Tier 3 (2175)} > \text{Cutoff (1000)} > \text{Untiered (775)}$.
+   * **Sub-4K x265 Denial:** Enforces Dumpstarr rule rejecting any sub-4K x265/HEVC encodes via `x265 (HD)` (`-10000 pts`), while preserving high-bitrate 1080p x264 archival encodes.
+
+2. **Quality Definitions & Remux Blockade (185 MB/min Ceiling):**
+   * **2160p Qualities:** `min 30, preferred 100, max 185 MB/min` (~22.5 GB @120min, ~43.6 GB @232min LOTR ROTK anchor).
+   * **1080p Qualities:** `min 12, preferred 45, max 120 MB/min` (~14.4 GB @120min).
+   * **Hard Quality Removal:** `Remux-2160p` and `Remux-1080p` permanently deleted from `quality_group_members`.
+
+3. **Collision & Alias Resolution (Bug 1, 2, 3 Resolved):**
+   * **Bug 1 (Collisions):** Resolved tier-vs-banned contradictions (`CHD` and `TiZU` promoted to tiers, purged from banned). Zero collisions across all 208 aliases.
+   * **Bug 2 (Aliases):** Consolidated all known aliases into canonical group regexes with trailing-group anchoring and left-boundary guards (`(?<![A-Za-z0-9])`). Verified via 208-alias automated screening battery with 0 anomalies.
+   * **Bug 3 (AV1-First Banned List):** Rebuilt clean banned list targeting genuine micro-rips (`YIFY`, `PSA`, `Saon`, `MeGusta`, `QxR`, `TGx`) while leaving `RARBG` neutral `0` and excluding anime/TV-only bans.
+
+
+
+
 

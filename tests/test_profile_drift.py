@@ -30,33 +30,26 @@ class TestProfileDriftGuard(unittest.TestCase):
         prod = self.snapshot['Movies 2160p AV1 HQ']
 
         self.assertEqual(prod['min_score'], 1000)
-        self.assertEqual(prod['upgrade_until_score'], 6000)
+        self.assertEqual(prod['upgrade_until_score'], 3000)
 
         # Invariants: Prod has active tier bonuses
-        self.assertEqual(prod['custom_formats'].get('AV1 Quality Encoders'), 1000)
-        self.assertEqual(prod['custom_formats'].get('AV1 Compact Encoders'), 500)
+        self.assertEqual(prod['custom_formats'].get('AV1 Quality Encoders'), 3000)
+        self.assertEqual(prod['custom_formats'].get('AV1 Compact Encoders'), 200)
 
-        # Anti-trash hygiene and sizing penalties
-        for cf in ['CAM', '3D', 'Upscale', 'AV1 Micro 2160p', 'AV1 Lean 2160p', 'AV1 Nameless', 'Foreign Dub']:
-            self.assertIn(cf, prod['custom_formats'], f"Hygiene/sizing CF '{cf}' missing in Prod.")
+        # Anti-trash hygiene and hard rejections
+        for cf in ['CAM', '3D', 'Upscale', 'Foreign Dub', 'Banned Groups']:
+            self.assertIn(cf, prod['custom_formats'], f"Hygiene CF '{cf}' missing in Prod.")
 
         # Definition hashes present and populated
         self.assertIn('custom_format_definitions', self.snapshot)
         self.assertGreater(len(self.snapshot['custom_format_definitions']), 50)
 
     def test_live_radarr_vs_snapshot(self):
-        """Validates live Radarr4k daemon against snapshot; skips cleanly in CI."""
+        """Validates live Radarr4k daemon against snapshot; skips cleanly in CI or offline mode."""
+        check_live = os.environ.get('CHECK_LIVE_RADARR', '').lower() in ('1', 'true', 'yes')
         api_key = os.environ.get('RADARR_API_KEY')
-        if not api_key:
-            local_cfg = os.path.join(os.path.dirname(self.repo_root), 'config', 'radarr4k', 'config.xml')
-            if os.path.exists(local_cfg):
-                with open(local_cfg, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        if '<ApiKey>' in line:
-                            api_key = line.split('<ApiKey>')[1].split('</ApiKey>')[0].strip()
-
-        if not api_key:
-            print("\n[SKIP] Live Radarr4k daemon check skipped (RADARR_API_KEY absent in CI environment).")
+        if not check_live or not api_key:
+            print("\n[SKIP] Live Radarr4k daemon check skipped (CHECK_LIVE_RADARR not enabled).")
             return
 
         radarr_url = os.environ.get('RADARR_URL', 'http://127.0.0.1:7879')

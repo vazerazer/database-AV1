@@ -149,6 +149,9 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Summary Report: [`artifacts_suspects_965a_summary.md`](artifacts_suspects_965a_summary.md)
   * Summary JSON: [`artifacts_suspects_965a_summary.json`](artifacts_suspects_965a_summary.json)
   * Raw Dataset: [`artifacts_suspects_965a_raw.csv`](artifacts_suspects_965a_raw.csv)
+* **Op 966 Pure Tiered Quality Profile Rebuild:**
+  * PCD SQL Migration: [`../ops/966.rebuild-pure-tiered-quality-profile.sql`](../ops/966.rebuild-pure-tiered-quality-profile.sql)
+  * Verification Battery: [`../tests/simulate_scoring.py`](../tests/simulate_scoring.py)
 
 ---
 

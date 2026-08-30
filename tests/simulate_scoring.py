@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Phase 4 + Fallback Ladder Unified Scoring Simulation Battery
+PCD Flagship Quality Profile Simulation Battery (AV1-First, Dumpstarr 2160p Hybrid Standard)
 Evaluates:
-- Band 1: Pure AV1 Releases (>= 2300) -> Highest priority within quality group
-- Band 2: Tiered x265 Fallbacks (1000 - 1400) -> Accepted above min cutoff, auto-upgrades to AV1
-- Band 3: Random Untiered x265 / Codec-less Releases (< 1000 for 2160p, < 500 for 1080p) -> Rejected
-- Band 4: Codec-less AV1-unnamed Releases -> Rejected (documented trade-off)
-- Band 5: Legacy x264 Releases (< 0) -> Hard rejected
-- Band 6: Universal Hygiene (CAM, Screener, Upscale, 3D, Full Disc, Banned Groups) -> Hard rejected (-10000)
+- Tier 1: Elite 4K Encoders (AV1 + Upstream x265/x264) -> +3000
+- Tier 2: Top 4K Encoders (WEB-DL + 2160p Bluray Tier 03/04) -> +2200
+- Tier 3: Archival 1080p Blu-ray Disc Encoders -> +1400
+- Feature Bonuses: Max stacking strictly capped < 800
+- Untiered Releases without Vetted Group: < 1000 (Fails profile minimum cutoff)
+- Sub-4K x265/HEVC: -10000 (x265 HD denied below 2160p)
+- Banned / Toxic Groups: -10000 (Hard rejected)
+- Full Alias Coverage Test: Verifies all aliases across tiers
 """
 
 import sqlite3
@@ -83,6 +85,7 @@ def parse_release_tokens(title):
     is_hdtv = bool(re.search(r"\b(HDTV)\b", title, re.IGNORECASE))
     is_2160p = bool(re.search(r"\b(2160p|4K|UHD)\b", title, re.IGNORECASE))
     is_1080p = bool(re.search(r"\b(1080p|1080i)\b", title, re.IGNORECASE))
+    is_720p = bool(re.search(r"\b(720p)\b", title, re.IGNORECASE))
 
     return {
         "group": group,
@@ -91,7 +94,8 @@ def parse_release_tokens(title):
         "is_webrip": is_webrip,
         "is_hdtv": is_hdtv,
         "is_2160p": is_2160p,
-        "is_1080p": is_1080p
+        "is_1080p": is_1080p,
+        "is_720p": is_720p
     }
 
 def regex_match(pattern_str, text):
@@ -107,12 +111,9 @@ def regex_match(pattern_str, text):
 
 def make_python_re_compatible(pat):
     p = pat.replace('(?i)', '').replace('(?-i)', '')
-    # Convert (?<=^|...) and (?<=...|^)
     p = re.sub(r'\(\?<=\^\|([^)]+)\)', r'(?:^|(?<=\1))', p)
     p = re.sub(r'\(\?<=([^)]+)\|\^\)', r'(?:(?<=\1)|^)', p)
     p = p.replace(r'(?<=\b[12]\d{3}\b).*?', r'(?:[12]\d{3}.*?)')
-
-    # Specific upstream variable-width lookbehinds
     p = p.replace(r'(?<!e-?)', r'(?:(?<!e)(?<!e-))')
     p = p.replace(r'(?<!NON.?)', r'(?:(?<!NON)(?<!NON.))')
     p = p.replace(r'(?<!HD[._ -]|HD)', r'(?:(?<!HD[._ -])(?<!HD))')
@@ -127,12 +128,10 @@ def make_python_re_compatible(pat):
 class ScoringContext:
     def __init__(self, conn):
         self.profiles = {}
-        # Pre-cache profiles and their rules
         prof_rows = conn.execute("SELECT name, minimum_custom_format_score, upgrade_until_score FROM quality_profiles").fetchall()
         for p_name, min_s, upg_s in prof_rows:
             self.profiles[p_name] = {"min_score": min_s, "upgrade_until": upg_s, "rules": {}}
 
-        # Pre-compile regular expressions
         pat_cache = {}
         for r_name, p_str in conn.execute("SELECT name, pattern FROM regular_expressions").fetchall():
             clean_pat = make_python_re_compatible(p_str)
@@ -141,7 +140,6 @@ class ScoringContext:
             except re.error:
                 pat_cache[r_name] = (None, clean_pat)
 
-        # Pre-cache rules per profile and arr_type
         for p_name in self.profiles:
             for arr in ("radarr", "sonarr"):
                 rules = conn.execute("""
@@ -179,13 +177,19 @@ class ScoringContext:
 
                         sources = set()
                         if c_type == "source":
-                            for (s_val,) in conn.execute("SELECT source FROM condition_sources WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
-                                sources.add(s_val.lower().replace("_", "").replace("-", ""))
+                            s_rows = conn.execute("""
+                                SELECT cs.source FROM condition_sources cs
+                                WHERE cs.custom_format_name = ? AND cs.condition_name = ?
+                            """, (cf_name, c_name)).fetchall()
+                            sources = set(r[0].lower() for r in s_rows)
 
                         res_set = set()
                         if c_type == "resolution":
-                            for (r_val,) in conn.execute("SELECT resolution FROM condition_resolutions WHERE custom_format_name = ? AND condition_name = ?", (cf_name, c_name)).fetchall():
-                                res_set.add(r_val.lower().replace("_", "").replace("-", ""))
+                            r_rows = conn.execute("""
+                                SELECT cr.resolution FROM condition_resolutions cr
+                                WHERE cr.custom_format_name = ? AND cr.condition_name = ?
+                            """, (cf_name, c_name)).fetchall()
+                            res_set = set(r[0].lower() for r in r_rows)
 
                         size_bounds = None
                         if c_type == "size":
@@ -278,6 +282,7 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
                 r_set = cond["res_set"]
                 if "2160p" in r_set and tokens["is_2160p"]: cond_matched = True
                 if "1080p" in r_set and tokens["is_1080p"]: cond_matched = True
+                if "720p" in r_set and tokens["is_720p"]: cond_matched = True
             elif c_type == "size":
                 if size_gb is not None and cond.get("size_bounds"):
                     min_b, max_b = cond["size_bounds"]
@@ -292,6 +297,7 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
             if required:
                 if not cond_matched:
                     all_required_met = False
+                    break
             else:
                 if cond_matched:
                     matched_optional_types.add(c_type)
@@ -312,1109 +318,334 @@ def run_simulation_battery():
     conn = build_compiled_db()
 
     test_corpus = [
-        # --- 1. PURE AV1 2160p RELEASES (BAND >= 2300) ---
+        # --- 1. TOP TIER AV1 2160p & 1080p ENCODERS (Score >= 3000) ---
         {
-            "category": "Pure AV1 2160p HQ (standard suffix)",
+            "category": "Pure AV1 2160p HQ (dAV1nci LOTR)",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2300
+            "min_band": 3000
         },
         {
-            "category": "Pure AV1 2160p HQ (R&H ampersand variant - Task 4 Top Priority)",
+            "category": "Pure AV1 2160p HQ (ChopperHitler Matrix)",
+            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3000
+        },
+        {
+            "category": "Pure AV1 2160p HQ (RandH / R&H Shawshank)",
             "title": "The.Shawshank.Redemption.1994.2160p.BluRay.DV.HDR10.AV1.DTS.5.1-R&H",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2300
+            "min_band": 3000
         },
         {
-            "category": "Pure AV1 2160p HQ (R and H spaced variant)",
-            "title": "The.Shawshank.Redemption.1994.2160p.BluRay.DV.HDR10.AV1.DTS.5.1-R and H",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 2160p HQ (Smokindevil - Task 4 Item 2)",
-            "title": "The.Shawshank.Redemption.1994.2160p.UHD.BluRay.DD+5.1.HDR.AV1-Smokindevil",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 2160p HQ (site-tagged [rarbg])",
-            "title": "The.Matrix.1999.2160p.HDR.UHD.BluRay.AV1.DDP5.1-dAV1nci[rarbg]",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 2160p HQ (site-tagged [TGx])",
-            "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.OPUS.7.1-UH[TGx]",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Quality Encoder - Beats Compact Tier)",
-            "title": "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR10+.AV1-CoSMiCSuRFeR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 6000
-        },
-        {
-            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR site-tagged [rarbg])",
-            "title": "Dune.Part.Two.2024.2160p.HDR.AV1-CoSMiCSuRFeR[rarbg]",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 4500
-        },
-        {
-            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR no extension)",
+            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Dune 2)",
             "title": "Dune.Part.Two.2024.2160p.HDR.AV1-CoSMiCSuRFeR",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 4500
+            "min_band": 3000
         },
         {
-            "category": "Pure AV1 2160p HQ (bracketed -[dAV1nci])",
-            "title": "Dune.Part.Two.2024.2160p.HDR.AV1-[dAV1nci].mkv",
+            "category": "Pure AV1 2160p HQ (UH LOTR)",
+            "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.OPUS.7.1-UH",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2300
+            "min_band": 3000
         },
         {
-            "category": "Pure AV1 2160p TV (WEB-DL edge2020)",
-            "title": "House.of.the.Dragon.S02E01.2160p.UHD.WEB-DL.AV1.DDP5.1.Atmos.DV.HDR.AMZN.DSNP-edge2020",
+            "category": "Pure AV1 1080p HQ (KIMJI The Hunt)",
+            "title": "The.Hunt.2012.1080p.BluRay.Opus.5.1.AV1-KIMJI",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2300
+            "min_band": 3000
+        },
+        {
+            "category": "Pure AV1 2160p HQ (TAoE Dune 2)",
+            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3000
         },
 
-        # --- 2. PURE AV1 1080p HQ & ANIME RELEASES (BAND >= 2300) ---
+        # --- 2. TIERED X265 4K FALLBACKS (Score 2200 - 3775) ---
         {
-            "category": "Pure AV1 1080p HQ",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.1080p.Bluray.OPUS.7.1.AV1-WhiskeyJack",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 1080p HQ (UserHEVC - Task 4 Item 4)",
-            "title": "The.Matrix.1999.1080p.AV1.Opus-UserHEVC.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 1080p HQ (RAV1NE prefix - Task 4 Item 4)",
-            "title": "[RAV1NE] Interstellar 2014 1080p AV1 10bit.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 1080p HQ (edge2020 valid)",
-            "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 Anime (Ironclad - Task 4 Item 4)",
-            "title": "[Ironclad] Sousou no Frieren - 01 [AV1 1080p 10bit Opus].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 Anime (Trix)",
-            "title": "[Trix] Frieren - Beyond Journey's End (01-28) [AV1 10bit 1080p Opus].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 Anime (Breeze)",
-            "title": "[Breeze] Jujutsu Kaisen - S02 [1080p AV1 10bit Opus].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-        {
-            "category": "Pure AV1 Anime (AV1ARY)",
-            "title": "[AV1ARY] Dungeon Meshi [1080p AV1 10bit Dual-Audio].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 2300
-        },
-
-        # --- 3. TIERED X265 FALLBACK RELEASES (BAND 1000 - 3400 for 2160p, 1000 - 3400 for 1080p fallback) ---
-        {
-            "category": "SDR 2160p WEB-DL Tier 1 (FLUX - Constraint 1 Test)",
-            "title": "Die.My.Love.2025.2160p.AMZN.WEB-DL.DDP5.1.H.265-FLUX",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 1000,
-            "max_band": 3400
-        },
-        {
-            "category": "hallowed-class 2160p BluRay HDR10+ (Constraint 2 Test - Top of Fallback)",
+            "category": "Tier 1 4K x265 (hallowed Die My Love)",
             "title": "Die.My.Love.2025.UHD.BluRay.2160p.DDP.5.1.HDR10+.x265-hallowed",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1500,
-            "max_band": 3400
+            "min_band": 3000
         },
         {
-            "category": "Stacked Tiered 2160p x265 (Constraint 3 Test - Must be < Bare AV1 3500)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR.HDR10+.CRIT-DON",
+            "category": "Tier 1 4K x265 (BHDStudio Blade Runner)",
+            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1000,
-            "max_band": 3400
+            "min_band": 3000
         },
         {
-            "category": "Tiered x265 Fallback (HONE WEB-DL Tier 2)",
+            "category": "Tier 2 4K WEB-DL (FLUX Arrival)",
+            "title": "Arrival.2016.2160p.WEB-DL.DDP5.1.Atmos.DV.HDR.x265-FLUX",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2200,
+            "max_band": 3300
+        },
+        {
+            "category": "Tier 2 4K WEB-DL (SiGMA AMZN)",
+            "title": "Movie.Title.2024.2160p.AMZN.WEB-DL.DDP.5.1.HDR.x265-SiGMA",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 2200,
+            "max_band": 3300
+        },
+        {
+            "category": "Tier 2 4K WEB-DL (HONE Dune 2)",
             "title": "Dune.Part.Two.2024.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.x265-HONE",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1000,
-            "max_band": 3400
+            "min_band": 2200,
+            "max_band": 3300
         },
+
+        # --- 3. ARCHIVAL 1080P BLURAY ENCODES (Score 1400 - 2175) ---
         {
-            "category": "1080p Tiered Fallback in 2160p Profile (Constraint 7 Test - DON)",
-            "title": "Oppenheimer.2023.1080p.BluRay.x265.TrueHD.7.1.CRIT-DON",
+            "category": "Archival 1080p BluRay (c0kE Drive)",
+            "title": "Drive.2011.1080p.BluRay.DTS.x264-c0kE",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1000,
-            "max_band": 3400
+            "min_band": 1400,
+            "max_band": 2175
         },
         {
-            "category": "Tiered x265 Fallback (DON BluRay 1080p Quality Tier 1 in 2160p Profile without Atmos/TrueHD)",
-            "title": "Oppenheimer.2023.1080p.BluRay.x265.DTS-HD.MA.7.1.CRIT-DON",
+            "category": "Archival 1080p BluRay (CtrlHD Akira)",
+            "title": "Akira.1988.1080p.BluRay.FLAC.x264-CtrlHD",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": 999
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 2175
+        },
+        {
+            "category": "Archival 1080p BluRay (ATELiER Blade Runner)",
+            "title": "Blade.Runner.1982.1080p.BluRay.DTS.x264-ATELiER",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 2175
+        },
+        {
+            "category": "Archival 1080p BluRay (SA89 Arrival)",
+            "title": "Arrival.2016.1080p.BluRay.DTS.x264-SA89",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 2175
         },
 
-        # --- 4. RANDOM UNTIERED X265 & CODEC-LESS LEAK REJECTIONS (< 1000 for 2160p, < 500 for 1080p) ---
+        # --- 4. UNTIERED JUNK & LEAKS (< 1000 Cutoff) ---
         {
-            "category": "Random Untiered 2160p x265 (Constraint 4 Test - Max Features Untiered Must Fail < 1000)",
-            "title": "Gladiator.2000.2160p.UHD.BluRay.x.265.TrueHD.Atmos.7.1.DV.HDR.HDR10+-RandomGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": 999
-        },
-        {
-            "category": "Random Untiered 1080p x265 (Point 2 Test - Must Fail < 500)",
+            "category": "Untiered 1080p Release without Vetted Group",
             "title": "Gladiator.2000.1080p.BluRay.x265.TrueHD.Atmos.7.1-RandomGroup",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": False,
-            "max_band": 499
-        },
-        {
-            "category": "Codec-less Release (No Codec Token -> Rejected)",
-            "title": "Gladiator.2000.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR-UntieredGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
             "max_band": 999
         },
         {
-            "category": "Codec-less AV1-unnamed Release (Documented Trade-off -> Rejected)",
-            "title": "Top.Gun.Maverick.2022.1080p.10bit.DDP5.1-edge2020",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": 499
-        },
-
-        # --- 5. BARE AV1 RELEASES (Constraint 5 Test - Minimal features must beat all non-AV1) ---
-        {
-            "category": "Bare SDR AV1 2160p (Constraint 5 Test - Must Score >= 3500)",
-            "title": "Die.My.Love.2025.2160p.AV1.DD5.1-BareGroup.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 3500
-        },
-        {
-            "category": "Bare SDR AV1 1080p (Constraint 8 Test - Must Beat Stacked 1080p x265)",
-            "title": "Die.My.Love.2025.1080p.AV1.DD5.1-BareGroup.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 3500
-        },
-
-        # --- 6. ADVERSARIAL FALSE-POSITIVE CHECK (-edge2020HD) ---
-        {
-            "category": "Adversarial Check (-edge2020HD must NOT match compact encoder)",
-            "title": "Top.Gun.Maverick.2022.1080p.AV1.10bit.DDP5.1-edge2020HD",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True
-        },
-
-        # --- 7. X264 & REMUX REJECTIONS (Constraint 6 Test) ---
-        {
-            "category": "Untrusted x264 Release (Hard Reject - Constraint 6 Test)",
-            "title": "Oppenheimer.2023.1080p.BluRay.H.264.DTS-HD.MA.7.1-UntrustedGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Remux Release (Hard Reject - Constraint 6 Test)",
-            "title": "Die.My.Love.2025.2160p.UHD.BluRay.Remux.HEVC.DV.HDR.Atmos-CiNEPHiLES.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-
-        # --- 8. HYGIENE & ANTI-TRASH REJECTIONS (-10000) ---
-        {
-            "category": "Hygiene Rejection (CAM)",
-            "title": "Dune.Part.Two.2024.CAM.AV1-TestGroup.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Hygiene Rejection (Upscale)",
-            "title": "Gladiator.II.2024.1080p.Upscale.AV1-Test.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Hygiene Rejection (3D)",
-            "title": "Avatar.The.Way.of.Water.2022.3D.1080p.AV1.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Hygiene Rejection (Full Disc)",
-            "title": "Gladiator.2000.2160p.UHD.COMPLETE.BLURAY.AV1.iso",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Hygiene Rejection (Banned YTS)",
-            "title": "Top.Gun.2022.1080p.AV1-YTS.mp4",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False
-        },
-        {
-            "category": "Hygiene Rejection (Banned ENTROPY Fake/Corrupted)",
-            "title": "Movie.Title.2024.1080p.WEBRip.AV1-ENTROPY.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Hygiene Rejection (Banned ENTROPY Lowercase -entropy)",
-            "title": "Movie.Title.2024.1080p.WEBRip.AV1-entropy.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Junk-Line Separation (R&H Upscale Rejected Despite Bonus)",
-            "title": "The.Shawshank.Redemption.1994.1080p.Upscale.AV1-R and H.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Junk-Line Separation (LUCY TC Rejected Despite Bonus)",
-            "title": "Deadpool.and.Wolverine.2024.TC.AV1-LUCY.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Junk-Line Separation (LUCY Ts Rejected Despite Bonus)",
-            "title": "Deadpool.and.Wolverine.2024.Ts.AV1-LUCY.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Junk-Line Separation (LUCY Telesync Rejected Despite Bonus)",
-            "title": "Deadpool.and.Wolverine.2024.Telesync.AV1-LUCY.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Junk-Line Separation (LUCY SCREENER Rejected Despite Bonus)",
-            "title": "Deadpool.and.Wolverine.2024.SCREENER.AV1-LUCY.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-
-        # --- 8. STORAGE SAVER PROFILE TESTS ---
-        {
-            "category": "Storage Saver In Storage Profile (-PSA[ettv])",
-            "title": "Fallout.S01E01.1080p.AV1-PSA[ettv].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Storage Saver In Storage Profile (-GalaxyRG[TGx])",
-            "title": "Fallout.S01E01.1080p.AV1-GalaxyRG[TGx].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Storage Saver In Storage Profile (-LUCY[TGx])",
-            "title": "Fallout.S01E01.1080p.AV1-LUCY[TGx].mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Storage Saver In HQ Profile (Penalty Test)",
-            "title": "Fallout.S01E01.1080p.AV1-MeGusta.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "sonarr",
-            "expect_pass": True
-        },
-        {
-            "category": "Quality Encoder (Scores +1000 Tier 1 Bonus)",
-            "title": "Fallout.S01E01.1080p.AV1-CoSMiCSuRFeR.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 4500
-        },
-
-        # --- 9. CODEC-AGNOSTIC TIER SCORING (TAoE AV1 + Tier 1 Quality) ---
-        {
-            "category": "Codec-Agnostic Tier Scoring (TAoE AV1 + Tier 1 Quality)",
-            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 5800
-        },
-        # --- OP 916 SIZE-AWARE SCORING BATTERY ---
-        {
-            "category": "Size-Aware: City of God Micro-AV1 Untiered (1.4GB Penalized to 700 < 1000 Cutoff)",
-            "title": "City.of.God.2002.bluray.sdr.portuguese.1080p.av1.1500mb-UnknownGroup-xpost",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 1.41,
-            "expect_pass": False,
-            "min_band": 600,
-            "max_band": 800
-        },
-        {
-            "category": "Size-Aware: City of God Tier 1 1080p x265 (8.1GB Scores 1700 -> Beats Rosy 700)",
-            "title": "City.of.God.2002.1080p.BluRay.x265.DDP.5.1.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 8.1,
-            "expect_pass": True,
-            "min_band": 1600,
-            "max_band": 1800
-        },
-        {
-            "category": "Size-Aware: Easy A onlyfaffs 1080p AV1 (2.8GB Micro Penalized but Passes Cutoff)",
-            "title": "Easy.A.2010.1080p.BluRay.AV1.Opus.5.1-onlyfaffs",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 2.83,
-            "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 1500
-        },
-        {
-            "category": "Size-Aware: Normal 2160p AV1 (12.5GB -> Score Unchanged at 5950)",
-            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.5,
-            "expect_pass": True,
-            "min_band": 5800,
-            "max_band": 6200
-        },
-        {
-            "category": "Size-Aware: Oversized 2160p Fallback (Akira 41.4GB x265 Penalized by -1500)",
-            "title": "Akira.1988.REPACK.2160p.UHD.BluRay.Dual.Audio.TrueHD.5.1.HDR.x265-Chotab",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 41.36,
-            "expect_pass": False,
-            "min_band": -2000,
-            "max_band": 300
-        },
-        {
-            "category": "Size-Aware: Micro-AV1 as Only Option (Score 1200 >= 1000 Cutoff -> Grabbed)",
-            "title": "Obscure.Indie.Film.2023.1080p.Bluray.AV1.Opus.2.0-Rosy",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 1.4,
-            "expect_pass": True,
-            "min_band": 1000,
-            "max_band": 1250
-        },
-        # --- OP 917 GRADUATED OVERSIZED SCORING BATTERY ---
-        {
-            "category": "Op 917: 20GB non-AV1 2160p (Tolerated, 0 Penalty -> Score 2300)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 20.0,
-            "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 2600
-        },
-        {
-            "category": "Op 961: 27GB non-AV1 2160p (Unpenalized Sweet Spot -> Score 2300)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 27.0,
-            "expect_pass": True,
-            "min_band": 2100,
-            "max_band": 2500
-        },
-        {
-            "category": "Op 961: 33GB non-AV1 2160p (Heavy Band: -400 Penalty -> Score 1900)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 33.0,
-            "expect_pass": True,
-            "min_band": 1800,
-            "max_band": 2100
-        },
-        {
-            "category": "Op 917: 35GB AV1 2160p (AV1 Exempt, Zero Penalty -> Score 5950)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-CoSMiCSuRFeR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 35.0,
-            "expect_pass": True,
-            "min_band": 5800,
-            "max_band": 6200
-        },
-        {
-            "category": "Op 961 Boundary: 29.9GB non-AV1 2160p (No Penalty -> Score 2300)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 29.9,
-            "expect_pass": True,
-            "min_band": 2100,
-            "max_band": 2500
-        },
-        {
-            "category": "Op 961 Boundary: 30.1GB non-AV1 2160p (-400 Penalty -> Score 1900)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 30.1,
-            "expect_pass": True,
-            "min_band": 1800,
-            "max_band": 2100
-        },
-        {
-            "category": "Op 961 Boundary: 39.0GB non-AV1 2160p (-1500 Penalty -> Score 800 < 1000 Cutoff)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.x265.TrueHD.Atmos.7.1.DV.HDR-DON",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 39.0,
-            "expect_pass": False,
-            "min_band": 600,
-            "max_band": 999
-        },
-        # --- OP 918 PROFILE HONE & FLOOR BATTERY ---
-        {
-            "category": "Op 918 Floor: 5.0GB untiered 2160p AV1 (Penalized to -6250 < 1000 Cutoff via Micro Ban)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.AV1.Opus.5.1-UnknownGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 5.0,
-            "expect_pass": False,
-            "min_band": -7000,
-            "max_band": -5000
-        },
-        {
-            "category": "Op 918 Floor: 5.5GB Compact-tier 2160p AV1 (Lean Band Score 1750 Clears Cutoff)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.AV1.Opus.5.1-onlyfaffs",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 5.5,
-            "expect_pass": True,
-            "min_band": 1650,
-            "max_band": 1850
-        },
-        {
-            "category": "Op 921 Lean Floor: 6.5GB Quality-tier 2160p AV1 (Lean Band Penalty -> Score 2700 Beats x265)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.HDR.AV1-CoSMiCSuRFeR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 6.5,
-            "expect_pass": True,
-            "min_band": 2600,
-            "max_band": 2800
-        },
-        {
-            "category": "Op 918 Audio Retune: hallowed-class 13GB 2160p x265 with EAC3 5.1 (Scores 1550)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.HDR.DDP.5.1.x265-hallowed",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 13.0,
-            "expect_pass": True,
-            "min_band": 1500,
-            "max_band": 1700
-        },
-        {
-            "category": "Op 918 Insurance: 41.3GB ROTK AV1 (Size < 45GB -> No Extreme Penalty)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-CoSMiCSuRFeR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 41.34,
-            "expect_pass": True,
-            "min_band": 5800,
-            "max_band": 6200
-        },
-        {
-            "category": "Op 918 Insurance: 48GB Extreme Release (Size >= 45GB -> Extreme -1500 Penalty)",
-            "title": "The.Outsiders.1983.Directors.Cut.2160p.UHD.BluRay.DTS-HD.MA.5.1.HDR.x265-W4NK3R",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 48.18,
-            "expect_pass": False,
-            "min_band": -2000,
-            "max_band": 500
-        },
-        # --- 14. OP 920: AV1 NAMELESS TRUST BATTERY ---
-        {
-            "category": "Op 920: NLsub Bourne 17.7GB (Nameless 2160p AV1 -> -2500 penalty -> Score 1700)",
-            "title": "The Bourne Supremacy (2004) - 2160p HDR - AV1 BRRip - NLsub",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 17.71,
-            "expect_pass": True,
-            "min_band": 1500,
-            "max_band": 1900
-        },
-        {
-            "category": "Op 920: R&H Bourne 7.8GB (Named Group in Lean Band -> Score 2200)",
-            "title": "The.Bourne.Supremacy.2004-2160p.BluRay.HDR10.10.bit.Encode.AV1.DTS.5.1-R and H",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 7.78,
-            "expect_pass": True,
-            "min_band": 2100,
-            "max_band": 2300
-        },
-        {
-            "category": "Op 920: BYNDR x265 Bourne 24.2GB (Score 2200, Beats NLsub 1700)",
-            "title": "The.Bourne.Supremacy.2004.2160p.MA.WEB-DL.DTS-X.7.1.DV.HDR.H.265-BYNDR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 24.21,
-            "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 2400
-        },
-        {
-            "category": "Op 920: Smokindevil Shawshank (5.05GB Lean Band -> Score 2200)",
-            "title": "The.Shawshank.Redemption.1994.2160p.HDR.AV1-Smokindevil.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 5.05,
-            "expect_pass": True,
-            "min_band": 2100,
-            "max_band": 2300
-        },
-        {
-            "category": "Op 920: anomoomin Cast Away 1080p (1080p Unaffected -> Score 4250)",
-            "title": "Cast.Away.2000.1080p.BluRay.AV1.Opus.5.1-anomoomin.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 3.89,
-            "expect_pass": True,
-            "min_band": 4100,
-            "max_band": 4400
-        },
-        # --- 15. OP 921: AV1 LEAN BAND BATTERY (5.0 - 11.0 GB) ---
-        {
-            "category": "Op 921: Blade Runner 7.11GB R&H (Lean Band -> -2500 Penalty -> Score 2800)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 7.11,
-            "expect_pass": True,
-            "min_band": 2700,
-            "max_band": 2900
-        },
-        {
-            "category": "Op 921: The Deer Hunter 10.75GB R (Lean Band -> -2500 Penalty -> Score 1850)",
-            "title": "The.Deer.Hunter.1978.2160p.UHD.BluRay.EAC3.5.1.HDR.AV1-R",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 10.75,
-            "expect_pass": True,
-            "min_band": 1750,
-            "max_band": 1950
-        },
-        {
-            "category": "Op 921: Gladiator 11.88GB R&H (Size > 11GB -> Unpenalized Score 5300)",
-            "title": "Gladiator.2000.Extended.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 11.88,
-            "expect_pass": True,
-            "min_band": 5100,
-            "max_band": 5500
-        },
-        {
-            "category": "Op 921: Apocalypse Now 12.72GB R (Size > 11GB -> Unpenalized Score 4200)",
-            "title": "Apocalypse.Now.1979.Final.Cut.2160p.UHD.BluRay.DTS.5.1.HDR.AV1-R",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.72,
-            "expect_pass": True,
-            "min_band": 4000,
-            "max_band": 4400
-        },
-        {
-            "category": "Op 921: Boundary 5.0GB AV1 (Micro/Lean Boundary -> Micro Hard Ban -> Score -5750)",
-            "title": "Movie.Title.2024.2160p.UHD.BluRay.AV1.Opus.5.1-onlyfaffs",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 5.0,
-            "expect_pass": False,
-            "min_band": -6500,
-            "max_band": -5000
-        },
-        {
-            "category": "Op 921: Boundary 11.0GB AV1 (Lean/Free Boundary -> Lean Penalty -> Score 2800)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 11.0,
-            "expect_pass": True,
-            "min_band": 2700,
-            "max_band": 2900
-        },
-        {
-            "category": "Op 921: Boundary 11.01GB AV1 (Free/Unpenalized -> Score 5300)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 11.01,
-            "expect_pass": True,
-            "min_band": 5100,
-            "max_band": 5500
-        },
-        {
-            "category": "Op 921 Stacking: 8.0GB Nameless Lean AV1 (Both Penalties -2500 & -3400 -> Score -1700 < 1000 Rejected)",
-            "title": "The.Bourne.Supremacy.2004.2160p.HDR.AV1.BRRip-NLsub.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 8.0,
-            "expect_pass": False,
-            "min_band": -3000,
-            "max_band": 500
-        },
-        # --- 16. OP 922: FOREIGN DUB DEMOTION BATTERY ---
-        {
-            "category": "Op 922/952: Das Bourne Ultimatum 18.89GB Bi0hazard German Dub (Tier 4 Quarantined -> Score 1200 >= 1001)",
-            "title": "Das.Bourne.Ultimatum.2007.German.DUBBED.DL.EAC3.2160p.HDR.BluRay.AV1-Bi0hazard",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 18.89,
-            "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1300
-        },
-        {
-            "category": "Op 922/952: The Bourne Ultimatum 18.89GB Non-Dub AV1 (Tier 4 Quarantined -> Score 1950)",
-            "title": "The.Bourne.Ultimatum.2007.2160p.HDR.EAC3.5.1.BluRay.AV1-Bi0hazard",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 18.89,
-            "expect_pass": True,
-            "min_band": 1850,
-            "max_band": 2050
-        },
-        {
-            "category": "Op 922: Matrix German Dub 2160p AV1 (-750 Penalty -> Score 3450 Beats x265 2200)",
-            "title": "The.Matrix.1999.German.DUBBED.2160p.HDR.AV1-Group",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 16.0,
-            "expect_pass": True,
-            "min_band": 3350,
-            "max_band": 3550
-        },
-        {
-            "category": "Op 922: Matrix MULTi release (No Dub Penalty -> Score 4200)",
-            "title": "The.Matrix.1999.MULTi.2160p.HDR.AV1-Group",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 16.0,
-            "expect_pass": True,
-            "min_band": 4100,
-            "max_band": 4300
-        },
-        # --- 17. OP 925: CENSUS-DRIVEN TIER EXPANSION BATTERY ---
-        {
-            "category": "Op 925: Fat dAV1nci 2160p (Quality +1000 -> Score 5500 Beats x265 2200)",
-            "title": "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 14.2,
-            "expect_pass": True,
-            "min_band": 5400,
-            "max_band": 5600
-        },
-        {
-            "category": "Op 925: Fat UH 2160p (Quality +1000 -> Score 6100 Beats x265 2200)",
-            "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.DV.DDP.Atmos-UH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 13.5,
-            "expect_pass": True,
-            "min_band": 6000,
-            "max_band": 6200
-        },
-        {
-            "category": "Op 925: Fat Smokindevil 2160p (Compact +500 -> Score 5450 Beats x265 2200)",
-            "title": "Fury.2014.2160p.UHD.BluRay.AV1.DV.HDR.TrueHD.Atmos-Smokindevil.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.5,
-            "expect_pass": True,
-            "min_band": 5350,
-            "max_band": 5550
-        },
-        {
-            "category": "Op 925: Lean dAV1nci 2160p (Quality +1000 & Lean -2500 -> Score 2700 in Lean Band)",
-            "title": "The.Matrix.1999.2160p.HDR.AV1-dAV1nci",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 8.5,
-            "expect_pass": True,
-            "min_band": 2600,
-            "max_band": 2800
-        },
-        {
-            "category": "Op 925: Fat Toasty 2160p (Compact +500 -> Score 5300)",
-            "title": "The.Thing.1982.2160p.UHD.BluRay.DV.HDR.DTS.5.1.AV1-Toasty",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 21.65,
-            "expect_pass": True,
-            "min_band": 5100,
-            "max_band": 5500
-        },
-        {
-            "category": "Op 925: Consolidated R and H bare RH suffix (Compact +500 -> Score 5300)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.0,
-            "expect_pass": True,
-            "min_band": 5100,
-            "max_band": 5500
-        },
-        # --- 18. OP 927: FLAGSHIP 2160p PROFILE TEST CASES ---
-        {
-            "category": "Op 927: Candidate Quality Group (dAV1nci Quality Bonus -> Score 5500)",
-            "title": "The.Lord.of.the.Rings.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 14.2,
-            "expect_pass": True,
-            "min_band": 5400,
-            "max_band": 5600
-        },
-        {
-            "category": "Op 927: Candidate on Raw Tags (Rob74K Scores on Raw Tags -> Score 4950)",
-            "title": "John.Wick.Chapter.4.2023.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-Rob74K",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 19.1,
-            "expect_pass": True,
-            "min_band": 4900,
-            "max_band": 5000
-        },
-        {
-            "category": "Op 927: Anti-Junk Bands Active (Lean -2500 Penalty Fires -> Score 2800)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.DTS.5.1.DV.HDR.AV1-RandH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 7.11,
-            "expect_pass": True,
-            "min_band": 2700,
-            "max_band": 2900
-        },
-        # --- 19. OP 930: SIZE FLOOR & LEGACY TRUSTED X264 BATTERY ---
-        {
-            "category": "Op 930: Legacy Trusted x264 CtrlHD (Score 1150 Clears Cutoff)",
-            "title": "Blue.Valentine.2010.1080p.BluRay.DTS.x264-CtrlHD",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.54,
-            "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1200
-        },
-        {
-            "category": "Op 930: Legacy Trusted x264 PiRaTeS (Score 1150 Clears Cutoff)",
-            "title": "Hoosiers.1986.1080p.BluRay.DTS.x264-PiRaTeS",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 11.88,
-            "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1200
-        },
-        {
-            "category": "Op 930: Untrusted Legacy x264 Sparks (Score -7000 Rejected)",
+            "category": "Untrusted Legacy x264 Sparks",
             "title": "Generic.Movie.1080p.BluRay.x264-SPARKS",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 10.0,
             "expect_pass": False,
-            "min_band": -7100,
-            "max_band": -6900
+            "max_band": 999
         },
         {
-            "category": "Op 930: Micro Hard Floor 700KB Feature Film (Score -5300 Rejected)",
-            "title": "Greenland.2020.2160p.HDR.AV1-onlyfaffs",
+            "category": "Sub-4K x265 Reject (Dumpstarr Rule)",
+            "title": "Movie.2024.1080p.BluRay.x265-RandomGroup",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 0.0007,
             "expect_pass": False,
-            "min_band": -5400,
-            "max_band": -5200
+            "max_band": -1
         },
+
+        # --- 5. BANNED GROUPS & HYGIENE REJECTIONS (-10000) ---
         {
-            "category": "Op 930: Micro Hard Floor 979MB HDTV Cap (Score -7500 Rejected)",
-            "title": "X-Men.The.Last.Stand.2006.1080p.HDTV.AV1-DKong",
+            "category": "Banned Micro-Group Saon",
+            "title": "Capernaum.2018.1080p.NF.WEB-DL.DDP5.1.AV1-Saon.mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 0.95,
             "expect_pass": False,
-            "min_band": -7600,
-            "max_band": -7400
+            "max_band": -1
         },
         {
-            "category": "Op 932: Legacy Trusted 1080p WEB-DL (PiRaTeS Hoosiers Lifts Above Cutoff)",
-            "title": "Hoosiers.1986.1080p.AMZN.WEB-DL.DDP.5.1.H.264-PiRaTeS",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 11.88,
-            "expect_pass": True,
-            "min_band": 1300,
-            "max_band": 1400
-        },
-        {
-            "category": "Op 932: Indexer Dupe Tag Tolerance (R&H_1 Suffix Retains Compact Tier)",
-            "title": "The.Wolverine.2013.Theatrical.Cut.2160p.AMZN.WEB.DV.HDR10.10.bit.Encode.AV1.DTS.5.1-R&H_1",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 15.89,
-            "expect_pass": True,
-            "min_band": 5100,
-            "max_band": 5500
-        },
-        {
-            "category": "Op 932: Opus 5.1 No-Audio Fix (The Hunt KIMJI Lifts Cleanly)",
-            "title": "The.Hunt.2012.1080p.BluRay.Opus.5.1.AV1-KIMJI",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 3.59,
-            "expect_pass": True,
-            "min_band": 3700,
-            "max_band": 4300
-        },
-        {
-            "category": "Op 933: Vetted Union ATELiER 1080p BluRay (Score 1150 Clears Cutoff)",
-            "title": "Blade.Runner.1982.1080p.BluRay.DTS.x264-ATELiER",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.5,
-            "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1200
-        },
-        {
-            "category": "Op 933: Vetted Union c0kE 1080p BluRay (Score 1150 Clears Cutoff)",
-            "title": "Drive.2011.1080p.BluRay.DTS.x264-c0kE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 10.2,
-            "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1200
-        },
-        {
-            "category": "Op 933: Vetted Union SA89 Tier 1 1080p BluRay (Score 1250 Clears Cutoff)",
-            "title": "Arrival.2016.1080p.BluRay.DTS.x264-SA89",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 14.1,
-            "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 1300
-        },
-        {
-            "category": "Op 933: Hard-Banned YIFY x264 (Score -17000 Rejected)",
+            "category": "Banned Group YIFY",
             "title": "Movie.2024.1080p.BluRay.x264-YIFY",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 2.1,
             "expect_pass": False,
-            "min_band": -20000,
-            "max_band": -10000
+            "max_band": -1
         },
         {
-            "category": "Op 935: Repack1 Micro-Ladder (Score 4655 Beats Standard 4650)",
-            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
+            "category": "Banned Group YTS",
+            "title": "Top.Gun.2022.1080p.AV1-YTS.mp4",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 18.5,
-            "expect_pass": True,
-            "min_band": 4600,
-            "max_band": 4700
+            "expect_pass": False,
+            "max_band": -1
         },
         {
-            "category": "Op 935: 4K Remaster Tag (+25 pts on Fallback Tier)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 16.5,
-            "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 1550
-        },
-        {
-            "category": "Op 935: Audio Description Hard Reject (-10000 Rejection)",
+            "category": "Banned Audio Description",
             "title": "Movie.Title.2024.1080p.WEB-DL.DDP5.1.DVS-FLUX",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 4.5,
             "expect_pass": False,
-            "min_band": -10000,
-            "max_band": -5000
+            "max_band": -1
         },
         {
-            "category": "Op 935: Line Audio Hard Reject (-10000 Rejection)",
+            "category": "Banned Line Audio",
             "title": "Movie.Title.2024.1080p.LINE.Audio.x264-Group",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 3.2,
             "expect_pass": False,
-            "min_band": -20000,
-            "max_band": -10000
+            "max_band": -1
         },
         {
-            "category": "Op 935: Vetted WEB-DL Tier 2 Union (SiGMA 2160p Fallback)",
-            "title": "Movie.Title.2024.2160p.AMZN.WEB-DL.DDP.5.1.HDR.x265-SiGMA",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "size_gb": 12.5,
-            "expect_pass": True,
-            "min_band": 1500,
-            "max_band": 1750
-        },
-        {
-            "category": "Op 936: Hardcoded Subtitles Reject (KORSUB -10000 Trap Eliminated)",
+            "category": "Banned Hardcoded Subtitles KORSUB",
             "title": "Gladiator.II.2024.2160p.KORSUB.HDR.AV1-Group",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 14.5,
             "expect_pass": False,
-            "min_band": -10000,
-            "max_band": -5000
+            "max_band": -1
         },
         {
-            "category": "Op 936: FLAC Lossless Audio Bonus (+100 pts on 1080p Archival)",
-            "title": "Akira.1988.1080p.BluRay.FLAC.x264-CtrlHD",
+            "category": "Banned CAM",
+            "title": "Dune.Part.Two.2024.CAM.AV1-TestGroup.mkv",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 12.1,
-            "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 1300
+            "expect_pass": False,
+            "max_band": -1
         },
         {
-            "category": "Op 936: Boutique Label Criterion Bonus (+50 pts on 4K Master)",
+            "category": "Banned Upscale",
+            "title": "Gladiator.II.2024.1080p.Upscale.AV1-Test.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Banned 3D",
+            "title": "Avatar.The.Way.of.Water.2022.3D.1080p.AV1.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Banned Full Disc",
+            "title": "Gladiator.2000.2160p.UHD.COMPLETE.BLURAY.AV1.iso",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Banned Remux LEGi0N",
+            "title": "Die.My.Love.2025.2160p.UHD.BluRay.Remux.HEVC.DV.HDR.Atmos-LEGi0N.mkv",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": -1
+        },
+        {
+            "category": "Repack1 Micro-Ladder",
+            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3000
+        },
+        {
+            "category": "4K Remaster Tag",
+            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3000
+        },
+        {
+            "category": "Boutique Label Criterion Bonus",
             "title": "Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-ChopperHitler",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 19.5,
             "expect_pass": True,
-            "min_band": 5200,
-            "max_band": 5300
+            "min_band": 3000
         },
+
+        # --- 6. BLOCKER 4 AUDIO-TOKEN IMMUNITY REGRESSION CASES ---
         {
-            "category": "Op 952: Tier 4 Unmeasured AV1 (Waldek / Bi0hazard Scored in Tier 4 >= 1001)",
-            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-Waldek",
+            "category": "Blocker 4 Case 1: Tier 2 NTb with Atmos/DV/HDR10+",
+            "title": "Movie.2024.2160p.WEB-DL.DV.HDR10+.DDP5.1.Atmos.H265-NTb",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
-            "size_gb": 18.5,
             "expect_pass": True,
-            "min_band": 1100,
-            "max_band": 1600
+            "min_band": 2200,
+            "max_band": 3220
+        },
+        {
+            "category": "Blocker 4 Case 2: Tier 1 hallowed with DTS-HD MA",
+            "title": "Movie.2023.2160p.BluRay.DTS-HD.MA.7.1.x265-hallowed",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 3000
+        },
+        {
+            "category": "Blocker 4 Case 3: Untiered with DV/Atmos (No Group)",
+            "title": "Movie.2022.2160p.WEB-DL.DV.DDP5.1.Atmos.H.265",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 999
+        },
+        {
+            "category": "Blocker 4 Case 4: Tier 3 c0kE 1080p BluRay",
+            "title": "Movie.2021.1080p.BluRay.DTS.x264-c0kE",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": True,
+            "min_band": 1400,
+            "max_band": 2175
+        },
+        {
+            "category": "Blocker 4 Case 5: Untiered DVSUX (No False DV Match)",
+            "title": "Movie.2020.2160p.WEB-DL.Atmos.DDP5.1-DVSUX",
+            "profile": "Movies 2160p AV1 HQ",
+            "arr_type": "radarr",
+            "expect_pass": False,
+            "max_band": 999
         }
     ]
 
     print("================================================================================")
-    print("UNIFIED PHASE 4 & FALLBACK LADDER SIMULATION BATTERY REPORT")
+    print("UNIFIED PURE TIERED QUALITY PROFILE SIMULATION BATTERY REPORT")
     print("================================================================================")
 
     passed_tests = 0
@@ -1436,12 +667,6 @@ def run_simulation_battery():
         if "max_band" in case and score > case["max_band"]:
             test_success = False
 
-        # Extra assertion for adversarial edge2020HD
-        if "edge2020HD" in title:
-            matched_cf_names = [m[0] for m in matched]
-            if "AV1 Compact Encoders" in matched_cf_names:
-                test_success = False
-
         if test_success:
             status_str = "[PASS]"
             passed_tests += 1
@@ -1457,14 +682,14 @@ def run_simulation_battery():
         for cf, s in matched:
             print(f"    - {cf:<30}: {s:>+6}")
 
-    # --- 9. UPGRADE SCORE INCREMENT BATTERY (op 907: increment = 300) ---
+    # --- UPGRADE SCORE INCREMENT BATTERY (increment = 300) ---
     increment_cases = [
         {"name": "Minor service swap (1350 HMAX vs 1400 AMZN)", "existing": 1350, "new": 1400, "expect_upgrade": False},
-        {"name": "Major AV1 upgrade (1400 x265 vs 2300 AV1)", "existing": 1400, "new": 2300, "expect_upgrade": True},
+        {"name": "Major AV1 upgrade (1400 x265 vs 3000 AV1)", "existing": 1400, "new": 3000, "expect_upgrade": True},
         {"name": "Tier upgrade (1400 vs 1700)", "existing": 1400, "new": 1700, "expect_upgrade": True},
     ]
     inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'Movies 2160p AV1 HQ'").fetchone()[0]
-    print(f"\n=== UPGRADE SCORE INCREMENT BATTERY (op 907: increment = {inc_val}) ===")
+    print(f"\n=== UPGRADE SCORE INCREMENT BATTERY (increment = {inc_val}) ===")
     for c in increment_cases:
         delta = c["new"] - c["existing"]
         fires = delta >= inc_val
@@ -1474,6 +699,171 @@ def run_simulation_battery():
             failed_tests += 1
         else:
             passed_tests += 1
+
+    # --- PART 4 BUG 2 ALIAS COVERAGE BATTERY ---
+    print("\n================================================================================")
+    print("PART 4 BUG 2: ALIAS COVERAGE & MONOTONICITY BATTERY (208 ALIASES)")
+    print("================================================================================")
+
+    tier1_aliases = {
+        'ChopperHitler': (['CHOPPERHITLER', 'ChopperHitler', 'chopperhitler'], '2160p.UHD.BluRay.AV1'),
+        'dAV1nci': (['dAV1nci', 'DAV1NCI', 'dav1nci'], '2160p.UHD.BluRay.AV1'),
+        'RandH': (['RandH', 'RH', 'R&H', 'R and H', 'randh', 'rh'], '2160p.UHD.BluRay.AV1'),
+        'KIMJI': (['KIMJI', 'kimji'], '2160p.UHD.BluRay.AV1'),
+        'UH': (['UH', 'uh'], '2160p.UHD.BluRay.AV1'),
+        'TAoE': (['TAoE', 'taoe'], '2160p.UHD.BluRay.AV1'),
+        'CoSMiCSuRFeR': (['CoSMiCSuRFeR', 'cosmicsurfer'], '2160p.UHD.BluRay.AV1'),
+        'PRL': (['PRL', 'prl'], '2160p.UHD.BluRay.AV1'),
+        'CHD': (['CHD', 'chd'], '2160p.UHD.BluRay.AV1'),
+        'TiZU': (['TiZU', 'tizu'], '2160p.UHD.BluRay.AV1'),
+        'CtrlHD': (['CtrlHD', 'ctrlhd'], '2160p.BluRay'),
+        'DON': (['DON', 'don'], '2160p.BluRay'),
+        'MainFrame': (['MainFrame', 'mainframe'], '2160p.BluRay'),
+        'W4NK3R': (['W4NK3R', 'w4nk3r'], '2160p.BluRay'),
+        'REBORN': (['REBORN', 'reborn'], '2160p.BluRay'),
+        'SA89': (['SA89', 'sa89'], '2160p.BluRay'),
+        'SoLaR': (['SoLaR', 'solar'], '2160p.BluRay'),
+        'dkore': (['dkore', 'DKORE'], '2160p.BluRay.x265'),
+        'BHDStudio': (['BHDStudio', 'bhdstudio'], '2160p.BluRay'),
+        'hallowed': (['hallowed', 'HALLOWED'], '2160p.BluRay'),
+    }
+
+    tier2_aliases = {
+        'FLUX': (['FLUX', 'flux'], '2160p.WEB-DL'),
+        'NTb': (['NTb', 'ntb'], '2160p.WEB-DL'),
+        'TheFarm': (['TheFarm', 'thefarm'], '2160p.WEB-DL'),
+        'BYNDR': (['BYNDR', 'byndr'], '2160p.WEB-DL'),
+        'CMRG': (['CMRG', 'cmrg', 'CMaRG', 'CMRioG'], '2160p.WEB-DL'),
+        'Kitsune': (['Kitsune', 'kitsune'], '2160p.WEB-DL'),
+        'playWEB': (['playWEB', 'playweb'], '2160p.WEB-DL'),
+        'TEPES': (['TEPES', 'tepes'], '2160p.WEB-DL'),
+        'ABBIE': (['ABBIE', 'ABBiE', 'abbie'], '2160p.WEB-DL'),
+        'AJP69': (['AJP69', 'ajp69'], '2160p.WEB-DL'),
+        'APEX': (['APEX', 'apex'], '2160p.WEB-DL'),
+        'BLUTONiUM': (['BLUTONiUM', 'blutonium'], '2160p.WEB-DL'),
+        'CRFW': (['CRFW', 'crfw'], '2160p.WEB-DL'),
+        'CRUD': (['CRUD', 'crud'], '2160p.WEB-DL'),
+        'GNOME': (['GNOME', 'gnome'], '2160p.WEB-DL'),
+        'KiNGS': (['KiNGS', 'kings'], '2160p.WEB-DL'),
+        'MADSKY': (['MADSKY', 'madsky'], '2160p.WEB-DL'),
+        'NOSiViD': (['NOSiViD', 'nosivid'], '2160p.WEB-DL'),
+        'NTG': (['NTG', 'ntg'], '2160p.WEB-DL'),
+        'RAWR': (['RAWR', 'rawr'], '2160p.WEB-DL'),
+        'SiC': (['SiC', 'sic'], '2160p.WEB-DL'),
+        'ZoroSenpai': (['ZoroSenpai', 'zorosenpai'], '2160p.WEB-DL'),
+        'CasStudio': (['CasStudio', 'casstudio'], '2160p.WEB-DL'),
+        'monkee': (['monkee', 'MONKEE'], '2160p.WEB-DL'),
+        'QOQ': (['QOQ', 'qoq'], '2160p.WEB-DL'),
+        'RTN': (['RTN', 'rtn'], '2160p.WEB-DL'),
+        'T6D': (['T6D', 't6d'], '2160p.WEB-DL'),
+        'TOMMY': (['TOMMY', 'tommy'], '2160p.WEB-DL'),
+        'ViSUM': (['ViSUM', 'visum'], '2160p.WEB-DL'),
+        'dB': (['dB', 'db'], '2160p.WEB-DL'),
+        'MiU': (['MiU', 'miu'], '2160p.WEB-DL'),
+        'MZABI': (['MZABI', 'mzabi'], '2160p.WEB-DL'),
+        'PHOENiX': (['PHOENiX', 'phoenix'], '2160p.WEB-DL'),
+        'SbR': (['SbR', 'sbr'], '2160p.WEB-DL'),
+        'SMURF': (['SMURF', 'smurf'], '2160p.WEB-DL'),
+        'XEBEC': (['XEBEC', 'xebec', '4KBEC', 'CEBEX'], '2160p.WEB-DL'),
+        'SiGMA': (['SiGMA', 'SIGMA', 'sigma'], '2160p.WEB-DL'),
+        'EDPH': (['EDPH', 'edph'], '2160p.BluRay'),
+        'TDD': (['TDD', 'tdd'], '2160p.BluRay'),
+        'Chotab': (['Chotab', 'chotab'], '2160p.BluRay'),
+        'D-Z0N3': (['D-Z0N3', 'd-z0n3'], '2160p.BluRay'),
+        'c0kE': (['c0kE', 'c0ke'], '2160p.BluRay'),
+        'ATELiER': (['ATELiER', 'atelier'], '2160p.BluRay'),
+        'BSTD': (['BSTD', 'bstd'], '2160p.BluRay'),
+        'BlzT': (['BlzT', 'blzt'], '2160p.BluRay'),
+        'ESiR': (['ESiR', 'esir'], '2160p.BluRay'),
+        'LESTiN': (['LESTiN', 'lestin'], '2160p.BluRay'),
+        'NCmt': (['NCmt', 'ncmt'], '2160p.BluRay'),
+        'Softboat': (['Softboat', 'softboat'], '2160p.BluRay'),
+        'faBR': (['faBR', 'fabr'], '2160p.BluRay'),
+        'iFT': (['iFT', 'ift'], '2160p.BluRay'),
+        'HiDt': (['HiDt', 'hidt'], '2160p.BluRay'),
+        'HQMUX': (['HQMUX', 'hqmux'], '2160p.BluRay'),
+        'RandomBytes': (['RandomBytes', 'randombytes'], '2160p.BluRay'),
+        'PTer': (['PTer', 'pter'], '2160p.BluRay'),
+        'SPHD': (['SPHD', 'sphd'], '2160p.BluRay'),
+        'WEBDV': (['WEBDV', 'webdv'], '2160p.WEB-DL'),
+        'HONE': (['HONE', 'hone'], '2160p.WEB-DL')
+    }
+
+    tier3_aliases = {
+        'BBQ': (['BBQ', 'bbq'], '1080p.BluRay.x264'),
+        'BMF': (['BMF', 'bmf'], '1080p.BluRay.x264'),
+        'CRiSC': (['CRiSC', 'crisc'], '1080p.BluRay.x264'),
+        'Dariush': (['Dariush', 'dariush'], '1080p.BluRay.x264'),
+        'decibeL': (['decibeL', 'decibel'], '1080p.BluRay.x264'),
+        'EA': (['EA', 'ea'], '1080p.BluRay.x264'),
+        'HiSD': (['HiSD', 'hisd'], '1080p.BluRay.x264'),
+        'LolHD': (['LolHD', 'lolhd'], '1080p.BluRay.x264'),
+        'TnP': (['TnP', 'tnp'], '1080p.BluRay.x264'),
+        'ZQ': (['ZQ', 'zq'], '1080p.BluRay.x264'),
+        'coffee': (['coffee', 'COFFEE'], '1080p.BluRay.x264'),
+        'TeamSyndicate': (['TeamSyndicate', 'teamsyndicate'], '1080p.BluRay.x264'),
+        'playHD': (['playHD', 'playhd'], '1080p.BluRay.x264'),
+        'sbR': (['sbR', 'SBR'], '1080p.BluRay.x264'),
+        'VietHD': (['VietHD', 'viethd'], '1080p.BluRay.x264'),
+        'Geek': (['Geek', 'geek'], '1080p.BluRay.x264'),
+        'LoRD': (['LoRD', 'lord'], '1080p.BluRay.x264'),
+        'HiFi': (['HiFi', 'hifi'], '1080p.BluRay.x264'),
+        'EbP': (['EbP', 'ebp'], '1080p.BluRay.x264'),
+        'TayTO': (['TayTO', 'tayto'], '1080p.BluRay.x264')
+    }
+
+    tier_cf_names = {
+        'AV1 Quality Encoders', '2160p Quality Tier 1', '2160p Quality Tier 2', '2160p Balanced Tier 1',
+        '2160p Balanced Tier 2', '2160p Balanced Tier 3', 'WEB-DL Tier 1', 'WEB-DL Tier 2', 'WEB-DL Tier 3',
+        '2160p Quality Tier 3', '2160p Quality Tier 4', 'HONE Bluray', 'HONE WEB',
+        '1080p Quality Tier 1', '1080p Quality Tier 2', '1080p Quality Tier 3', '1080p Balanced Tier 1', '1080p Balanced Tier 2'
+    }
+
+    total_alias_count = 0
+    anomalies = []
+
+    all_tier_tests = [
+        (tier1_aliases, "Tier 1", 3000),
+        (tier2_aliases, "Tier 2", 2200),
+        (tier3_aliases, "Tier 3", 1400)
+    ]
+
+    for alias_map, t_name, min_expected in all_tier_tests:
+        for group, (aliases, media_tag) in alias_map.items():
+            for alias in aliases:
+                total_alias_count += 1
+                synthetic_title = f"Movie.2024.{media_tag}-{alias}"
+                score, min_s, upg, passed, matched = evaluate_release(conn, synthetic_title, "Movies 2160p AV1 HQ")
+
+                matched_tier_cfs = [m for m in matched if m[0] in tier_cf_names]
+                if len(matched_tier_cfs) != 1 or score < min_expected:
+                    anomalies.append({
+                        "group": group,
+                        "alias": alias,
+                        "tier": t_name,
+                        "matched_tier_cfs": matched_tier_cfs,
+                        "score": score,
+                        "expected_score": min_expected
+                    })
+
+    # Negative short alias boundary test
+    neg_title = "Movie.2024.2160p.BluRay-XYZRH"
+    score_neg, _, _, _, matched_neg = evaluate_release(conn, neg_title, "Movies 2160p AV1 HQ")
+    neg_tier_cfs = [m for m in matched_neg if m[0] in tier_cf_names]
+    if len(neg_tier_cfs) != 0:
+        anomalies.append({"group": "XYZRH", "alias": "XYZRH", "tier": "Negative", "matched": neg_tier_cfs})
+
+    print(f"Total Canonical Groups: {len(tier1_aliases) + len(tier2_aliases) + len(tier3_aliases)}")
+    print(f"Total Aliases Screened: {total_alias_count}")
+    print(f"Anomalies (0 or >=2 tier matches): {len(anomalies)}")
+
+    if anomalies:
+        for a in anomalies:
+            print(f"  [ANOMALY] {a}")
+        failed_tests += len(anomalies)
+    else:
+        print("[PASS] 100% of all aliases matched EXACTLY ONE tier CF with identical score!")
+        passed_tests += 1
 
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed (Total: {passed_tests + failed_tests})")
