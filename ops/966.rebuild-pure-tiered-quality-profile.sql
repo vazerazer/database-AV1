@@ -7,7 +7,7 @@ BEGIN TRANSACTION;
 -- 1. Configure Quality Profile Parameters
 UPDATE "quality_profiles"
 SET "minimum_custom_format_score" = 1000,
-    "upgrade_until_score" = 3500,
+    "upgrade_until_score" = 3300,
     "upgrade_score_increment" = 300,
     "description" = 'Flagship 4K Quality profile (AV1-First, Dumpstarr 2160p Territory) targeting transparent 4K AV1 & x265 HDR/Dolby Vision encodes with ARC-optimized bitstream audio and vetted 1080p archival fallback.'
 WHERE "name" = 'Movies 2160p AV1 HQ';
@@ -74,41 +74,41 @@ INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_fo
 VALUES ('Movies 2160p AV1 HQ', 'x265 (HD)', 'all', -10000)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = excluded.score;
 
--- 6. Tier 1A — Authoritative Master AV1 Ladder (+3500 pts)
+-- 6. Tier 1A — Authoritative Master AV1 Ladder (+3300 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
-VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'all', 3500)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3500;
+VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'all', 3300)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3300;
 
--- 7. Tier 1B — Elite 4K Disc Encoders (+2800 pts)
+-- 7. Tier 1B — Elite 4K Disc Encoders (+3000 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
 VALUES 
-  ('Movies 2160p AV1 HQ', '2160p Quality Tier 1', 'all', 2800),
-  ('Movies 2160p AV1 HQ', '2160p Quality Tier 2', 'all', 2800),
-  ('Movies 2160p AV1 HQ', '2160p Balanced Tier 2', 'all', 2800),
-  ('Movies 2160p AV1 HQ', '2160p Balanced Tier 3', 'all', 2800)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 2800;
+  ('Movies 2160p AV1 HQ', '2160p Quality Tier 1', 'all', 3000),
+  ('Movies 2160p AV1 HQ', '2160p Quality Tier 2', 'all', 3000),
+  ('Movies 2160p AV1 HQ', '2160p Balanced Tier 2', 'all', 3000),
+  ('Movies 2160p AV1 HQ', '2160p Balanced Tier 3', 'all', 3000)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3000;
 
--- 8. Tier 2 — Top 4K WEB-DL & Secondary 4K Blu-ray (+2000 pts)
+-- 8. Tier 2 — Top 4K WEB-DL & Secondary 4K Blu-ray (+2200 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
 VALUES 
-  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 1', 'all', 2000),
-  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 2', 'all', 2000),
-  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 3', 'all', 2000),
-  ('Movies 2160p AV1 HQ', '2160p Quality Tier 3', 'all', 2000),
-  ('Movies 2160p AV1 HQ', '2160p Quality Tier 4', 'all', 2000),
-  ('Movies 2160p AV1 HQ', 'HONE Bluray', 'all', 2000),
-  ('Movies 2160p AV1 HQ', 'HONE WEB', 'all', 2000)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 2000;
+  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 1', 'all', 2200),
+  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 2', 'all', 2200),
+  ('Movies 2160p AV1 HQ', 'WEB-DL Tier 3', 'all', 2200),
+  ('Movies 2160p AV1 HQ', '2160p Quality Tier 3', 'all', 2200),
+  ('Movies 2160p AV1 HQ', '2160p Quality Tier 4', 'all', 2200),
+  ('Movies 2160p AV1 HQ', 'HONE Bluray', 'all', 2200),
+  ('Movies 2160p AV1 HQ', 'HONE WEB', 'all', 2200)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 2200;
 
--- 9. Tier 3 — Archival 1080p Blu-ray Disc Fallback (+1200 pts)
+-- 9. Tier 3 — Archival 1080p Blu-ray Disc Fallback (+1400 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
 VALUES 
-  ('Movies 2160p AV1 HQ', '1080p Quality Tier 1', 'all', 1200),
-  ('Movies 2160p AV1 HQ', '1080p Quality Tier 2', 'all', 1200),
-  ('Movies 2160p AV1 HQ', '1080p Quality Tier 3', 'all', 1200),
-  ('Movies 2160p AV1 HQ', '1080p Balanced Tier 1', 'all', 1200),
-  ('Movies 2160p AV1 HQ', '1080p Balanced Tier 2', 'all', 1200)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 1200;
+  ('Movies 2160p AV1 HQ', '1080p Quality Tier 1', 'all', 1400),
+  ('Movies 2160p AV1 HQ', '1080p Quality Tier 2', 'all', 1400),
+  ('Movies 2160p AV1 HQ', '1080p Quality Tier 3', 'all', 1400),
+  ('Movies 2160p AV1 HQ', '1080p Balanced Tier 1', 'all', 1400),
+  ('Movies 2160p AV1 HQ', '1080p Balanced Tier 2', 'all', 1400)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 1400;
 
 -- 10. Editions & Cuts (Prioritizes Extended & Special Editions)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")

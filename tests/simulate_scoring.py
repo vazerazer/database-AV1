@@ -318,14 +318,14 @@ def run_simulation_battery():
     conn = build_compiled_db()
 
     test_corpus = [
-        # --- 1. PURE AV1 4K ENCODES (Score 3500 - 4375) ---
+        # --- 1. PURE AV1 4K ENCODES (Score 3300 - 4375) ---
         {
             "category": "Pure AV1 2160p HQ (dAV1nci LOTR)",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 2160p HQ (ChopperHitler Matrix)",
@@ -333,7 +333,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 2160p HQ (RandH / R&H Shawshank)",
@@ -341,7 +341,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Dune 2)",
@@ -349,7 +349,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 2160p HQ (UH LOTR)",
@@ -357,7 +357,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 1080p HQ (KIMJI The Hunt)",
@@ -365,7 +365,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
         {
             "category": "Pure AV1 2160p HQ (TAoE Dune 2)",
@@ -373,17 +373,17 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3500
+            "min_band": 3300
         },
 
-        # --- 2. TIERED X265 4K FALLBACKS (Score 2000 - 3675) ---
+        # --- 2. TIERED X265 4K FALLBACKS (Score 2200 - 3775) ---
         {
             "category": "Tier 1 4K x265 (hallowed Die My Love)",
             "title": "Die.My.Love.2025.UHD.BluRay.2160p.DDP.5.1.HDR10+.x265-hallowed",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2800
+            "min_band": 3000
         },
         {
             "category": "Tier 1 4K x265 (BHDStudio Blade Runner)",
@@ -391,7 +391,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2800
+            "min_band": 3000
         },
         {
             "category": "Tier 2 4K WEB-DL (FLUX Arrival)",
@@ -399,8 +399,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 3100
+            "min_band": 2200,
+            "max_band": 3300
         },
         {
             "category": "Tier 2 4K WEB-DL (SiGMA AMZN)",
@@ -408,8 +408,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 3100
+            "min_band": 2200,
+            "max_band": 3300
         },
         {
             "category": "Tier 2 4K WEB-DL (HONE Dune 2)",
@@ -417,19 +417,19 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 3100
+            "min_band": 2200,
+            "max_band": 3300
         },
 
-        # --- 3. ARCHIVAL 1080P BLURAY ENCODES (Score 1200 - 2000) ---
+        # --- 3. ARCHIVAL 1080P BLURAY ENCODES (Score 1400 - 2175) ---
         {
             "category": "Archival 1080p BluRay (c0kE Drive)",
             "title": "Drive.2011.1080p.BluRay.DTS.x264-c0kE",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 2000
+            "min_band": 1400,
+            "max_band": 2175
         },
         {
             "category": "Archival 1080p BluRay (CtrlHD Akira)",
@@ -437,8 +437,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 2000
+            "min_band": 1400,
+            "max_band": 2175
         },
         {
             "category": "Archival 1080p BluRay (ATELiER Blade Runner)",
@@ -446,8 +446,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 2000
+            "min_band": 1400,
+            "max_band": 2175
         },
         {
             "category": "Archival 1080p BluRay (SA89 Arrival)",
@@ -455,8 +455,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 2000
+            "min_band": 1400,
+            "max_band": 2175
         },
 
         # --- 4. UNTIERED JUNK & LEAKS (< 1000 Cutoff) ---
@@ -606,8 +606,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2000,
-            "max_band": 3100
+            "min_band": 2200,
+            "max_band": 3300
         },
         {
             "category": "Blocker 4 Case 2: Tier 1 hallowed with DTS-HD MA",
@@ -615,7 +615,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 2800
+            "min_band": 3000
         },
         {
             "category": "Blocker 4 Case 3: Untiered with DV/Atmos (No Group)",
@@ -631,8 +631,8 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 1200,
-            "max_band": 2000
+            "min_band": 1400,
+            "max_band": 2175
         },
         {
             "category": "Blocker 4 Case 5: Untiered DVSUX (No False DV Match)",
@@ -823,9 +823,9 @@ def run_simulation_battery():
     anomalies = []
 
     all_tier_tests = [
-        (tier1_aliases, "Tier 1", 2800),
-        (tier2_aliases, "Tier 2", 2000),
-        (tier3_aliases, "Tier 3", 1200)
+        (tier1_aliases, "Tier 1", 3000),
+        (tier2_aliases, "Tier 2", 2200),
+        (tier3_aliases, "Tier 3", 1400)
     ]
 
     for alias_map, t_name, min_expected in all_tier_tests:
