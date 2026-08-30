@@ -59,7 +59,7 @@ def load_tier_patterns_from_pcd():
             JOIN custom_format_conditions cfc ON cf.name = cfc.custom_format_name
             JOIN condition_patterns cp ON cfc.custom_format_name = cp.custom_format_name AND cfc.name = cp.condition_name
             JOIN regular_expressions re ON cp.regular_expression_name = re.name
-            WHERE cf.name = ?
+            WHERE cf.name = ? AND cfc.name != 'AV1 Codec'
         """, (cf_name,)).fetchone()
         return row[0] if row else None
 

@@ -211,3 +211,18 @@ VALUES
 DROP TABLE _pcd_assertions;
 
 COMMIT;
+
+-- 19. Ensure AV1 Encoders Custom Formats Strictly Require AV1 Codec (Prevents x264/x265 legacy release misattribution)
+INSERT INTO "custom_format_conditions" ("custom_format_name", "name", "type", "negate", "required", "arr_type")
+VALUES 
+  ('AV1 Quality Encoders', 'AV1 Codec', 'release_title', 0, 1, 'all'),
+  ('AV1 Compact Encoders', 'AV1 Codec', 'release_title', 0, 1, 'all'),
+  ('AV1 Storage Savers', 'AV1 Codec', 'release_title', 0, 1, 'all')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO "condition_patterns" ("custom_format_name", "condition_name", "regular_expression_name")
+VALUES 
+  ('AV1 Quality Encoders', 'AV1 Codec', 'AV1'),
+  ('AV1 Compact Encoders', 'AV1 Codec', 'AV1'),
+  ('AV1 Storage Savers', 'AV1 Codec', 'AV1')
+ON CONFLICT DO NOTHING;
