@@ -130,17 +130,23 @@ UPDATE "quality_profile_custom_formats" SET "score" = 50  WHERE "quality_profile
 UPDATE "quality_profile_custom_formats" SET "score" = 50  WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'CRIT';
 UPDATE "quality_profile_custom_formats" SET "score" = 200 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'AV1 Compact Encoders';
 
--- 12. Direct ARC Audio Features (Universal Atmos + Lossless / DD+ Passthrough)
+-- 12. Direct ARC Audio Features (Universal Atmos + DTS Core & DD+ Bitstream Ladder)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
-VALUES ('Movies 2160p AV1 HQ', 'Atmos', 'all', 200)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 200;
-
-UPDATE "quality_profile_custom_formats" SET "score" = 120 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Dolby Digital +';
-UPDATE "quality_profile_custom_formats" SET "score" = 100 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'DTS-X';
-UPDATE "quality_profile_custom_formats" SET "score" = 100 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'TrueHD';
-UPDATE "quality_profile_custom_formats" SET "score" = 100 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Lossless Audio';
-UPDATE "quality_profile_custom_formats" SET "score" = 80  WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Dolby Digital';
-UPDATE "quality_profile_custom_formats" SET "score" = 150 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Opus 5.1 / 7.1';
+VALUES 
+  ('Movies 2160p AV1 HQ', 'Atmos', 'all', 200),
+  ('Movies 2160p AV1 HQ', 'DTS', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'DTS-ES', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'DTS-HD MA', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'DTS-HD HRA', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'DTS-X', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'Dolby Digital +', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'Dolby Digital', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'TrueHD', 'all', 80),
+  ('Movies 2160p AV1 HQ', 'Opus 5.1 / 7.1', 'all', 80),
+  ('Movies 2160p AV1 HQ', 'FLAC', 'all', 80),
+  ('Movies 2160p AV1 HQ', 'Lossless Audio', 'all', 50),
+  ('Movies 2160p AV1 HQ', 'AAC', 'all', 10)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = excluded.score;
 
 -- 13. Update AV1 Quality Encoders Regex (Authoritative AV1 Ladder, Trailing-Group Anchored)
 UPDATE "regular_expressions"
@@ -205,7 +211,7 @@ CREATE TEMP TABLE _pcd_assertions (
 
 INSERT INTO _pcd_assertions (name, condition)
 VALUES
-  ('Active CF Count == 60', (SELECT count(*) = 60 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
+  ('Active CF Count == 66', (SELECT count(*) = 66 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
   ('Banned Groups CF Count == 3', (SELECT count(*) = 3 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" LIKE 'Banned Groups%')),
   ('Zero Orphan Release Group Conditions', (SELECT count(*) = 0 FROM "custom_format_conditions" cfc LEFT JOIN "condition_patterns" cp ON cfc.custom_format_name = cp.custom_format_name AND cfc.name = cp.condition_name WHERE cfc.type IN ('release_group', 'release_title') AND cp.regular_expression_name IS NULL)),
   ('Tier Regex Audio Token Immunity', (SELECT count(*) = 0 FROM "regular_expressions" r WHERE r.name IN ('AV1 Quality Encoders', 'AV1 Compact Encoders', 'Saon') AND (r.pattern LIKE '%(DTS|%' OR r.pattern LIKE '%|DTS|%' OR r.pattern LIKE '%|DTS)%' OR r.pattern LIKE '%(Atmos|%' OR r.pattern LIKE '%|Atmos|%' OR r.pattern LIKE '%|Atmos)%' OR r.pattern LIKE '%(TrueHD|%' OR r.pattern LIKE '%|TrueHD|%' OR r.pattern LIKE '%|TrueHD)%'))),

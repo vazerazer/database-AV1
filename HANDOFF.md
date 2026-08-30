@@ -1244,12 +1244,14 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Standard Alignment (`upgrade_until_score: 10000`, `upgrade_score_increment: 1`):**
    * Aligned with Dumpstarr / TRaSH standards: `upgrade_until_score = 10000` (unbounded ceiling) and `upgrade_score_increment = 1` (any strictly positive improvement triggers an upgrade).
 
+## 61. DTS-Core & Bitstream Audio Ladder Harmonization (Op 966-REV9)
 
+1. **DTS-Core Bitstream Recognition (`+100 pts`):**
+   * All DTS streams (`DTS`, `DTS-ES`, `DTS-HD MA`, `DTS-HD HRA`, `DTS-X`) embed a full 1509 kbps DTS Core track for lossless ARC passthrough, standardized at `+100 pts`.
+   * Standard Dolby bitstream (`Dolby Digital +`, `Dolby Digital`) aligned at `+100 pts`.
+   * Complex lossless & software surround (`TrueHD`, `Opus 5.1 / 7.1`, `FLAC`) set to `+80 pts`, `Lossless Audio` to `+50 pts`, `AAC` to `+10 pts`, and `PCM` to `0 pts`.
 
-
-
-
-
-
-
-
+2. **Empirical Verification (*John Wick 3*, *Interstellar*, *Bourne Ultimatum*):**
+   * **John Wick 3:** `CoSMiCSuRFeR` AV1 TrueHD Atmos (**`4,130 pts`** 🏆) > `R and H` AV1 DTS (**`3,950 pts`**) > `MainFrame` x265 TrueHD Atmos (`3,930 pts`) > `hallowed` x265 DDP (`3,755 pts`).
+   * **Interstellar:** `RandH` AV1 DTS-HD MA (**`3,950 pts`** 🏆) > `hallowed` IMAX x265 DDP (`3,850 pts`) > `W4NK3R` x265 DTS-HD MA (`3,550 pts`).
+   * **The Bourne Ultimatum:** `hallowed` / `BHDStudio` x265 DDP (**`3,750 pts`** 🏆) = `MainFrame` x265 DTS-X (**`3,750 pts`** 🏆) > `R and H` AV1 DTS (`3,650 pts`).
