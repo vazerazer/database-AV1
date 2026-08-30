@@ -111,9 +111,12 @@ VALUES
   ('Movies 2160p AV1 HQ', '1080p Balanced Tier 2', 'all', 1400)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 1400;
 
--- 10. Editions & Cuts (Prioritizes Extended & Special Editions)
+-- 10. Editions & Cuts (Prioritizes Extended, Special Editions & IMAX)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
-VALUES ('Movies 2160p AV1 HQ', 'Special Edition', 'all', 100)
+VALUES 
+  ('Movies 2160p AV1 HQ', 'Special Edition', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'IMAX', 'all', 100),
+  ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'all', 100)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 100;
 
 -- 11. Visual Features (Capped below 800)
@@ -202,7 +205,7 @@ CREATE TEMP TABLE _pcd_assertions (
 
 INSERT INTO _pcd_assertions (name, condition)
 VALUES
-  ('Active CF Count == 58', (SELECT count(*) = 58 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
+  ('Active CF Count == 60', (SELECT count(*) = 60 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ')),
   ('Banned Groups CF Count == 3', (SELECT count(*) = 3 FROM "quality_profile_custom_formats" WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" LIKE 'Banned Groups%')),
   ('Zero Orphan Release Group Conditions', (SELECT count(*) = 0 FROM "custom_format_conditions" cfc LEFT JOIN "condition_patterns" cp ON cfc.custom_format_name = cp.custom_format_name AND cfc.name = cp.condition_name WHERE cfc.type IN ('release_group', 'release_title') AND cp.regular_expression_name IS NULL)),
   ('Tier Regex Audio Token Immunity', (SELECT count(*) = 0 FROM "regular_expressions" r WHERE r.name IN ('AV1 Quality Encoders', 'AV1 Compact Encoders', 'Saon') AND (r.pattern LIKE '%(DTS|%' OR r.pattern LIKE '%|DTS|%' OR r.pattern LIKE '%|DTS)%' OR r.pattern LIKE '%(Atmos|%' OR r.pattern LIKE '%|Atmos|%' OR r.pattern LIKE '%|Atmos)%' OR r.pattern LIKE '%(TrueHD|%' OR r.pattern LIKE '%|TrueHD|%' OR r.pattern LIKE '%|TrueHD)%'))),

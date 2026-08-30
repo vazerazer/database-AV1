@@ -1228,9 +1228,16 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **The Matrix (1999):** `ChopperHitler` AV1 DV TrueHD Atmos (**`3,955 pts`** 🏆) > `hallowed` x265 DV HDR10+ TrueHD (`3,800 pts`).
    * **Interstellar (2014):** `RandH` AV1 DV (**`3,850 pts`** 🏆) > `BHDStudio` x265 DV (`3,650 pts`).
 
-4. **Monotonicity & Invariants:**
-   * $\text{Bare AV1 (3200)} > \text{Bare x265 (3000)} > \text{Max Tier 2 (2975)} > \text{Max Tier 3 (2175)} > \text{Cutoff (1000)} > \text{Untiered (775)}$.
-   * 800-point separation guarantees structural impossibility of tier leapfrogging or upgrade looping.
+## 59. IMAX & IMAX Enhanced Prioritization (Op 966-REV7)
+
+1. **IMAX / IMAX Enhanced Integration (`+100 pts`):**
+   * **IMAX Enhanced (`+100 pts`):** Matches expanded 1.90:1 open-matte aspect ratio streams (e.g. Disney+ IMAX Enhanced Marvel titles, Bravia Core streams), ensuring full-screen presentation beats letterboxed 2.39:1 streams.
+   * **IMAX (`+100 pts`):** Matches 4K Blu-ray releases with variable aspect ratio IMAX sequences (*Interstellar*, *Oppenheimer*, *Dunkirk*, *Top Gun: Maverick*).
+
+2. **Empirical Verification (*Interstellar* & *Marvel*):**
+   * **Interstellar (2014):** `hallowed` IMAX x265 DV (**`3,870 pts`** 🏆) > `RandH` AV1 DV (`3,850 pts`) > `W4NK3R` x265 DV (`3,450 pts`) > `CHD` AV1 (`3,350 pts`) > `PiRaTeS` WEB-DL (`2,280 pts`).
+   * **Avengers: Endgame (2019):** `FLUX` IMAX Enhanced DSNP DV Atmos (**`3,370 pts`** 🏆) > Standard Letterbox DSNP (`3,270 pts`).
+
 
 
 
