@@ -73,13 +73,14 @@ def get_candidate_release_group_patterns():
     """
     roster = {
         "AV1 Quality Encoders": [
-            "CoSMiCSuRFeR", "Waldek", "PRL", "CHD", "CHOPPERHITLER", "TAoE"
+            "CoSMiCSuRFeR", "Waldek", "PRL", "CHD", "CHOPPERHITLER", "ChopperHitler", "TAoE",
+            "dAV1nci", "RandH", "R&H", "R and H", "KIMJI", "UH", "TiZU"
         ],
         "AV1 Compact Encoders": [
-            "dAV1nci", "UnAV1Chain", "RAV1NE", "UserHEVC", "UH", "LAZARUS", "DKV", "TiZU",
-            "Saon", "onlyfaffs", "KIMJI", "heTOrico", "Rosy", "anomoomin", "CMCT",
+            "UnAV1Chain", "RAV1NE", "UserHEVC", "LAZARUS", "DKV",
+            "onlyfaffs", "heTOrico", "Rosy", "anomoomin", "CMCT",
             "GRiMM", "Dust", "DIN", "GanG", "WhiskyJack", "WhiskeyJack", "SmokinDevil", "Smokindevil",
-            "edge2020", "R and H", "R&H"
+            "edge2020"
         ],
         "AV1 Storage Savers": [
             "PSA", "GalaxyRG", "MeGusta", "VXT", "d3g", "Ghost", "rartv", "ELiTE",

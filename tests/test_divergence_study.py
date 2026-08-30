@@ -33,22 +33,23 @@ class TestDivergenceStudyCore(unittest.TestCase):
         q_re = self.cand_patterns["AV1 Quality Encoders"]["compiled"]
         self.assertTrue(q_re.search("CoSMiCSuRFeR"))
         self.assertTrue(q_re.search("TAoE"))
-        self.assertFalse(q_re.search("dAV1nci"))
+        self.assertTrue(q_re.search("dAV1nci"))
+        self.assertTrue(q_re.search("R and H"))
+        self.assertTrue(q_re.search("R&H"))
         
         c_re = self.cand_patterns["AV1 Compact Encoders"]["compiled"]
-        self.assertTrue(c_re.search("dAV1nci"))
-        self.assertTrue(c_re.search("R and H"))
-        self.assertTrue(c_re.search("R&H"))
+        self.assertTrue(c_re.search("LAZARUS"))
+        self.assertTrue(c_re.search("DKV"))
         self.assertFalse(c_re.search("CoSMiCSuRFeR"))
 
     def test_divergence_classification_synthetic(self):
         # Synthetic recorded corpus with known parser behaviors
         synthetic_corpus = [
-            # 1. Direct Agreement (Both title regex and parsed group match Compact)
+            # 1. Direct Agreement (Both title regex and parsed group match Quality)
             {
                 "title": "The.Lord.of.the.Rings.2003.Extended.1080p.AV1.DDP.Atmos-TiZU.mkv",
                 "category": "Standard Compact",
-                "target_cf": "AV1 Compact Encoders",
+                "target_cf": "AV1 Quality Encoders",
                 "expected_pass": True,
                 "parsed_group": "TiZU",
                 "arr_type": "radarr"
@@ -57,7 +58,7 @@ class TestDivergenceStudyCore(unittest.TestCase):
             {
                 "title": "The.Shawshank.Redemption.1994.2160p.AV1-R&H.mkv",
                 "category": "Compound Ampersand",
-                "target_cf": "AV1 Compact Encoders",
+                "target_cf": "AV1 Quality Encoders",
                 "expected_pass": True,
                 "parsed_group": "R",
                 "arr_type": "radarr"
@@ -66,7 +67,7 @@ class TestDivergenceStudyCore(unittest.TestCase):
             {
                 "title": "The.Shawshank.Redemption.1994.2160p.AV1-R and H.mkv",
                 "category": "Compound Space",
-                "target_cf": "AV1 Compact Encoders",
+                "target_cf": "AV1 Quality Encoders",
                 "expected_pass": True,
                 "parsed_group": "R",
                 "arr_type": "radarr"

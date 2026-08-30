@@ -81,7 +81,7 @@ class TestLibraryAuditCore(unittest.TestCase):
         self.assertEqual(classify_group_tier("Toasty", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("LAZARUS", self.tier_patterns), "Compact")
         self.assertEqual(classify_group_tier("DKV", self.tier_patterns), "Compact")
-        self.assertEqual(classify_group_tier("R and H", self.tier_patterns), "Compact")
+        self.assertEqual(classify_group_tier("R and H", self.tier_patterns), "Quality")
         self.assertEqual(classify_group_tier("WhiskeyJack", self.tier_patterns), "Compact")
         
         # Storage Tier
