@@ -113,11 +113,14 @@ ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE
 
 -- 10. Editions & Cuts (Prioritizes Extended, Special Editions & IMAX)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
-VALUES 
-  ('Movies 2160p AV1 HQ', 'Special Edition', 'all', 100),
-  ('Movies 2160p AV1 HQ', 'IMAX', 'all', 100),
-  ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'all', 100)
+VALUES ('Movies 2160p AV1 HQ', 'Special Edition', 'all', 100)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 100;
+
+INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
+VALUES 
+  ('Movies 2160p AV1 HQ', 'IMAX', 'all', 250),
+  ('Movies 2160p AV1 HQ', 'IMAX Enhanced', 'all', 250)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 250;
 
 -- 11. Visual Features (Capped below 800)
 UPDATE "quality_profile_custom_formats" SET "score" = 300 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Dolby Vision';

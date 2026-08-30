@@ -1230,11 +1230,14 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 ## 59. IMAX & IMAX Enhanced Prioritization (Op 966-REV7)
 
-1. **IMAX / IMAX Enhanced Integration (`+100 pts`):**
-   * **IMAX Enhanced (`+100 pts`):** Matches expanded 1.90:1 open-matte aspect ratio streams (e.g. Disney+ IMAX Enhanced Marvel titles, Bravia Core streams), ensuring full-screen presentation beats letterboxed 2.39:1 streams.
-   * **IMAX (`+100 pts`):** Matches 4K Blu-ray releases with variable aspect ratio IMAX sequences (*Interstellar*, *Oppenheimer*, *Dunkirk*, *Top Gun: Maverick*).
+1. **IMAX / IMAX Enhanced Integration (`+250 pts`):**
+   * **IMAX Enhanced (`+250 pts`):** Matches expanded 1.90:1 open-matte aspect ratio streams (e.g. Disney+ IMAX Enhanced Marvel titles, Bravia Core streams), ensuring full-screen presentation beats letterboxed 2.39:1 streams.
+   * **IMAX (`+250 pts`):** Matches 4K Blu-ray releases with variable aspect ratio IMAX sequences (*Interstellar*, *Oppenheimer*, *Dunkirk*, *Top Gun: Maverick*). At `+250 pts`, explicitly confirmed IMAX disc masters cleanly win over non-IMAX AV1 encodes.
 
 2. **Empirical Verification (*Interstellar* & *Marvel*):**
+   * **Interstellar (2014):** `hallowed` IMAX x265 DV (**`4,000 pts`** 🏆) > `RandH` AV1 DV (`3,950 pts`) > `W4NK3R` x265 DV (`3,550 pts`).
+   * **Avengers: Endgame (2019):** `FLUX` IMAX Enhanced DSNP DV Atmos (**`3,500 pts`** 🏆) > Standard Letterbox DSNP (`3,250 pts`).
+
 ## 60. Upgrade Until Ceiling & Increment Normalization (Op 966-REV8)
 
 1. **Root Cause Analysis (Blocked Upgrades on Top Releases):**
@@ -1253,5 +1256,5 @@ All 6 development phases from architecture extraction through E2E live synchroni
 
 2. **Empirical Verification (*John Wick 3*, *Interstellar*, *Bourne Ultimatum*):**
    * **John Wick 3:** `CoSMiCSuRFeR` AV1 TrueHD Atmos (**`4,130 pts`** 🏆) > `R and H` AV1 DTS (**`3,950 pts`**) > `MainFrame` x265 TrueHD Atmos (`3,930 pts`) > `hallowed` x265 DDP (`3,755 pts`).
-   * **Interstellar:** `RandH` AV1 DTS-HD MA (**`3,950 pts`** 🏆) > `hallowed` IMAX x265 DDP (`3,850 pts`) > `W4NK3R` x265 DTS-HD MA (`3,550 pts`).
+   * **Interstellar:** `hallowed` IMAX x265 DDP (**`4,000 pts`** 🏆) > `RandH` AV1 DTS-HD MA (`3,950 pts`) > `W4NK3R` x265 DTS-HD MA (`3,550 pts`).
    * **The Bourne Ultimatum:** `hallowed` / `BHDStudio` x265 DDP (**`3,750 pts`** 🏆) = `MainFrame` x265 DTS-X (**`3,750 pts`** 🏆) > `R and H` AV1 DTS (`3,650 pts`).
