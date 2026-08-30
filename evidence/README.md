@@ -141,6 +141,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Streamlining Report: [`profile_streamlining_957a_report.md`](profile_streamlining_957a_report.md)
   * Raw Streamlining Dataset: [`profile_streamlining_957a_raw.json`](profile_streamlining_957a_raw.json)
   * PCD SQL Migration: [`../ops/957.deprecate-all-unused-profiles.sql`](../ops/957.deprecate-all-unused-profiles.sql)
+* **Op 964A Full Library BPP Density Audit (314 Movies):**
+  * Summary Report: [`library_bpp_audit_964a_summary.md`](library_bpp_audit_964a_summary.md)
+  * Summary JSON: [`library_bpp_audit_964a_summary.json`](library_bpp_audit_964a_summary.json)
+  * Raw Dataset: [`library_bpp_audit_964a_raw.csv`](library_bpp_audit_964a_raw.csv)
 
 ---
 

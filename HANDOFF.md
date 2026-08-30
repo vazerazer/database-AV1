@@ -1147,3 +1147,19 @@ All 6 development phases from architecture extraction through E2E live synchroni
 2. **Dedicated Pure Flagship Repository:**
    * `database-AV1` is now 100% focused on a single flagship profile: **`Movies 2160p AV1 HQ`**.
    * Live Radarr4k daemon cleaned via API; test suites and profile drift guards updated and 100% green.
+
+---
+
+## 53. Full Library BPP Density Audit (Op 964A)
+
+1. **Audit Execution (314 Movies):**
+   * Scanned the entire media library (`library/altmount/complete/movies4k/`, 314 active movie releases) extracting codec, resolution, dimensions, fps, duration, size, and audio streams.
+   * Calculated Bits-Per-Pixel ($\text{BPP} = \frac{\text{Bitrate}}{\text{Width} \times \text{Height} \times \text{FPS}}$) across all files.
+   * Documented in [`evidence/library_bpp_audit_964a_summary.md`](evidence/library_bpp_audit_964a_summary.md), [`evidence/library_bpp_audit_964a_summary.json`](evidence/library_bpp_audit_964a_summary.json), and [`evidence/library_bpp_audit_964a_raw.csv`](evidence/library_bpp_audit_964a_raw.csv).
+
+2. **Key Findings:**
+   * **`OPTIMAL` (40.8%, 128 movies):** Perfectly sitting within target transparency sweet spots (AV1 0.045–0.075 / HEVC 0.080–0.140).
+   * **`REFERENCE/HEAVY` (15.9%, 50 movies):** High-bitrate transfers / uncompressed masters.
+   * **`RES-ANOMALY` (31.8%, 100 movies):** 1080p archival fallback or H264 transfers.
+   * **`STARVED` (11.5%, 36 movies):** Below minimum density floor; candidate targets for future upgrade cycles.
+
