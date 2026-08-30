@@ -7,7 +7,7 @@ BEGIN TRANSACTION;
 -- 1. Configure Quality Profile Parameters
 UPDATE "quality_profiles"
 SET "minimum_custom_format_score" = 1000,
-    "upgrade_until_score" = 3300,
+    "upgrade_until_score" = 3200,
     "upgrade_score_increment" = 300,
     "description" = 'Flagship 4K Quality profile (AV1-First, Dumpstarr 2160p Territory) targeting transparent 4K AV1 & x265 HDR/Dolby Vision encodes with ARC-optimized bitstream audio and vetted 1080p archival fallback.'
 WHERE "name" = 'Movies 2160p AV1 HQ';
@@ -45,7 +45,8 @@ WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ'
     'Legacy x264 Codec',
     'Legacy Trusted x264',
     '2160p Balanced Tier 1',
-    'Theatrical'
+    'Theatrical',
+    'Dolby Atmos'
   );
 
 -- 5. Create x265 (HD) custom format to deny x265/HEVC below 2160p (Dumpstarr rule)
@@ -74,10 +75,10 @@ INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_fo
 VALUES ('Movies 2160p AV1 HQ', 'x265 (HD)', 'all', -10000)
 ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = excluded.score;
 
--- 6. Tier 1A — Authoritative Master AV1 Ladder (+3300 pts)
+-- 6. Tier 1A — Authoritative Master AV1 Ladder (+3200 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
-VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'all', 3300)
-ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3300;
+VALUES ('Movies 2160p AV1 HQ', 'AV1 Quality Encoders', 'all', 3200)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 3200;
 
 -- 7. Tier 1B — Elite 4K Disc Encoders (+3000 pts)
 INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
@@ -126,8 +127,11 @@ UPDATE "quality_profile_custom_formats" SET "score" = 50  WHERE "quality_profile
 UPDATE "quality_profile_custom_formats" SET "score" = 50  WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'CRIT';
 UPDATE "quality_profile_custom_formats" SET "score" = 200 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'AV1 Compact Encoders';
 
--- 12. Direct ARC Audio Features (Capped below 800)
-UPDATE "quality_profile_custom_formats" SET "score" = 200 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Dolby Atmos';
+-- 12. Direct ARC Audio Features (Universal Atmos + Lossless / DD+ Passthrough)
+INSERT INTO "quality_profile_custom_formats" ("quality_profile_name", "custom_format_name", "arr_type", "score")
+VALUES ('Movies 2160p AV1 HQ', 'Atmos', 'all', 200)
+ON CONFLICT ("quality_profile_name", "custom_format_name", "arr_type") DO UPDATE SET "score" = 200;
+
 UPDATE "quality_profile_custom_formats" SET "score" = 120 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'Dolby Digital +';
 UPDATE "quality_profile_custom_formats" SET "score" = 100 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'DTS-X';
 UPDATE "quality_profile_custom_formats" SET "score" = 100 WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ' AND "custom_format_name" = 'TrueHD';

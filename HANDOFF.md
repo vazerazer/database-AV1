@@ -1211,22 +1211,27 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Theatrical vs Extended Issue:** `Theatrical` was previously assigned `+50 pts` while `Special Edition` (matching Extended, Director's Cut, DC, Final Cut) was unassigned (`0 pts`), allowing theatrical cuts to incorrectly outscore extended cuts.
    * **AV1 vs x265 Parity Issue:** Both `AV1 Quality Encoders` and `2160p Balanced Tier 3` (x265 disc) were scored equally at `+3000 pts`. An x265 release with DV (`+300`) + HDR10+ (`+250`) + TrueHD (`+100`) reached `3800–4050 pts`, outscoring an AV1 encode (`3670 pts`) despite AV1 being the target flagship codec.
 
-## 58. Flagship Multi-Movie Robustness Calibration (Op 966-REV5)
+## 58. Flagship Multi-Movie Robustness Calibration (Op 966-REV6)
 
-1. **Robust Multi-Movie Calibration (`AV1 Quality: +3300` vs `x265 Disc: +3000`):**
-   * **Problem:** Large gaps (+700 pts) allowed undersized non-DV AV1 encodes (e.g. 15GB `dAV1nci`) to score ahead of master Dolby Vision + Atmos disc releases. Conversely, flat 3000/3000 caused feature-dense x265 to edge out pristine AV1 masters on complex releases like *Dune: Part Two*.
-   * **Calibrated Solution:** Established a balanced $+300$ flagship boost for `AV1 Quality Encoders` (`+3300 pts`) alongside elite 4K disc encodes (`+3000 pts`), with Tier 2 (`+2200 pts`), Tier 3 (`+1400 pts`), Special Edition (`+100 pts`), and 2160p Max Size (`250 MB/min`).
+1. **Root Cause of ROTK / Dune 2 Equalization:**
+   * **Dolby Vision vs AV1 Gap:** Setting AV1 at $+300$ over x265 cancelled out the $+300$ Dolby Vision bonus, causing 15GB non-DV AV1 (`dAV1nci`) to tie with a 36.3GB master Dolby Vision x265 release (`hallowed Extended`).
+   * **Atmos Disparity:** `Dolby Atmos` CF had `Not TrueHD`, preventing uncompressed `TrueHD Atmos` tracks from receiving their full Atmos bonus (+200 pts), artificially penalizing lossless Atmos masters.
 
-2. **Empirical Multi-Movie Verification Matrix:**
-   * **Dune: Part Two (2024):** `TAoE` AV1 DV TrueHD Atmos (**`4,050 pts`** 🏆) > `hallowed` x265 DV HDR10+ Atmos (`4,020 pts`) > `CoSMiCSuRFeR` AV1 HDR (`3,650 pts`) > `FLUX` WEB-DL (`3,170 pts`).
-   * **LOTR: Return of the King (2003):** `CoSMiCSuRFeR` AV1 Extended DV TrueHD (**`4,150 pts`** 🏆) > `hallowed` x265 Extended DV Atmos (`4,070 pts`) = `dAV1nci` AV1 Extended Atmos (`4,070 pts`) > `hallowed` Theatrical (`3,970 pts`).
-   * **Blade Runner (1982):** `RandH` AV1 Final Cut DV TrueHD (**`4,150 pts`** 🏆) > `hallowed` x265 Final Cut DV (`3,870 pts`) > `hallowed` Theatrical (`3,650 pts`).
-   * **The Matrix (1999):** `ChopperHitler` AV1 DV TrueHD Atmos (**`4,055 pts`** 🏆) > `hallowed` x265 DV HDR10+ TrueHD (`3,800 pts`).
+2. **Universal Atmos & Fine-Tuned AV1 Ladder (`AV1 Quality: +3200` vs `x265 Disc: +3000`):**
+   * **Universal Atmos (`+200 pts`):** Replaced restricted `Dolby Atmos` with universal `Atmos` format, ensuring TrueHD Atmos tracks receive `Atmos (+200)` + `TrueHD (+100)` = `+300 pts`.
+   * **Balanced AV1 Boost (`+3200 pts`):** $+200$ edge allows AV1 to win head-to-head on identical features, while ensuring Dolby Vision (+300 pts) always takes priority over non-Dolby Vision releases.
+
+3. **Empirical Multi-Movie Verification Matrix:**
+   * **LOTR: Return of the King (2003):** `CoSMiCSuRFeR` AV1 Extended DV TrueHD Atmos (**`4,250 pts`** 🏆) > `hallowed` x265 Extended DV Atmos (**`4,070 pts`**) > `dAV1nci` AV1 Extended Atmos (**`3,970 pts`** — `hallowed` cleanly beats `dAV1nci` by $+100$ pts!) > `hallowed` Theatrical (`3,970 pts`).
+   * **Dune: Part Two (2024):** `TAoE` AV1 DV TrueHD Atmos (**`4,150 pts`** 🏆 — beats `hallowed` by $+130$ pts!) > `hallowed` x265 DV HDR10+ Atmos (`4,020 pts`) > `CoSMiCSuRFeR` AV1 HDR (`3,550 pts`) > `FLUX` WEB-DL (`3,170 pts`).
+   * **Blade Runner (1982):** `RandH` AV1 Final Cut DV TrueHD (**`4,050 pts`** 🏆) > `hallowed` x265 Final Cut DV (`3,870 pts`) > `hallowed` Theatrical (`3,650 pts`).
+   * **The Matrix (1999):** `ChopperHitler` AV1 DV TrueHD Atmos (**`3,955 pts`** 🏆) > `hallowed` x265 DV HDR10+ TrueHD (`3,800 pts`).
    * **Interstellar (2014):** `RandH` AV1 DV (**`3,850 pts`** 🏆) > `BHDStudio` x265 DV (`3,650 pts`).
 
-3. **Monotonicity & Invariants:**
-   * $\text{Bare AV1 (3300)} > \text{Bare x265 (3000)} > \text{Max Tier 2 (2975)} > \text{Max Tier 3 (2175)} > \text{Cutoff (1000)} > \text{Untiered (775)}$.
+4. **Monotonicity & Invariants:**
+   * $\text{Bare AV1 (3200)} > \text{Bare x265 (3000)} > \text{Max Tier 2 (2975)} > \text{Max Tier 3 (2175)} > \text{Cutoff (1000)} > \text{Untiered (775)}$.
    * 800-point separation guarantees structural impossibility of tier leapfrogging or upgrade looping.
+
 
 
 

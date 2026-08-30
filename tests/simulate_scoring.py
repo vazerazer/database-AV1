@@ -318,14 +318,14 @@ def run_simulation_battery():
     conn = build_compiled_db()
 
     test_corpus = [
-        # --- 1. PURE AV1 4K ENCODES (Score 3300 - 4375) ---
+        # --- 1. PURE AV1 4K ENCODES (Score 3200 - 4375) ---
         {
             "category": "Pure AV1 2160p HQ (dAV1nci LOTR)",
             "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 2160p HQ (ChopperHitler Matrix)",
@@ -333,7 +333,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 2160p HQ (RandH / R&H Shawshank)",
@@ -341,7 +341,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Dune 2)",
@@ -349,7 +349,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 2160p HQ (UH LOTR)",
@@ -357,7 +357,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 1080p HQ (KIMJI The Hunt)",
@@ -365,7 +365,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
         {
             "category": "Pure AV1 2160p HQ (TAoE Dune 2)",
@@ -373,7 +373,7 @@ def run_simulation_battery():
             "profile": "Movies 2160p AV1 HQ",
             "arr_type": "radarr",
             "expect_pass": True,
-            "min_band": 3300
+            "min_band": 3200
         },
 
         # --- 2. TIERED X265 4K FALLBACKS (Score 2200 - 3775) ---

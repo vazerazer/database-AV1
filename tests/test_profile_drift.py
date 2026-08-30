@@ -30,10 +30,10 @@ class TestProfileDriftGuard(unittest.TestCase):
         prod = self.snapshot['Movies 2160p AV1 HQ']
 
         self.assertEqual(prod['min_score'], 1000)
-        self.assertEqual(prod['upgrade_until_score'], 3300)
+        self.assertEqual(prod['upgrade_until_score'], 3200)
 
         # Invariants: Prod has active tier bonuses
-        self.assertEqual(prod['custom_formats'].get('AV1 Quality Encoders'), 3300)
+        self.assertEqual(prod['custom_formats'].get('AV1 Quality Encoders'), 3200)
         self.assertEqual(prod['custom_formats'].get('AV1 Compact Encoders'), 200)
 
         # Anti-trash hygiene and hard rejections
