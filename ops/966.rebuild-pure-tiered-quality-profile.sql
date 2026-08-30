@@ -19,7 +19,7 @@ WHERE "quality_profile_name" = 'Movies 2160p AV1 HQ'
 
 -- 3. Calibrate Radarr Quality Definitions (proportional runtime MB/min)
 UPDATE "radarr_quality_definitions"
-SET "min_size" = 30, "preferred_size" = 100, "max_size" = 185
+SET "min_size" = 30, "preferred_size" = 100, "max_size" = 250
 WHERE "quality_name" IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'Remux-2160p', 'HDTV-2160p');
 
 UPDATE "radarr_quality_definitions"
