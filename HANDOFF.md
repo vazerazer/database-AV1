@@ -1163,3 +1163,21 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **`RES-ANOMALY` (31.8%, 100 movies):** 1080p archival fallback or H264 transfers.
    * **`STARVED` (11.5%, 36 movies):** Below minimum density floor; candidate targets for future upgrade cycles.
 
+---
+
+## 54. No-Reference Artifact Autopsy of Low-BPP Suspects (Op 965A)
+
+1. **Screening Execution (47 Suspect Titles):**
+   * Screened all 47 suspect titles flagged in Op 964A across 4 objective probes:
+     1. Dark-scene isolation via 3-point luma analysis (`signalstats`).
+     2. Contrast Aware Multiscale Banding Index (`CAMBI`) on the darkest 10s window.
+     3. High-motion sequence macroblock & blur detection (`blockdetect`, `blurdetect`).
+     4. Encoder SEI bitstream psycho-visual parameter extraction (`mediainfo`).
+   * Documented in [`evidence/artifacts_suspects_965a_summary.md`](evidence/artifacts_suspects_965a_summary.md), [`evidence/artifacts_suspects_965a_summary.json`](evidence/artifacts_suspects_965a_summary.json), and [`evidence/artifacts_suspects_965a_raw.csv`](evidence/artifacts_suspects_965a_raw.csv).
+
+2. **Classification & Autopsy Results:**
+   * **`ARTIFACT-POSITIVE` (1 title, 2.1%):** *Capernaum* (1080p 1.43 GB micro-file) exhibited significant blockiness (`block_mean = 1.31`), confirming genuine artifact contamination.
+   * **`STARVED-BUT-CLEAN` (46 titles, 97.9%):** 46 out of 47 suspect titles showed near-zero dark-scene banding ($\text{CAMBI} \le 2.67 \ll 5.0$) and zero macroblocking, proving high-fidelity retention despite lean bitrates.
+   * **`HDR/DoVi Profiles` (44 titles, 93.6%):** Confirmed 10-bit dynamic range and wide color gamut deliver smooth gradients even at low BPP.
+
+

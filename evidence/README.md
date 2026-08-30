@@ -145,6 +145,10 @@ Confidence states classify the depth and repeatability of empirical evidence wit
   * Summary Report: [`library_bpp_audit_964a_summary.md`](library_bpp_audit_964a_summary.md)
   * Summary JSON: [`library_bpp_audit_964a_summary.json`](library_bpp_audit_964a_summary.json)
   * Raw Dataset: [`library_bpp_audit_964a_raw.csv`](library_bpp_audit_964a_raw.csv)
+* **Op 965A No-Reference Artifact Autopsy (47 Suspect Titles):**
+  * Summary Report: [`artifacts_suspects_965a_summary.md`](artifacts_suspects_965a_summary.md)
+  * Summary JSON: [`artifacts_suspects_965a_summary.json`](artifacts_suspects_965a_summary.json)
+  * Raw Dataset: [`artifacts_suspects_965a_raw.csv`](artifacts_suspects_965a_raw.csv)
 
 ---
 
