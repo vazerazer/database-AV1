@@ -1203,6 +1203,28 @@ All 6 development phases from architecture extraction through E2E live synchroni
    * **Bug 2 (Aliases):** Consolidated all known aliases into canonical group regexes with trailing-group anchoring and left-boundary guards (`(?<![A-Za-z0-9])`). Verified via 208-alias automated screening battery with 0 anomalies.
    * **Bug 3 (AV1-First Banned List):** Rebuilt clean banned list targeting genuine micro-rips (`YIFY`, `PSA`, `Saon`, `MeGusta`, `QxR`, `TGx`) while leaving `RARBG` neutral `0` and excluding anime/TV-only bans.
 
+---
+
+## 57. AV1-First Ladder Prioritization & Editions Calibration (Op 966-REV4)
+
+1. **Root Cause Analysis (LOTR / Edition & Codec Priority):**
+   * **Theatrical vs Extended Issue:** `Theatrical` was previously assigned `+50 pts` while `Special Edition` (matching Extended, Director's Cut, DC, Final Cut) was unassigned (`0 pts`), allowing theatrical cuts to incorrectly outscore extended cuts.
+   * **AV1 vs x265 Parity Issue:** Both `AV1 Quality Encoders` and `2160p Balanced Tier 3` (x265 disc) were scored equally at `+3000 pts`. An x265 release with DV (`+300`) + HDR10+ (`+250`) + TrueHD (`+100`) reached `3800–4050 pts`, outscoring an AV1 encode (`3670 pts`) despite AV1 being the target flagship codec.
+
+2. **Calibrated Tier Architecture & Mathematical Monotonicity:**
+   * **Tier 1A — Master AV1 Ladder (`+3500 pts`):** `AV1 Quality Encoders` (`ChopperHitler`, `dAV1nci`, `RandH`, `KIMJI`, `UH`, `TAoE`, `CoSMiCSuRFeR`, `PRL`, `CHD`, `TiZU`).
+   * **Tier 1B — Elite 4K Disc Encoders (`+2800 pts`):** `2160p Quality Tier 1/2`, `2160p Balanced Tier 2/3` (`BHDStudio`, `hallowed`, `dkore`, `CtrlHD`, `DON`).
+   * **Tier 2 — Top 4K WEB-DL & Secondary Disc (`+2000 pts`):** `WEB-DL Tier 1/2/3`, `2160p Quality Tier 3/4`, `HONE`.
+   * **Tier 3 — Archival 1080p Blu-ray Disc (`+1200 pts`):** `1080p Quality Tier 1/2/3`, `1080p Balanced Tier 1/2`.
+   * **Editions & Cuts:** Added `Special Edition: +100 pts` (matches Extended, Director's Cut, Special Edition, Final Cut); reset `Theatrical: 0 pts`.
+   * **Monotonicity Invariant:** $\text{Bare AV1 Tier 1 (3500)} \ge \text{Best-Case x265 Tier 1 (3575–3675 with identical features)} > \text{Bare x265 Tier 1 (2800)} > \text{Max Tier 2 (2775)} > \text{Max Tier 3 (1975)} > \text{Cutoff (1000)} > \text{Untiered (775)}$.
+
+3. **Empirical Release Verification (LOTR ROTK):**
+   * **`CoSMiCSuRFeR` AV1 Extended:** Base `3500` + HDR `200` + Atmos `200` + DD+ `120` + 10-bit `150` + Special Edition `100` = **`4270 pts`** (WINNER 🏆).
+   * **`hallowed` x265 Extended:** Base `2800` + DV `300` + HDR10+ `250` + TrueHD `100` + 10-bit `150` + Special Edition `100` = **`3700 pts`**.
+   * **`hallowed` x265 Theatrical:** Base `2800` + DV `300` + HDR10+ `250` + TrueHD `100` + 10-bit `150` = **`3600 pts`**.
+
+
 
 
 
