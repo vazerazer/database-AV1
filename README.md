@@ -30,7 +30,7 @@ Import this repository into Profilarr to manage and sync custom formats to your 
 ## Repository Layout
 
 * `ops/` — Versioned SQL migration scripts defining custom formats, regex patterns, and profile scores.
-* `tests/` — Automated CI test harnesses verifying schema integrity, regex behavior, scoring boundaries, and profile drift.
+* `tests/` — Automated CI test harnesses verifying schema integrity, regex behavior, and scoring boundaries.
 * `scripts/` — Upstream synchronization script (`sync_upstream.sh`).
 
 ## Running Tests
@@ -40,11 +40,6 @@ python3 tests/audit_pcd_harness.py .
 python3 tests/test_refined_regex_battery.py
 python3 tests/test_final_anime.py
 python3 tests/simulate_scoring.py
-python3 tests/test_library_audit.py
-python3 tests/test_supply_audit.py
-python3 tests/test_divergence_study.py
-python3 tests/test_tripwire_hygiene.py
-python3 tests/test_profile_drift.py
 ```
 
 ## License
