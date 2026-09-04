@@ -4,13 +4,9 @@
 *.local
 .env.*
 
-# Local-only Catalog & Checkpoint Data (Public Repo Quarantine)
-evidence/supply_av1.csv
-evidence/supply_checkpoint.jsonl
-evidence/checkpoints/
-evidence/census_924.md
-evidence/indexer_map.local
-evidence/*.local
+# Local-only Catalog & Checkpoint Data
+*.local
+evidence/
 
 # OS files
 .DS_Store

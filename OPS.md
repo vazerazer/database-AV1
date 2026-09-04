@@ -16,14 +16,11 @@ This document defines the permanent operational rules and execution guardrails f
 
 3. **Quarantine Path Pattern (Zero-Leakage Rule):**
    * NEVER stage or commit files matching:
-     * `evidence/supply_*`
-     * `evidence/supply_av1.csv`
-     * `evidence/supply_checkpoint.jsonl`
-     * `evidence/checkpoints/`
-     * `evidence/census_924.md`
-     * `evidence/indexer_map.local`
      * `*.local`
-   * Only [`evidence/verdicts.csv`](evidence/verdicts.csv) and [`evidence/census_924_public.md`](evidence/census_924_public.md) are allowed public tracked artifacts.
+     * `*.env`
+     * `.env`
+     * `telemetry/*`
+     * `export/*`
 
 4. **Mandatory Local Proof Loop:**
    * Full local 8-step proof loop INCLUDING [`tests/test_tripwire_hygiene.py`](tests/test_tripwire_hygiene.py) (path guards, 32-hex regex, absolute `/home/` path scan, indexer brand name check) must pass 100% green before any commit.

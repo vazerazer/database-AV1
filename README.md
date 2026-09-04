@@ -24,8 +24,7 @@ Import this repository into Profilarr to manage and sync custom formats to your 
 
 * `ops/` — Versioned SQL migration scripts defining custom formats, regex patterns, and profile scores.
 * `tests/` — Test harnesses verifying schema integrity, regex behavior, scoring boundaries, and profile drift.
-* `scripts/` — Maintenance utilities and analysis helpers.
-* `evidence/` — Curated audit data, bake-off benchmarks, and verified release verdicts.
+* `scripts/` — Repository synchronization and maintenance utilities.
 
 ## Running Tests
 
