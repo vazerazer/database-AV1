@@ -1,0 +1,106 @@
+name: PCD Audit & Simulation Battery
+
+on:
+  push:
+    branches: [v2, main, stable, dev]
+  pull_request:
+    branches: [v2, main, stable, dev]
+  workflow_dispatch:
+  schedule:
+    # Run weekly every Sunday at 04:00 UTC
+    - cron: '0 4 * * 0'
+
+jobs:
+  audit-and-test:
+    name: PCD Schema Audit & Scoring Simulation Battery
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PCD Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Extract Schema Tag from pcd.json
+        id: get_schema_tag
+        run: |
+          SCHEMA_TAG=$(python3 -c "import json; m = json.load(open('pcd.json')); print(m['dependencies']['https://github.com/Dictionarry-Hub/schema'])")
+          echo "tag=${SCHEMA_TAG}" >> $GITHUB_OUTPUT
+          echo "Resolved Dictionarry schema tag: ${SCHEMA_TAG}"
+
+      - name: Checkout Dictionarry Schema Dependency at Exact Tag
+        uses: actions/checkout@v4
+        with:
+          repository: 'Dictionarry-Hub/schema'
+          ref: ${{ steps.get_schema_tag.outputs.tag }}
+          path: 'deps/schema'
+
+      - name: Step 1 - Run PCD SQLite Schema & Foreign Key Audit Harness
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/audit_pcd_harness.py .
+
+      - name: Step 2 - Run Refined Codec & Encoder Regex Battery
+        run: |
+          python3 tests/test_refined_regex_battery.py
+
+      - name: Step 3 - Run Final Anime Encoders Regex Suite
+        run: |
+          python3 tests/test_final_anime.py
+
+      - name: Step 4 - Run Full Scoring Simulation & Upgrade Increment Battery
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/simulate_scoring.py
+
+      - name: Step 5 - Run Library Audit Unit Test Suite
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/test_library_audit.py
+
+      - name: Step 6 - Run Supply Audit Unit Test Suite
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/test_supply_audit.py
+
+      - name: Step 7 - Run Release Group Divergence Study Unit Test Suite
+        env:
+          PCD_SCHEMA_PATH: deps/schema/ops
+        run: |
+          python3 tests/test_divergence_study.py
+
+      - name: Step 8 - CI Tripwire - Security & Path Leak Verification
+        run: |
+          echo "Executing CI Tripwire: Checking for hardcoded 32-character hex keys..."
+          HEX_LEAKS=$(git grep -nEi '\b[0-9a-f]{32}\b' -- ':!.github/last-upstream-sha' || true)
+          if [ -n "$HEX_LEAKS" ]; then
+            echo "::error::TRIPWIRE FAILED: Potential API key or 32-character hex secret detected in tracked files:"
+            echo "$HEX_LEAKS"
+            exit 1
+          fi
+
+          echo "Executing CI Tripwire: Checking for personal home directory paths..."
+          HOME_LEAKS=$(git grep -nE '/home/[A-Za-z0-9._-]+' || true)
+          if [ -n "$HOME_LEAKS" ]; then
+            echo "::error::TRIPWIRE FAILED: Personal user home directory path detected in tracked files:"
+            echo "$HOME_LEAKS"
+            exit 1
+          fi
+
+          echo "CI Tripwire check passed: Zero credentials and zero personal paths found."
+
+      - name: Step 9 - Run Profile Drift Guard Test Suite
+        run: |
+          python3 tests/test_profile_drift.py
