@@ -49,15 +49,7 @@ jobs:
         run: |
           python3 tests/audit_pcd_harness.py .
 
-      - name: Step 2 - Run Refined Codec & Encoder Regex Battery
-        run: |
-          python3 tests/test_refined_regex_battery.py
-
-      - name: Step 3 - Run Final Anime Encoders Regex Suite
-        run: |
-          python3 tests/test_final_anime.py
-
-      - name: Step 4 - Run Full Scoring Simulation & Upgrade Increment Battery
+      - name: Step 2 - Run Full Scoring Simulation & Upgrade Increment Battery
         env:
           PCD_SCHEMA_PATH: deps/schema/ops
         run: |

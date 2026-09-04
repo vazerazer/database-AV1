@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+import glob
 
 def run_audit(pcd_dir, schema_dir=None):
     findings = []
@@ -161,10 +162,10 @@ def run_audit(pcd_dir, schema_dir=None):
         candidate_deps_ops = os.path.join(pcd_dir, "deps", "schema", "ops")
         candidate_deps_root = os.path.join(pcd_dir, "deps", "schema")
         
-        # Check standard sibling/parent deployment paths relative to repo root
         parent_dir = os.path.dirname(os.path.abspath(pcd_dir))
         candidate_sibling_deps = os.path.join(parent_dir, "deps", "schema", "ops")
-        candidate_profilarr_deps = os.path.join(parent_dir, "config", "profilarr", "data", "databases", "707ac052-713c-47dc-a438-a9a8d0fd8c7e", "deps", "schema", "ops")
+        profilarr_matches = sorted(glob.glob(os.path.join(parent_dir, "config", "profilarr", "data", "databases", "*", "deps", "schema", "ops")))
+        candidate_profilarr_deps = profilarr_matches[-1] if profilarr_matches else None
 
         if os.path.exists(candidate_deps_ops) and os.path.isdir(candidate_deps_ops):
             schema_dir = candidate_deps_ops
@@ -172,7 +173,7 @@ def run_audit(pcd_dir, schema_dir=None):
             schema_dir = candidate_deps_root
         elif os.path.exists(candidate_sibling_deps) and os.path.isdir(candidate_sibling_deps):
             schema_dir = candidate_sibling_deps
-        elif os.path.exists(candidate_profilarr_deps) and os.path.isdir(candidate_profilarr_deps):
+        elif candidate_profilarr_deps and os.path.exists(candidate_profilarr_deps):
             schema_dir = candidate_profilarr_deps
         else:
             raise FileNotFoundError(

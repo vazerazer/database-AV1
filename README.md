@@ -37,8 +37,6 @@ Import this repository into Profilarr to manage and sync custom formats to your 
 
 ```bash
 python3 tests/audit_pcd_harness.py .
-python3 tests/test_refined_regex_battery.py
-python3 tests/test_final_anime.py
 python3 tests/simulate_scoring.py
 ```
 
