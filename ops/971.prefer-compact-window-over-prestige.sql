@@ -106,62 +106,18 @@ INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUE
   ('2160p Compact Streaming WEB-DL', 'WEBRip', 'webrip')
 ON CONFLICT DO NOTHING;
 
--- 30 GiB is the floor of the 30-40 GB HONE/MA dumps. A two-hour file at the
--- 130 MB/min target is about 15 GiB, so FLUX/Kitsune/CMRG miss this. A long
--- compact disc such as Return of the King hallowed (35 GiB, 179 MB/min) is a
--- Blu-ray and does not match. -3200 pulls a fully tagged Tier 1 WEB under the
--- PSA tier (5300) and under the UTR tier (4600).
-INSERT INTO custom_formats (name, description) VALUES (
-  '2160p Bloated WEB',
-  '4K WEB-DL or WEBRip at or above 30 GiB. The 40 GB HONE Movies Anywhere dumps and other untouched dumps. Scored only on the movie profile, below a PSA micro.'
-) ON CONFLICT (name) DO UPDATE SET description = excluded.description;
-
-INSERT INTO custom_format_tags (custom_format_name, tag_name) VALUES
-  ('2160p Bloated WEB', 'HEVC')
-ON CONFLICT DO NOTHING;
-
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES
-  ('2160p Bloated WEB', 'Resolution', 'resolution', 'all', 0, 1)
-ON CONFLICT DO NOTHING;
-INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES
-  ('2160p Bloated WEB', 'Resolution', '2160p')
-ON CONFLICT DO NOTHING;
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES
-  ('2160p Bloated WEB', 'Not Bluray', 'source', 'all', 1, 1)
-ON CONFLICT DO NOTHING;
-INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES
-  ('2160p Bloated WEB', 'Not Bluray', 'bluray')
-ON CONFLICT DO NOTHING;
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES
-  ('2160p Bloated WEB', 'WEB-DL', 'source', 'all', 0, 0)
-ON CONFLICT DO NOTHING;
-INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES
-  ('2160p Bloated WEB', 'WEB-DL', 'web_dl')
-ON CONFLICT DO NOTHING;
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES
-  ('2160p Bloated WEB', 'WEBRip', 'source', 'all', 0, 0)
-ON CONFLICT DO NOTHING;
-INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES
-  ('2160p Bloated WEB', 'WEBRip', 'webrip')
-ON CONFLICT DO NOTHING;
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES
-  ('2160p Bloated WEB', 'At Least 30 GiB', 'size', 'all', 0, 1)
-ON CONFLICT DO NOTHING;
-INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES
-  ('2160p Bloated WEB', 'At Least 30 GiB', 32212254720, NULL)
-ON CONFLICT (custom_format_name, condition_name) DO UPDATE SET min_bytes = excluded.min_bytes, max_bytes = excluded.max_bytes;
-
 -- Movie ladder, 700-point gaps so DV/Atmos/HDR stay inside a class.
 --   8100 Blu-ray tier 1  hallowed / BHDStudio / in-window HONE
 --   7400 Blu-ray tier 2  QxR / TAoE / edge2020 (still a disc, so it beats WEB)
 --   6700 WEB tier 1      compact WEB encode from the mid-size circle
 --   6000 streaming WEB   FLUX / Kitsune / CMRG, and QxR WEB
---   5300 Blu-ray tier 3  PSA. Above every big WEB-DL, below compact WEB.
+--   5300 Blu-ray tier 3  PSA. Above the untouched WEB-DL bucket, below compact WEB.
 --   4600 Blu-ray tier 4  UTR / RARBG
 --   3900 WEB tier 3
 --   3200 WEB tier 4
---   2500 untouched WEB   BYNDR / NTb, under the micros
--- A 30 GiB WEB also takes -3200, which puts a tagged HONE/MA dump under PSA.
+--   2500 untouched WEB   BYNDR / NTb, under PSA. No gigabyte penalty:
+--   a long movie at a mid-size bitrate can pass 30 GiB and must keep this score.
+--   Files over 200 MB/min are rejected by the quality cap instead.
 -- Movies Anywhere is +15, the same kind of storefront tie-break as Amazon, so
 -- it no longer clears the disc-over-WEB gap.
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES
@@ -175,14 +131,13 @@ INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_
   ('Movies 2160p HEVC Compact', '2160p Compact WEB Tier 3', 'all', 3900),
   ('Movies 2160p HEVC Compact', '2160p Compact WEB Tier 4', 'all', 3200),
   ('Movies 2160p HEVC Compact', '2160p WEB-DL HEVC', 'all', 2500),
-  ('Movies 2160p HEVC Compact', '2160p Bloated WEB', 'all', -3200),
   ('Movies 2160p HEVC Compact', 'MA', 'all', 15)
 ON CONFLICT (quality_profile_name, custom_format_name, arr_type) DO UPDATE SET score = excluded.score;
 
 -- TV keeps WEB above disc. The shared group regexes move BHDStudio up and
 -- edge2020 down, and FLUX/Kitsune/CMRG have to stay grabable once they leave
 -- the untouched WEB-DL list. 5300 sits under TV WEB tier 4 (6000) and above
--- the untouched bucket (2500). The 30 GiB penalty is movie-only.
+-- the untouched bucket (2500).
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES
   ('TV 2160p HEVC Compact', '2160p Compact Streaming WEB-DL', 'all', 5300)
 ON CONFLICT (quality_profile_name, custom_format_name, arr_type) DO UPDATE SET score = excluded.score;
@@ -225,7 +180,7 @@ INSERT INTO _pcd_assertions (name, condition) VALUES
   ('Movie WEB tier sits under both disc tiers', (SELECT score = 6700 FROM quality_profile_custom_formats WHERE quality_profile_name = 'Movies 2160p HEVC Compact' AND custom_format_name = '2160p Compact WEB Tier 1')),
   ('Compact streaming WEB beats PSA', (SELECT s.score > p.score FROM quality_profile_custom_formats s JOIN quality_profile_custom_formats p ON p.quality_profile_name = s.quality_profile_name WHERE s.quality_profile_name = 'Movies 2160p HEVC Compact' AND s.custom_format_name = '2160p Compact Streaming WEB-DL' AND p.custom_format_name = '2160p Compact Bluray Tier 3')),
   ('PSA beats untouched WEB-DL', (SELECT p.score > w.score FROM quality_profile_custom_formats p JOIN quality_profile_custom_formats w ON w.quality_profile_name = p.quality_profile_name WHERE p.quality_profile_name = 'Movies 2160p HEVC Compact' AND p.custom_format_name = '2160p Compact Bluray Tier 3' AND w.custom_format_name = '2160p WEB-DL HEVC')),
-  ('Bloated WEB penalty clears a tagged tier-1 WEB under PSA', (SELECT (6700 + 180 + 80 + 50 + 40 + 40 + 40 + 30 + 20 + 15 + 15 - 3200) < 5300)),
+  ('No gigabyte WEB penalty', (SELECT COUNT(*) = 0 FROM custom_formats WHERE name = '2160p Bloated WEB')),
   ('Movies Anywhere is a tie-break', (SELECT score = 15 FROM quality_profile_custom_formats WHERE quality_profile_name = 'Movies 2160p HEVC Compact' AND custom_format_name = 'MA')),
   ('TV top WEB tier unchanged', (SELECT score = 8100 FROM quality_profile_custom_formats WHERE quality_profile_name = 'TV 2160p HEVC Compact' AND custom_format_name = '2160p Compact WEB Tier 1')),
   ('4K cap is 200 MB/min', (SELECT COUNT(*) = 4 AND MIN(max_size) = 200 AND MAX(max_size) = 200 AND MIN(preferred_size) = 130 FROM radarr_quality_definitions WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p')));

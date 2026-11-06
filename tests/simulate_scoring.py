@@ -4,8 +4,9 @@ PCD compact 4K HEVC scoring battery.
 
 Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray (hallowed,
 BHDStudio, in-window HONE), then a smaller disc such as QxR, then a compact
-streaming WEB-DL, then a PSA micro, then a big WEB-DL. A 30 GiB WEB is
-penalized under the micros. 4K quality definitions cap bitrate at 200 MB/min.
+streaming WEB-DL, then a PSA micro, then a big WEB-DL. 4K quality
+definitions cap bitrate at 200 MB/min. There is no gigabyte penalty, so a
+long movie at a mid-size bitrate keeps its score.
 TV 2160p HEVC Compact still prefers WEB over disc. Feature bonuses stay
 inside the 700-point gap, and Movies Anywhere does not flip a WEB over a disc.
 """
@@ -677,24 +678,26 @@ def run_simulation_battery():
     towers_bhd, _, _ = score_of(
         "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.BluRay.DV.HDR.DDP5.1.10bit.x265-BHDStudio", 23.5
     )
-    towers_web, towers_web_pass, towers_web_matched = score_of(
-        "The.Lord.of.the.Rings.The.Two.Towers.2002.Extended.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.Hybrid.10bit.x265-HONE",
-        41.52,
-    )
+    towers_web_title = "The.Lord.of.the.Rings.The.Two.Towers.2002.Extended.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.Hybrid.10bit.x265-HONE"
+    towers_web, towers_web_pass, towers_web_matched = score_of(towers_web_title, 41.52)
+    towers_web_small, _, _ = score_of(towers_web_title, 16.0)
     fellowship_web, fellowship_web_pass, fellowship_web_matched = score_of(
         "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.Hybrid.10bit.x265-HONE",
         40.23,
     )
-    # PSA must beat a large BYNDR and that same 40 GiB HONE/MA WEB.
+    # PSA beats a typical BYNDR (18.9 GB / ~181 MB/min) because BYNDR is in the
+    # untouched bucket, not because the file is over 30 GiB. The same BYNDR
+    # title at 36 GiB must score identically when its bitrate stays under the cap.
     psa, psa_pass, psa_matched = score_of(
         "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.BluRay.HDR.x265-PSA", 8.0
     )
-    byndr, byndr_pass, byndr_matched = score_of(
-        "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR", 18.9
-    )
-    byndr_dump, byndr_dump_pass, byndr_dump_matched = score_of(
-        "Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR", 35.0
-    )
+    byndr_title = "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR"
+    byndr, byndr_pass, byndr_matched = score_of(byndr_title, 18.9)
+    byndr_long, byndr_long_pass, byndr_long_matched = score_of(byndr_title, 36.0)
+    # A 3-hour-plus HONE WEB at ~160 MB/min can exceed 30 GiB without being bloated.
+    long_web_title = "Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.10bit.x265-HONE"
+    long_web, long_web_pass, long_web_matched = score_of(long_web_title, 36.0)
+    long_web_small, _, long_web_small_matched = score_of(long_web_title, 16.0)
     # Compact streaming WEB (Apple / Amazon / Netflix) beats PSA and loses to a compact disc.
     flux, flux_pass, flux_matched = score_of(
         "Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX", 15.9
@@ -717,7 +720,12 @@ def run_simulation_battery():
     rotk_blocked = bitrate_blocked(bluray_limits, 179)
     hone_cap_blocked = bitrate_blocked(bluray_limits, 230)
     byndr_blocked = bitrate_blocked(web_limits, 181)
+    byndr_long_blocked = bitrate_blocked(web_limits, 160)
+    long_web_blocked = bitrate_blocked(web_limits, 160)
     flux_blocked = bitrate_blocked(web_limits, 147)
+    no_size_penalty = conn.execute(
+        "SELECT COUNT(*) FROM custom_formats WHERE name = '2160p Bloated WEB'"
+    ).fetchone()[0] == 0
 
     upgrade_inc = conn.execute(
         "SELECT upgrade_score_increment FROM quality_profiles WHERE name = ?",
@@ -732,29 +740,31 @@ def run_simulation_battery():
         ("Ocean's Twelve HONE replacement is inside the cap", oceans_hone_pass and not oceans_hone_blocked),
         ("Ocean's Twelve BHDStudio scores at least the HONE replacement", oceans_bhd >= oceans_hone),
         ("Ocean's Twelve HONE does not upgrade BHDStudio", not oceans_would_upgrade),
-        ("Two Towers compact disc beats the 41.5 GiB HONE MA WEB", towers_disc > towers_web and towers_bhd > towers_web),
-        ("Fellowship 40 GiB HONE MA WEB loses to that compact disc", towers_disc > fellowship_web),
+        ("Two Towers compact disc outscores the HONE MA WEB", towers_disc > towers_web and towers_bhd > towers_web),
+        ("Fellowship HONE MA WEB loses to that compact disc on score", towers_disc > fellowship_web),
         ("230 MB/min HONE MA WEB is rejected by the bitrate cap", towers_web_blocked and fellowship_blocked),
+        ("HONE MA WEB score does not depend on file gigabytes", towers_web == towers_web_small),
         ("Return of the King hallowed at 179 MB/min stays inside the cap", rotk_pass and not rotk_blocked),
-        ("Return of the King disc is not treated as a bloated WEB", not any(name == "2160p Bloated WEB" for name, _ in rotk_matched)),
         ("A 230 MB/min HONE disc is rejected", hone_cap_blocked),
-        ("PSA beats a BYNDR-style WEB-DL", psa > byndr and psa_pass and byndr_pass and not byndr_blocked),
-        ("PSA beats a 35 GiB BYNDR dump", psa > byndr_dump),
-        ("PSA beats the 40 GiB HONE MA WEB", psa > towers_web and psa > fellowship_web),
-        ("35 GiB BYNDR dump is under the minimum or under PSA", (not byndr_dump_pass) or psa > byndr_dump),
+        ("PSA beats a typical BYNDR WEB-DL", psa > byndr and psa_pass and byndr_pass and not byndr_blocked),
+        ("A 36 GiB BYNDR at 160 MB/min scores the same and still loses to PSA", byndr_long == byndr and psa > byndr_long and byndr_long_pass and not byndr_long_blocked),
+        ("A 36 GiB HONE WEB at 160 MB/min is not bitrate-blocked", long_web_pass and not long_web_blocked),
+        ("A long in-cap WEB scores the same as the small copy", long_web == long_web_small and long_web_matched == long_web_small_matched),
+        ("That long WEB stays under the compact disc and above PSA", towers_disc > long_web > psa),
+        ("No gigabyte WEB custom format exists", no_size_penalty),
         ("Compact FLUX WEB beats PSA", flux > psa and flux_pass and not flux_blocked),
         ("Compact FLUX WEB loses to the Two Towers disc", towers_disc > flux),
         ("Amazon Kitsune and Netflix CMRG beat PSA and lose to the disc", kitsune > psa and cmrg > psa and towers_disc > kitsune and towers_disc > cmrg),
         ("Apple TV tag scored on FLUX", any(name == "ATVP" for name, _ in flux_matched)),
         ("Amazon tag scored on Kitsune", any(name == "AMZN" for name, _ in kitsune_matched)),
         ("Netflix tag scored on CMRG", any(name == "NF" for name, _ in cmrg_matched)),
-        ("Bloated WEB penalty scored on the HONE MA dump", any(name == "2160p Bloated WEB" and s == -3200 for name, s in towers_web_matched)),
         ("YTS still banned", not score_of("Movie.2024.2160p.BluRay.x265-YTS")[1]),
     )
     print(f"  Ocean's Twelve BHD {oceans_bhd} HONE {oceans_hone} upgrade {oceans_would_upgrade}")
     print(f"  Two Towers disc {towers_disc} BHD {towers_bhd} MA WEB {towers_web} pass {towers_web_pass} blocked {towers_web_blocked}")
     print(f"  Fellowship MA WEB {fellowship_web} blocked {fellowship_blocked}")
-    print(f"  PSA {psa} BYNDR {byndr} BYNDR dump {byndr_dump} pass {byndr_dump_pass}")
+    print(f"  PSA {psa} BYNDR {byndr} BYNDR 36 GiB {byndr_long}")
+    print(f"  long HONE WEB {long_web} same title at 16 GiB {long_web_small}")
     print(f"  FLUX {flux} Kitsune {kitsune} CMRG {cmrg}")
     print(f"  ROTK hallowed {rotk} blocked {rotk_blocked}")
     for name, ok in proof:
@@ -771,7 +781,8 @@ def run_simulation_battery():
         print("  Fellowship WEB", fellowship_web_matched)
         print("  PSA", psa_matched)
         print("  BYNDR", byndr_matched)
-        print("  BYNDR dump", byndr_dump_matched)
+        print("  BYNDR long", byndr_long_matched)
+        print("  long WEB", long_web_matched)
         print("  FLUX", flux_matched)
         print("  ROTK", rotk_matched)
 
