@@ -1,7 +1,7 @@
 {
   "name": "HEVC Compact Database",
-  "version": "2.0.0",
-  "description": "Compact 4K HEVC custom formats and quality profiles for Radarr and Sonarr. Prefers small x265 encodes from vetted circles, with HDR and Atmos as tie-breakers.",
+  "version": "2.0.1",
+  "description": "Compact 4K HEVC profiles for Radarr and Sonarr. Movies prefer the hallowed and BHDStudio window (about 110-160 MB/min, hard cap 200), then compact streaming WEB-DL, then a PSA micro. The cap is bitrate, so a long movie is not penalized for a large file. HDR and Atmos only break ties inside a class.",
   "arr_types": [
     "radarr",
     "sonarr"

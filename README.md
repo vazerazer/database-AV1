@@ -2,18 +2,20 @@
 
 [![PCD Audit & Simulation Battery](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml)
 
-A custom format database and quality profile suite for Radarr and Sonarr, built to the Profilarr PCD v2 specification. The flagship profiles target compact 4K HEVC (x265) encodes: small files from vetted groups, with HDR, Dolby Vision and Atmos used only as tie-breakers inside a tier.
+A custom format database and quality profile suite for Radarr and Sonarr, built to the Profilarr PCD v2 specification. The movie profile targets compact 4K that is good on a 55-inch Mini LED, a 32-inch 4K monitor, and a phone: the hallowed and BHDStudio size window, not a transparent encode and not a large WEB-DL.
 
 ## Upstream
 
-Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database), then widened from tracker and forum notes on middle-size 4K HEVC (r/trackers, r/sonarr, TRaSH group requests). The ladder is aimed at a 55-inch 4K Mini LED and a 32-inch 4K monitor, where a soft encode shows and a phone would hide it. The top circle is the mid-size careful encodes: HONE, hallowed, Vyndros, edge2020, dkore, HQMUX and PTer, typically around 12–20 GB with Dolby Vision and soft subs. QxR, TAoE, BHDStudio, HeVK, KeepFRDS and Prof sit one step down. PSA, d3g, SEV, ELiTE, HiQVE, HODL, DEFLATE and their peers are the smaller encodes that still stay clean. UTR/Joy, RARBG, iVy, t0paz and POF are allowed below that and get replaced when a better encode exists. YTS and MeGusta stay rejected because their 4K files break up on those two screens. Transparent 30–50 GB groups (MainFrame, CtrlHD, W4NK3R, FraMeSToR) stay out, as do NVENC tags such as KONTRAST. Untouched WEB-DL groups such as NTb and FLUX are a larger fallback, not the target.
+Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database), then widened from tracker and forum notes on middle-size 4K HEVC (r/trackers, r/sonarr, TRaSH group requests). On those screens a soft encode shows and a phone would hide it. The target is what hallowed (~135 MB/min) and BHDStudio (~120 MB/min) already produce. HONE disc encodes in that same window share their score, so a larger HONE does not replace a smaller file from prestige alone. Public size notes put edge2020 with the large UHD groups (MainFrame, CtrlHD), so it sits one step down with QxR and TAoE. dkore stays in the mid-size circle; the same notes list it there, and the 200 MB/min cap contains the larger copies. A long movie is judged by that bitrate, not by its gigabytes: Return of the King extended hallowed is 35.2 GB and still only 179 MB/min, so it stays.
+
+Compact streaming WEB-DLs come next. That is FLUX, Kitsune and CMRG, and a compact Apple TV, iTunes, Amazon, Netflix, Max or Disney+ release from a vetted group. A Blu-ray encode still beats those. PSA and the other micros come after the compact WEB-DLs, and they beat an untouched WEB-DL such as BYNDR. A HONE Movies Anywhere WEB at 230 MB/min or more is rejected by the bitrate cap. UTR, RARBG, iVy, t0paz and POF remain the lowest encodes. YTS and MeGusta stay rejected. Transparent groups (MainFrame, CtrlHD, W4NK3R, FraMeSToR) stay out, as do NVENC tags such as KONTRAST.
 
 ## Profiles
 
-* **Movies 2160p HEVC Compact** — 4K from the mid-size circles (HONE, hallowed, HQMUX, PTer), then QxR/TAoE/BHDStudio, then PSA/HiQVE/DEFLATE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC. A plain WEB sits just under that group's Blu-ray. A Movies Anywhere WEB from the same group ranks above the Blu-ray, because that is the larger storefront encode.
-* **TV 2160p HEVC Compact** — the same groups, with WEB ranked above disc encodes.
+* **Movies 2160p HEVC Compact** — mid-size Blu-ray (hallowed, BHDStudio, in-window HONE), then a smaller disc (QxR, TAoE, edge2020), then compact streaming WEB, then PSA, then UTR, then untouched WEB-DL, then 1080p HEVC. 4K qualities are capped at 200 MB/min (preferred 130). That keeps Return of the King hallowed at 179 MB/min, and a long WEB at 150–160 MB/min, and it rejects a 230 MB/min dump. There is no gigabyte penalty. Movies Anywhere is a storefront tie-break and does not outrank a Blu-ray.
+* **TV 2160p HEVC Compact** — the same groups, with WEB ranked above disc. BHDStudio shares the top circle. FLUX, Kitsune and CMRG sit above untouched WEB-DL. Sonarr 2160p encode qualities use the same 200 MB/min cap.
 
-AV1, remuxes, 4K x264 and releases with no vetted group do not clear the minimum score. Tier gaps are 700 points, wider than the feature stack, so Dolby Vision cannot promote a lower group over a higher one.
+AV1, remuxes, 4K x264 and releases with no vetted group do not clear the minimum score. Gaps between classes are 700 points, wider than the feature stack, so Dolby Vision, HDR and Atmos only break ties inside a class.
 
 ## Usage
 

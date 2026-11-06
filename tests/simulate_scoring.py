@@ -2,10 +2,13 @@
 """
 PCD compact 4K HEVC scoring battery.
 
-Movies 2160p HEVC Compact prefers small 2160p x265 disc encodes, then compact
-WEB, then untouched WEB-DL, then 1080p HEVC. TV 2160p HEVC Compact prefers
-compact WEB over disc. AV1, remuxes and micro encodes are rejected. Feature
-bonuses stay inside the 700-point tier gap.
+Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray (hallowed,
+BHDStudio, in-window HONE), then a smaller disc such as QxR, then a compact
+streaming WEB-DL, then a PSA micro, then a big WEB-DL. 4K quality
+definitions cap bitrate at 200 MB/min. There is no gigabyte penalty, so a
+long movie at a mid-size bitrate keeps its score.
+TV 2160p HEVC Compact still prefers WEB over disc. Feature bonuses stay
+inside the 700-point gap, and Movies Anywhere does not flip a WEB over a disc.
 """
 
 import sqlite3
@@ -312,6 +315,21 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
     passed_cutoff = total_score >= min_score
     return total_score, min_score, upgrade_until, passed_cutoff, matched_cfs
 
+def quality_limits(conn, quality_name, arr_type="radarr"):
+    table = "radarr_quality_definitions" if arr_type == "radarr" else "sonarr_quality_definitions"
+    return conn.execute(
+        f"SELECT min_size, preferred_size, max_size FROM {table} WHERE quality_name = ?",
+        (quality_name,),
+    ).fetchall()
+
+def bitrate_blocked(limits, mb_per_min):
+    if mb_per_min is None or not limits:
+        return False
+    for min_size, _preferred, max_size in limits:
+        if mb_per_min < min_size or mb_per_min > max_size:
+            return True
+    return False
+
 def run_simulation_battery():
     conn = build_compiled_db()
 
@@ -327,6 +345,7 @@ def run_simulation_battery():
         "2160p Compact WEB Tier 3",
         "2160p Compact WEB Tier 4",
         "2160p WEB-DL HEVC",
+        "2160p Compact Streaming WEB-DL",
         "1080p Compact HEVC Tier 1",
         "1080p Compact HEVC Tier 2",
         "1080p Compact HEVC Tier 3",
@@ -369,20 +388,28 @@ def run_simulation_battery():
             "tier": "2160p Compact Bluray Tier 2",
         },
         {
-            "category": "Movie compact WEB just under disc (edge2020)",
+            "category": "Movie mid-size WEB stays under both disc tiers (hallowed)",
+            "title": "Movie.2024.2160p.WEB-DL.H265-hallowed",
+            "profile": movies,
+            "expect_pass": True,
+            "exact": 6700,
+            "tier": "2160p Compact WEB Tier 1",
+        },
+        {
+            "category": "Movie edge2020 WEB is the lower circle",
             "title": "Movie.2024.2160p.WEB-DL.H265-edge2020",
             "profile": movies,
             "expect_pass": True,
-            "exact": 7900,
-            "tier": "2160p Compact WEB Tier 1",
+            "exact": 6000,
+            "tier": "2160p Compact WEB Tier 2",
         },
         {
             "category": "Movie small-good disc (PSA)",
             "title": "Movie.2024.2160p.BluRay.HDR.x265-PSA",
             "profile": movies,
             "expect_pass": True,
-            "min_band": 6700,
-            "max_band": 7399,
+            "min_band": 5300,
+            "max_band": 5999,
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
@@ -390,15 +417,15 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.WEB-DL.x265-UTR",
             "profile": movies,
             "expect_pass": True,
-            "exact": 5800,
+            "exact": 3200,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
-            "category": "Movie RARBG disc is allowed and below UTR bluray",
+            "category": "Movie RARBG disc is allowed and below PSA",
             "title": "Movie.2024.2160p.BluRay.x265-RARBG",
             "profile": movies,
             "expect_pass": True,
-            "exact": 6000,
+            "exact": 4600,
             "tier": "2160p Compact Bluray Tier 4",
         },
         {
@@ -406,7 +433,7 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.BluRay.x265-d3g",
             "profile": movies,
             "expect_pass": True,
-            "exact": 6700,
+            "exact": 5300,
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
@@ -414,7 +441,7 @@ def run_simulation_battery():
             "title": "Show.Name.S01E01.2160p.WEBRip.x265-iVy",
             "profile": movies,
             "expect_pass": True,
-            "exact": 5800,
+            "exact": 3200,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
@@ -595,20 +622,20 @@ def run_simulation_battery():
     for case in test_corpus:
         check(case)
 
-    print("\n=== MOVIES ANYWHERE VS DISC ===")
+    print("\n=== MOVIES ANYWHERE DOES NOT BEAT A DISC ===")
     disc_title = "Movie.2024.2160p.BluRay.x265.DV.HDR.DDP5.1.10bit-HONE"
     plain_web = "Movie.2024.2160p.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-HONE"
     ma_web = "Movie.2024.2160p.MA.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-HONE"
     lower_ma = "Movie.2024.2160p.MA.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-Tigole"
     disc_score, _, _, _, disc_matched = evaluate_release(conn, disc_title, movies)
     plain_score, _, _, _, plain_matched = evaluate_release(conn, plain_web, movies)
-    ma_score, _, _, _, ma_matched = evaluate_release(conn, ma_web, movies)
-    lower_score, _, _, _, lower_matched = evaluate_release(conn, lower_ma, movies)
+    ma_score, _, _, _, ma_matched = evaluate_release(conn, ma_web, movies, size_gb=16)
+    lower_score, _, _, _, lower_matched = evaluate_release(conn, lower_ma, movies, size_gb=12)
     comparisons = (
         ("Plain HONE WEB stays under the HONE Blu-ray", plain_score < disc_score),
-        ("HONE Movies Anywhere WEB beats the HONE Blu-ray", ma_score > disc_score),
+        ("Compact HONE Movies Anywhere WEB stays under the HONE Blu-ray", ma_score < disc_score),
         ("QxR Movies Anywhere WEB stays under the HONE Blu-ray", lower_score < disc_score),
-        ("Movies Anywhere tag scored", any(name == "MA" for name, _ in ma_matched)),
+        ("Movies Anywhere tag scored", any(name == "MA" and s == 15 for name, s in ma_matched)),
     )
     print(f"  disc {disc_score} plain {plain_score} ma {ma_score} lower {lower_score}")
     for name, ok in comparisons:
@@ -619,6 +646,145 @@ def run_simulation_battery():
             failed_tests += 1
             for label, matched in (("disc", disc_matched), ("plain", plain_matched), ("ma", ma_matched), ("lower", lower_matched)):
                 print(f"  {label}: {matched}")
+
+    print("\n=== LIBRARY PROOF (radarr4k 2026-11-06) ===")
+    bluray_limits = quality_limits(conn, "Bluray-2160p")
+    web_limits = quality_limits(conn, "WEBDL-2160p")
+    limit_rows = conn.execute(
+        """
+        SELECT quality_name, min_size, preferred_size, max_size
+        FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p')
+        """
+    ).fetchall()
+    print("  2160p quality definitions:", limit_rows)
+
+    def score_of(title, size_gb=None):
+        score, _min_s, _until, passed, matched = evaluate_release(conn, title, movies, size_gb=size_gb)
+        return score, passed, matched
+
+    # Ocean's Twelve. History deleted BHDStudio 14.6 GiB / 119 MB/min for a
+    # Tier 1 disc at 20.14 GiB / 165.0 MB/min. Both carry DV, HDR, DD+ and 10-bit.
+    oceans_bhd, oceans_bhd_pass, oceans_bhd_matched = score_of(
+        "Oceans.Twelve.2004.2160p.BluRay.DV.HDR.DDP5.1.10bit.x265-BHDStudio", 14.6
+    )
+    oceans_hone, oceans_hone_pass, oceans_hone_matched = score_of(
+        "Oceans.Twelve.2004.2160p.BluRay.DV.HDR.DDP5.1.10bit.x265-HONE", 20.14
+    )
+    # Two Towers / Fellowship. Compact disc versus the 40 GiB HONE MA WEB.
+    towers_disc, _, towers_disc_matched = score_of(
+        "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.BluRay.DV.HDR.DDP5.1.10bit.x265-hallowed", 24.0
+    )
+    towers_bhd, _, _ = score_of(
+        "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.BluRay.DV.HDR.DDP5.1.10bit.x265-BHDStudio", 23.5
+    )
+    towers_web_title = "The.Lord.of.the.Rings.The.Two.Towers.2002.Extended.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.Hybrid.10bit.x265-HONE"
+    towers_web, towers_web_pass, towers_web_matched = score_of(towers_web_title, 41.52)
+    towers_web_small, _, _ = score_of(towers_web_title, 16.0)
+    fellowship_web, fellowship_web_pass, fellowship_web_matched = score_of(
+        "The.Lord.of.the.Rings.The.Fellowship.of.the.Ring.2001.Extended.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.Hybrid.10bit.x265-HONE",
+        40.23,
+    )
+    # PSA beats a typical BYNDR (18.9 GB / ~181 MB/min) because BYNDR is in the
+    # untouched bucket, not because the file is over 30 GiB. The same BYNDR
+    # title at 36 GiB must score identically when its bitrate stays under the cap.
+    psa, psa_pass, psa_matched = score_of(
+        "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.BluRay.HDR.x265-PSA", 8.0
+    )
+    byndr_title = "The.Lord.of.the.Rings.The.Two.Towers.2002.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR"
+    byndr, byndr_pass, byndr_matched = score_of(byndr_title, 18.9)
+    byndr_long, byndr_long_pass, byndr_long_matched = score_of(byndr_title, 36.0)
+    # A 3-hour-plus HONE WEB at ~160 MB/min can exceed 30 GiB without being bloated.
+    long_web_title = "Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.10bit.x265-HONE"
+    long_web, long_web_pass, long_web_matched = score_of(long_web_title, 36.0)
+    long_web_small, _, long_web_small_matched = score_of(long_web_title, 16.0)
+    # Compact streaming WEB (Apple / Amazon / Netflix) beats PSA and loses to a compact disc.
+    flux, flux_pass, flux_matched = score_of(
+        "Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX", 15.9
+    )
+    kitsune, _, kitsune_matched = score_of(
+        "Movie.2024.2160p.AMZN.WEB-DL.DV.HDR.DDP5.1.H.265-Kitsune", 15.3
+    )
+    cmrg, _, cmrg_matched = score_of(
+        "Movie.2024.2160p.NF.WEB-DL.H.265-CMRG", 12.6
+    )
+    rotk, rotk_pass, rotk_matched = score_of(
+        "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.BluRay.DV.HDR.DDP5.1.x265-hallowed",
+        35.2,
+    )
+
+    oceans_bhd_blocked = bitrate_blocked(bluray_limits, 119)
+    oceans_hone_blocked = bitrate_blocked(bluray_limits, 165)
+    towers_web_blocked = bitrate_blocked(web_limits, 237.5)
+    fellowship_blocked = bitrate_blocked(web_limits, 230.1)
+    rotk_blocked = bitrate_blocked(bluray_limits, 179)
+    hone_cap_blocked = bitrate_blocked(bluray_limits, 230)
+    byndr_blocked = bitrate_blocked(web_limits, 181)
+    byndr_long_blocked = bitrate_blocked(web_limits, 160)
+    long_web_blocked = bitrate_blocked(web_limits, 160)
+    flux_blocked = bitrate_blocked(web_limits, 147)
+    no_size_penalty = conn.execute(
+        "SELECT COUNT(*) FROM custom_formats WHERE name = '2160p Bloated WEB'"
+    ).fetchone()[0] == 0
+
+    upgrade_inc = conn.execute(
+        "SELECT upgrade_score_increment FROM quality_profiles WHERE name = ?",
+        (movies,),
+    ).fetchone()[0]
+    oceans_would_upgrade = (oceans_hone - oceans_bhd) >= upgrade_inc and not oceans_hone_blocked
+
+    proof = (
+        ("4K max size is 200 MB/min", all(row[3] == 200 for row in limit_rows) and len(limit_rows) == 4),
+        ("4K preferred size is the 130 MB/min window", all(row[2] == 130 for row in limit_rows)),
+        ("Ocean's Twelve BHDStudio is inside the cap", oceans_bhd_pass and not oceans_bhd_blocked),
+        ("Ocean's Twelve HONE replacement is inside the cap", oceans_hone_pass and not oceans_hone_blocked),
+        ("Ocean's Twelve BHDStudio scores at least the HONE replacement", oceans_bhd >= oceans_hone),
+        ("Ocean's Twelve HONE does not upgrade BHDStudio", not oceans_would_upgrade),
+        ("Two Towers compact disc outscores the HONE MA WEB", towers_disc > towers_web and towers_bhd > towers_web),
+        ("Fellowship HONE MA WEB loses to that compact disc on score", towers_disc > fellowship_web),
+        ("230 MB/min HONE MA WEB is rejected by the bitrate cap", towers_web_blocked and fellowship_blocked),
+        ("HONE MA WEB score does not depend on file gigabytes", towers_web == towers_web_small),
+        ("Return of the King hallowed at 179 MB/min stays inside the cap", rotk_pass and not rotk_blocked),
+        ("A 230 MB/min HONE disc is rejected", hone_cap_blocked),
+        ("PSA beats a typical BYNDR WEB-DL", psa > byndr and psa_pass and byndr_pass and not byndr_blocked),
+        ("A 36 GiB BYNDR at 160 MB/min scores the same and still loses to PSA", byndr_long == byndr and psa > byndr_long and byndr_long_pass and not byndr_long_blocked),
+        ("A 36 GiB HONE WEB at 160 MB/min is not bitrate-blocked", long_web_pass and not long_web_blocked),
+        ("A long in-cap WEB scores the same as the small copy", long_web == long_web_small and long_web_matched == long_web_small_matched),
+        ("That long WEB stays under the compact disc and above PSA", towers_disc > long_web > psa),
+        ("No gigabyte WEB custom format exists", no_size_penalty),
+        ("Compact FLUX WEB beats PSA", flux > psa and flux_pass and not flux_blocked),
+        ("Compact FLUX WEB loses to the Two Towers disc", towers_disc > flux),
+        ("Amazon Kitsune and Netflix CMRG beat PSA and lose to the disc", kitsune > psa and cmrg > psa and towers_disc > kitsune and towers_disc > cmrg),
+        ("Apple TV tag scored on FLUX", any(name == "ATVP" for name, _ in flux_matched)),
+        ("Amazon tag scored on Kitsune", any(name == "AMZN" for name, _ in kitsune_matched)),
+        ("Netflix tag scored on CMRG", any(name == "NF" for name, _ in cmrg_matched)),
+        ("YTS still banned", not score_of("Movie.2024.2160p.BluRay.x265-YTS")[1]),
+    )
+    print(f"  Ocean's Twelve BHD {oceans_bhd} HONE {oceans_hone} upgrade {oceans_would_upgrade}")
+    print(f"  Two Towers disc {towers_disc} BHD {towers_bhd} MA WEB {towers_web} pass {towers_web_pass} blocked {towers_web_blocked}")
+    print(f"  Fellowship MA WEB {fellowship_web} blocked {fellowship_blocked}")
+    print(f"  PSA {psa} BYNDR {byndr} BYNDR 36 GiB {byndr_long}")
+    print(f"  long HONE WEB {long_web} same title at 16 GiB {long_web_small}")
+    print(f"  FLUX {flux} Kitsune {kitsune} CMRG {cmrg}")
+    print(f"  ROTK hallowed {rotk} blocked {rotk_blocked}")
+    for name, ok in proof:
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}")
+        if ok:
+            passed_tests += 1
+        else:
+            failed_tests += 1
+    if failed_tests:
+        print("  Ocean's Twelve BHD", oceans_bhd_matched)
+        print("  Ocean's Twelve HONE", oceans_hone_matched)
+        print("  Two Towers disc", towers_disc_matched)
+        print("  Two Towers WEB", towers_web_matched)
+        print("  Fellowship WEB", fellowship_web_matched)
+        print("  PSA", psa_matched)
+        print("  BYNDR", byndr_matched)
+        print("  BYNDR long", byndr_long_matched)
+        print("  long WEB", long_web_matched)
+        print("  FLUX", flux_matched)
+        print("  ROTK", rotk_matched)
 
     inc = conn.execute(
         "SELECT upgrade_score_increment FROM quality_profiles WHERE name = ?",
@@ -638,9 +804,10 @@ def run_simulation_battery():
         else:
             failed_tests += 1
 
-    elite = ["HONE","Vyndros","edge2020","dkore","GRiMM","TimeDistortion","DarQ","Vialle","Chivaman","Ralphy","YELLO","noxxus","ToNaTo","R1GY3B","bluegreeen","Weasley","DiscoD","hallowed","HQMUX","PTer"]
-    circle = ["QxR","afm72","Bandi","Bluespots","Celdra","FreetheFish","Garshasp","Ghost","Ime","Kappa","Langbard","LION","Panda","MONOLITH","Natty","r00t","RCVR","RZeroX","SAMPA","Silence","t3nzin","Tigole","YOGI","TAoE","Ainz","AJJMIN","ANONAZ","ArcX","bccornfo","DNU","DrainedDay","DUHIT","Erie","Frys","Goki","HxD","jb2049","JBENT","Nostradamus","r0b0t","Species180","TheSickle","xtrem3x","WEM","NAN0","SQS","LSt","SARTRE","honeyvera","MNHD","BHDStudio","HeVK","KeepFRDS","Prof"]
-    webdl = ["NTb","FLUX","CMRG","CMaRG","CMRioG","TEPES","MZABI","Kitsune","SMURF","XEBEC","4KBEC","CEBEX","BYNDR","HHWEB","DUSKLiGHT","playWEB","ABBIE","AJP69","BLUTONiUM","NOSiViD","SiC","SiGMA","RAWR","TOMMY"]
+    elite = ["HONE","Vyndros","dkore","GRiMM","TimeDistortion","DarQ","Vialle","Chivaman","Ralphy","YELLO","noxxus","ToNaTo","R1GY3B","bluegreeen","Weasley","DiscoD","hallowed","HQMUX","PTer","BHDStudio"]
+    circle = ["QxR","afm72","Bandi","Bluespots","Celdra","FreetheFish","Garshasp","Ghost","Ime","Kappa","Langbard","LION","Panda","MONOLITH","Natty","r00t","RCVR","RZeroX","SAMPA","Silence","t3nzin","Tigole","YOGI","TAoE","Ainz","AJJMIN","ANONAZ","ArcX","bccornfo","DNU","DrainedDay","DUHIT","Erie","Frys","Goki","HxD","jb2049","JBENT","Nostradamus","r0b0t","Species180","TheSickle","xtrem3x","WEM","NAN0","SQS","LSt","SARTRE","honeyvera","MNHD","edge2020","HeVK","KeepFRDS","Prof"]
+    streaming = ["FLUX","Kitsune","CMRG","CMaRG","CMRioG"]
+    webdl = ["NTb","TEPES","MZABI","SMURF","XEBEC","4KBEC","CEBEX","BYNDR","HHWEB","DUSKLiGHT","playWEB","ABBIE","AJP69","BLUTONiUM","NOSiViD","SiC","SiGMA","RAWR","TOMMY"]
     small = ["PSA","PSARips","d3g","ELiTE","ReELiTE","SEV","Kira","D0ct0rLew","HODL","HiQVE","SIQ","PSYPHER","POOTLED","kronox","yawnix","DEFLATE","LEGi0N","IAMABLE"]
     micro_ok = ["UTR","Joy","RARBG","iVy","t0paz","POF","UTRcorp"]
     micro_ban = ["YTS","YIFY","MeGusta","GalaxyRG","Pahe","TGx","aXXo","ION10","ION265","RMTeam","QxC","EVO","HDHub4u"]
@@ -668,14 +835,25 @@ def run_simulation_battery():
         title = f"Movie.2024.2160p.BluRay.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact Bluray Tier 3"] or score != 6700:
+        if hits != ["2160p Compact Bluray Tier 3"] or score != 5300:
             anomalies.append((group, "small-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in micro_ok:
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact WEB Tier 4"] or score != 5800:
+        if hits != ["2160p Compact WEB Tier 4"] or score != 3200:
             anomalies.append((group, "micro-ok-web", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in streaming:
+        title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact Streaming WEB-DL"] or score != 6000:
+            anomalies.append((group, "streaming-web", score, hits, [(n, s) for n, s in matched if s < 0]))
+        tv_title = f"Show.S01E01.2160p.WEB-DL.H265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, tv_title, tv)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact Streaming WEB-DL"] or score != 5300:
+            anomalies.append((group, "streaming-tv", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in webdl:
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
@@ -703,7 +881,7 @@ def run_simulation_battery():
         elif hits:
             anomalies.append((title, "negative", score, hits, []))
 
-    print(f"Aliases screened: {len(elite) + len(circle) + len(small) + len(micro_ok) + len(webdl) + len(micro_ban)}")
+    print(f"Aliases screened: {len(elite) + len(circle) + len(small) + len(micro_ok) + len(streaming) + len(webdl) + len(micro_ban)}")
     print(f"Anomalies: {len(anomalies)}")
     if anomalies:
         for row in anomalies:
