@@ -369,11 +369,11 @@ def run_simulation_battery():
             "tier": "2160p Compact Bluray Tier 2",
         },
         {
-            "category": "Movie compact WEB below disc (edge2020)",
+            "category": "Movie compact WEB just under disc (edge2020)",
             "title": "Movie.2024.2160p.WEB-DL.H265-edge2020",
             "profile": movies,
             "expect_pass": True,
-            "exact": 5300,
+            "exact": 7900,
             "tier": "2160p Compact WEB Tier 1",
         },
         {
@@ -390,7 +390,7 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.WEB-DL.x265-UTR",
             "profile": movies,
             "expect_pass": True,
-            "exact": 3200,
+            "exact": 5800,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
@@ -414,7 +414,7 @@ def run_simulation_battery():
             "title": "Show.Name.S01E01.2160p.WEBRip.x265-iVy",
             "profile": movies,
             "expect_pass": True,
-            "exact": 3200,
+            "exact": 5800,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
@@ -595,6 +595,31 @@ def run_simulation_battery():
     for case in test_corpus:
         check(case)
 
+    print("\n=== MOVIES ANYWHERE VS DISC ===")
+    disc_title = "Movie.2024.2160p.BluRay.x265.DV.HDR.DDP5.1.10bit-HONE"
+    plain_web = "Movie.2024.2160p.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-HONE"
+    ma_web = "Movie.2024.2160p.MA.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-HONE"
+    lower_ma = "Movie.2024.2160p.MA.WEB-DL.x265.DV.HDR.DDP5.1.Atmos.10bit-Tigole"
+    disc_score, _, _, _, disc_matched = evaluate_release(conn, disc_title, movies)
+    plain_score, _, _, _, plain_matched = evaluate_release(conn, plain_web, movies)
+    ma_score, _, _, _, ma_matched = evaluate_release(conn, ma_web, movies)
+    lower_score, _, _, _, lower_matched = evaluate_release(conn, lower_ma, movies)
+    comparisons = (
+        ("Plain HONE WEB stays under the HONE Blu-ray", plain_score < disc_score),
+        ("HONE Movies Anywhere WEB beats the HONE Blu-ray", ma_score > disc_score),
+        ("QxR Movies Anywhere WEB stays under the HONE Blu-ray", lower_score < disc_score),
+        ("Movies Anywhere tag scored", any(name == "MA" for name, _ in ma_matched)),
+    )
+    print(f"  disc {disc_score} plain {plain_score} ma {ma_score} lower {lower_score}")
+    for name, ok in comparisons:
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}")
+        if ok:
+            passed_tests += 1
+        else:
+            failed_tests += 1
+            for label, matched in (("disc", disc_matched), ("plain", plain_matched), ("ma", ma_matched), ("lower", lower_matched)):
+                print(f"  {label}: {matched}")
+
     inc = conn.execute(
         "SELECT upgrade_score_increment FROM quality_profiles WHERE name = ?",
         (movies,),
@@ -649,7 +674,7 @@ def run_simulation_battery():
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact WEB Tier 4"] or score != 3200:
+        if hits != ["2160p Compact WEB Tier 4"] or score != 5800:
             anomalies.append((group, "micro-ok-web", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in webdl:
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"

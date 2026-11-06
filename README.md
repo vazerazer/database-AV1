@@ -10,7 +10,7 @@ Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/datab
 
 ## Profiles
 
-* **Movies 2160p HEVC Compact** — 4K Blu-ray from the mid-size circles (HONE, hallowed, HQMUX, PTer), then QxR/TAoE/BHDStudio, then PSA/HiQVE/DEFLATE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC.
+* **Movies 2160p HEVC Compact** — 4K from the mid-size circles (HONE, hallowed, HQMUX, PTer), then QxR/TAoE/BHDStudio, then PSA/HiQVE/DEFLATE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC. A plain WEB sits just under that group's Blu-ray. A Movies Anywhere WEB from the same group ranks above the Blu-ray, because that is the larger storefront encode.
 * **TV 2160p HEVC Compact** — the same groups, with WEB ranked above disc encodes.
 
 AV1, remuxes, 4K x264 and releases with no vetted group do not clear the minimum score. Tier gaps are 700 points, wider than the feature stack, so Dolby Vision cannot promote a lower group over a higher one.
