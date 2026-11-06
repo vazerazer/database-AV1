@@ -22,6 +22,8 @@ import subprocess
 import glob
 
 def build_compiled_db():
+    global _GLOBAL_SCORING_CONTEXT
+    _GLOBAL_SCORING_CONTEXT = None
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     schema_dir = os.environ.get("PCD_SCHEMA_PATH")
     if not schema_dir:
@@ -83,9 +85,25 @@ def parse_release_tokens(title):
         if m_hyphen:
             group = m_hyphen.group(1)
 
-    is_bluray = bool(re.search(r"\b(Blu[-._]?ray|BD|UHD)\b", title, re.IGNORECASE))
-    is_webdl = bool(re.search(r"\b(WEB[-._]?DL|WEBDL)\b", title, re.IGNORECASE))
-    is_webrip = bool(re.search(r"\b(WEBRip)\b", title, re.IGNORECASE))
+    # Radarr QualityParser: UHD is a resolution, not a Blu-ray source.
+    # Bare scene ".WEB." / "2160p.WEB." is WEB-DL. WEBRip stays WEBRip.
+    is_bluray = bool(re.search(
+        r"\b(?:M?Blu[-_. ]?Ray|HD[-_. ]?DVD(?:Rip)?|BDRip|BDLight|UHDBDRip|UHD2?BD|BDISO|BDMux|BD25|BD50|BR[-_. ]?DISK|BD(?!$))\b",
+        title,
+        re.IGNORECASE,
+    ))
+    is_webrip = bool(re.search(r"\b(?:WEB[-_. ]?Rip|WEBRip|WEBMux)\b", title, re.IGNORECASE))
+    is_webdl = bool(re.search(
+        r"\b(?:WEB[-_. ]?DL(?:mux)?|WEBDL)\b"
+        r"|[. ]WEB[. ](?:[xh][ .]?26[45]|AVC|HEVC|DDP?5[. ]1)"
+        r"|(?:\d{3,4}0p)[-. ](?:Hybrid[-_. ]?)?WEB[-. ]"
+        r"|[-. ]WEB[-. ]\d{3,4}0p"
+        r"|(?:AMZN|NF|DP)[. -]WEB[. -](?!Rip)",
+        title,
+        re.IGNORECASE,
+    ))
+    if is_webrip and not re.search(r"\b(?:WEB[-_. ]?DL(?:mux)?|WEBDL)\b", title, re.IGNORECASE):
+        is_webdl = False
     is_hdtv = bool(re.search(r"\b(HDTV)\b", title, re.IGNORECASE))
     is_2160p = bool(re.search(r"\b(2160p|4K|UHD)\b", title, re.IGNORECASE))
     is_1080p = bool(re.search(r"\b(1080p|1080i)\b", title, re.IGNORECASE))
@@ -268,14 +286,18 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
                         cond_matched = True
                         break
             elif c_type == "release_group":
-                for compiled_re, raw_pat in cond["pats"]:
-                    if compiled_re:
-                        if (tokens["group"] and compiled_re.search(tokens["group"])) or compiled_re.search(release_title):
+                # Radarr tests the parsed release group, not the whole title.
+                # Searching the title made "Ben.Hur" and "E-AC-3" look banned.
+                group_name = tokens["group"]
+                if group_name:
+                    for compiled_re, raw_pat in cond["pats"]:
+                        if compiled_re:
+                            if compiled_re.search(group_name):
+                                cond_matched = True
+                                break
+                        elif raw_pat and regex_match(raw_pat, group_name):
                             cond_matched = True
                             break
-                    elif raw_pat and ((tokens["group"] and regex_match(raw_pat, tokens["group"])) or regex_match(raw_pat, release_title)):
-                        cond_matched = True
-                        break
             elif c_type == "source":
                 s_set = cond["sources"]
                 if "bluray" in s_set and tokens["is_bluray"]: cond_matched = True
@@ -306,8 +328,11 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
                 if cond_matched:
                     matched_optional_types.add(c_type)
 
+        # Radarr: every required spec must match, and if any optional specs
+        # exist then at least one of them must match. Remux is optional on
+        # the title OR the quality modifier OR the source, not all three.
         if optional_types:
-            cf_matched = all_required_met and (matched_optional_types == optional_types)
+            cf_matched = all_required_met and bool(matched_optional_types)
         else:
             cf_matched = all_required_met
 
@@ -961,10 +986,944 @@ def run_simulation_battery():
         print("[PASS] Every compact alias landed on exactly one tier")
         passed_tests += 1
 
+    stress_passed, stress_failed = run_identification_stress(conn, movies, tv)
+    passed_tests += stress_passed
+    failed_tests += stress_failed
+
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
     print("================================================================================")
     return failed_tests == 0
+
+
+def run_identification_stress(conn, movies, tv):
+    """Adversarial titles for every Movies 2160p HEVC Compact format class.
+
+    Scores below are the direct-play ladder (elite disc 38400, circle disc
+    35200, elite WEB 32000, circle/streaming WEB 28800) plus the feature
+    weights that actually match the name. HDR implies 10-bit (+30).
+    """
+    print("\n=== IDENTIFICATION STRESS ===")
+    passed = 0
+    failed = 0
+    tier_names = {
+        "2160p Compact Bluray Tier 1",
+        "2160p Compact Bluray Tier 2",
+        "2160p Compact Bluray Tier 3",
+        "2160p Compact Bluray Tier 4",
+        "2160p Compact WEB Tier 1",
+        "2160p Compact WEB Tier 2",
+        "2160p Compact WEB Tier 3",
+        "2160p Compact WEB Tier 4",
+        "2160p WEB-DL HEVC",
+        "2160p Compact Streaming WEB-DL",
+        "1080p Compact HEVC Tier 1",
+        "1080p Compact HEVC Tier 2",
+        "1080p Compact HEVC Tier 3",
+        "1080p Compact HEVC Tier 4",
+    }
+
+    cases = [
+        {
+            "name": "Ministry hallowed HDR10Plus is not SDR",
+            "title": "The.Ministry.of.Ungentlemanly.Warfare.2024.UHD.BluRay.2160p.DDP.7.1.HDR10Plus.x265-hallowed",
+            "exact": 39055,
+            "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "HDR", "CAM", "Dolby Digital"],
+        },
+        {
+            "name": "HDR10+ symbol is HDR10+ and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10+.x265-hallowed",
+            "exact": 39055,
+            "has": ["HDR10+", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "HDR"],
+        },
+        {
+            "name": "HDR10P is HDR10+ and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10P.x265-hallowed",
+            "exact": 39055,
+            "has": ["HDR10+"],
+            "not": ["2160p SDR Bluray", "HDR"],
+        },
+        {
+            "name": "HDR10plus is HDR10+ and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10plus.x265-hallowed",
+            "exact": 39055,
+            "has": ["HDR10+"],
+            "not": ["2160p SDR Bluray", "HDR"],
+        },
+        {
+            "name": "HDR+ is the HDR10+ format",
+            "title": "Movie.2024.2160p.BluRay.HDR+.x265-hallowed",
+            "exact": M_BR1 + 30 + 500,
+            "has": ["HDR10+", "10-bit Depth"],
+            "not": ["HDR", "2160p SDR Bluray"],
+        },
+        {
+            "name": "Plain HDR is HDR, not HDR10+ and not SDR",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "has": ["HDR", "10-bit Depth"],
+            "not": ["HDR10+", "2160p SDR Bluray"],
+        },
+        {
+            "name": "HDR10 is HDR, not a second HDR10+ score",
+            "title": "Movie.2024.2160p.BluRay.HDR10.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "has": ["HDR"],
+            "not": ["HDR10+", "2160p SDR Bluray"],
+        },
+        {
+            "name": "HDR and HDR10+ together score HDR10+ once",
+            "title": "Movie.2024.2160p.BluRay.HDR.HDR10+.x265-hallowed",
+            "exact": M_BR1 + 30 + 500,
+            "has": ["HDR10+"],
+            "not": ["HDR", "2160p SDR Bluray"],
+        },
+        {
+            "name": "HLG is HDR and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.BluRay.HLG.x265-hallowed",
+            "exact": M_BR1 + 30 + 500,
+            "has": ["HDR", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "HDR10+"],
+        },
+        {
+            "name": "PQ is HDR and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.BluRay.PQ.x265-hallowed",
+            "exact": M_BR1 + 30 + 500,
+            "has": ["HDR", "10-bit Depth"],
+            "not": ["2160p SDR Bluray"],
+        },
+        {
+            "name": "PQ10 is HDR and 10-bit, not SDR",
+            "title": "Movie.2024.2160p.BluRay.PQ10.x265-hallowed",
+            "exact": M_BR1 + 30 + 500,
+            "has": ["HDR"],
+            "not": ["2160p SDR Bluray"],
+        },
+        {
+            "name": "Dark Phoenix hallowed HDR10Plus is not SDR",
+            "title": "X-Men.Dark.Phoenix.2019.UHD.BluRay.2160p.DDP.7.1.HDR10Plus.x265-hallowed",
+            "exact": 39055,
+            "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +"],
+            "not": ["2160p SDR Bluray", "HDR"],
+        },
+        {
+            "name": "Ralphy DV+HDR Ministry matches the live 40055 file",
+            "title": "The.Ministry.Of.Ungentlemanly.Warfare.2024.2160p.UHD.BluRay.DD+.7.1.DV.HDR.X265-Ralphy",
+            "exact": 40055,
+            "has": ["2160p Compact Bluray Tier 1", "Dolby Vision", "HDR", "Dolby Digital +", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "HDR10+", "Dolby Vision (Without Fallback)"],
+        },
+        {
+            "name": "Mutiny hallowed HDR10Plus disc is elite, not SDR",
+            "title": "Mutiny 2026 UHD BluRay 2160p DDP 5 1 Atmos HDR10Plus x265-hallowed",
+            "exact": 39135,
+            "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +", "Atmos", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "CAM"],
+        },
+        {
+            "name": "Yi Yi dkore with no HDR token stays SDR",
+            "title": "Yi.Yi.2000.2160p.BluRay.x265-dkore",
+            "exact": M_BR1 - 100000,
+            "has": ["2160p Compact Bluray Tier 1", "2160p SDR Bluray"],
+            "not": ["HDR", "HDR10+", "Dolby Vision"],
+        },
+        {
+            "name": "Promised Land dkore with no HDR token stays SDR",
+            "title": "The.Promised.Land.2023.2160p.BluRay.x265-dkore",
+            "exact": M_BR1 - 100000,
+            "has": ["2160p SDR Bluray"],
+            "not": ["HDR", "HDR10+", "Dolby Vision"],
+        },
+        {
+            "name": "10-bit SDR with no HDR token stays SDR",
+            "title": "Movie.2024.2160p.BluRay.10bit.SDR.x265-dkore",
+            "exact": M_BR1 + 30 - 100000,
+            "has": ["2160p SDR Bluray", "10-bit Depth"],
+            "not": ["HDR", "HDR10+"],
+        },
+        {
+            "name": "Blu-ray DV without an HDR token is not SDR and not without-fallback",
+            "title": "Movie.2024.2160p.BluRay.DV.x265-hallowed",
+            "exact": M_BR1 + 30 + 1000,
+            "has": ["Dolby Vision", "10-bit Depth"],
+            "not": ["2160p SDR Bluray", "Dolby Vision (Without Fallback)", "HDR"],
+        },
+        {
+            "name": "DoVi plus HDR scores both and is not SDR",
+            "title": "Movie.2024.2160p.BluRay.DoVi.HDR.x265-hallowed",
+            "exact": M_BR1 + 30 + 1000 + 500,
+            "has": ["Dolby Vision", "HDR"],
+            "not": ["2160p SDR Bluray", "Dolby Vision (Without Fallback)"],
+        },
+        {
+            "name": "Dolby Vision words plus HDR10",
+            "title": "Movie.2024.2160p.BluRay.Dolby.Vision.HDR10.x265-hallowed",
+            "exact": M_BR1 + 30 + 1000 + 500,
+            "has": ["Dolby Vision", "HDR"],
+            "not": ["2160p SDR Bluray", "HDR10+"],
+        },
+        {
+            "name": "DV plus HDR10Plus scores DV and HDR10+ once",
+            "title": "Movie.2024.2160p.BluRay.DV.HDR10Plus.x265-hallowed",
+            "exact": M_BR1 + 30 + 1000 + 500,
+            "has": ["Dolby Vision", "HDR10+", "10-bit Depth"],
+            "not": ["HDR", "2160p SDR Bluray", "Dolby Vision (Without Fallback)"],
+        },
+        {
+            "name": "WEB DV without HDR is Dolby Vision without fallback",
+            "title": "Movie.2024.2160p.WEB-DL.DV.x265-FLUX",
+            "exact": 28800 + 30 + 1000 - 10000,
+            "has": ["2160p Compact Streaming WEB-DL", "Dolby Vision", "Dolby Vision (Without Fallback)"],
+            "not": ["HDR", "2160p SDR Bluray", "2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "WEB DV with HDR has a fallback",
+            "title": "Movie.2024.2160p.WEB-DL.DV.HDR.x265-FLUX",
+            "exact": 28800 + 30 + 1000 + 500,
+            "has": ["Dolby Vision", "HDR"],
+            "not": ["Dolby Vision (Without Fallback)", "2160p SDR Bluray"],
+        },
+        {
+            "name": "WEB DV with HDR10Plus has a fallback",
+            "title": "Movie.2024.2160p.WEB-DL.DV.HDR10Plus.x265-FLUX",
+            "exact": 28800 + 30 + 1000 + 500,
+            "has": ["HDR10+", "Dolby Vision"],
+            "not": ["Dolby Vision (Without Fallback)", "HDR", "2160p SDR Bluray"],
+        },
+        {
+            "name": "WEB DV with HLG has a fallback",
+            "title": "Movie.2024.2160p.WEB-DL.DV.HLG.x265-FLUX",
+            "exact": 28800 + 30 + 1000 + 500,
+            "has": ["HDR", "Dolby Vision"],
+            "not": ["Dolby Vision (Without Fallback)"],
+        },
+        {
+            "name": "Hulu DV stays out of without-fallback (regex treats Hulu as fallback)",
+            "title": "Movie.2024.2160p.DV.HULU.WEB-DL.x265-FLUX",
+            "has": ["Dolby Vision", "HULU", "2160p Compact Streaming WEB-DL"],
+            "not": ["Dolby Vision (Without Fallback)", "2160p SDR Bluray"],
+        },
+        {
+            "name": "German AC3.LD WEB is not CAM and is not circle WEB",
+            "title": "Mutiny.2026.German.AC3.LD.DL.2160p.WEB.HDR.x265-GHOST",
+            "exact": 30 + 20 + 500 - 750,
+            "has": ["Foreign Dub", "HDR", "Dolby Digital", "10-bit Depth"],
+            "not": ["CAM", "2160p Compact WEB Tier 2", "2160p Compact Bluray Tier 2", "2160p SDR Bluray", "HDR10+"],
+        },
+        {
+            "name": "German AC3.MD Blu-ray is not CAM; disc Ghost stays circle",
+            "title": "Mutiny.2026.German.AC3.MD.DL.2160p.BluRay.HDR.x265-GHOST",
+            "exact": M_BR2 + 30 + 20 + 500 - 750,
+            "has": ["2160p Compact Bluray Tier 2", "Foreign Dub", "HDR"],
+            "not": ["CAM", "2160p Compact WEB Tier 2", "2160p SDR Bluray"],
+        },
+        {
+            "name": "German.DL scene WEB is not circle WEB",
+            "title": "Movie.2024.German.DL.2160p.WEB.x265-GHOST",
+            "exact": -750,
+            "has": ["Foreign Dub"],
+            "not": ["CAM", "2160p Compact WEB Tier 2", "2160p Compact Bluray Tier 2"],
+        },
+        {
+            "name": "French.DL scene WEB is not circle WEB",
+            "title": "Movie.2024.FRENCH.DL.2160p.WEB.H.265-GHOST",
+            "exact": -750,
+            "has": ["Foreign Dub"],
+            "not": ["CAM", "2160p Compact WEB Tier 2"],
+        },
+        {
+            "name": "1080p German scene WEB is not circle",
+            "title": "Movie.2024.German.DL.1080p.WEB.x265-GHOST",
+            "exact": -750,
+            "has": ["Foreign Dub"],
+            "not": ["1080p Compact HEVC Tier 2", "CAM"],
+        },
+        {
+            "name": "WEBRip before the German tag is still not circle WEB",
+            "title": "Movie.2024.2160p.WEBRip.German.AC3.LD.DL.x265-GHOST",
+            "exact": 20 - 750,
+            "has": ["Foreign Dub", "Dolby Digital"],
+            "not": ["2160p Compact WEB Tier 2", "CAM", "2160p SDR Bluray"],
+        },
+        {
+            "name": "Glued AC3LD scene WEB is not circle and not CAM",
+            "title": "Movie.2024.German.AC3LD.2160p.WEB.x265-GHOST",
+            "exact": -750,
+            "has": ["Foreign Dub"],
+            "not": ["2160p Compact WEB Tier 2", "CAM"],
+        },
+        {
+            "name": "1080p German scene Blu-ray still matches disc circle",
+            "title": "Movie.2024.German.DL.1080p.BluRay.HDR.x265-GHOST",
+            "exact": 6400 + 30 + 500 - 750,
+            "has": ["1080p Compact HEVC Tier 2", "Foreign Dub", "HDR"],
+            "not": ["CAM", "2160p Compact WEB Tier 2"],
+        },
+        {
+            "name": "Compact Ghost WEB is still circle WEB",
+            "title": "Movie.2024.2160p.WEB-DL.HDR.x265-Ghost",
+            "exact": M_WEB2 + M_HDR,
+            "tier": "2160p Compact WEB Tier 2",
+            "has": ["2160p Compact WEB Tier 2", "HDR"],
+            "not": ["Foreign Dub", "CAM", "2160p Compact Bluray Tier 2"],
+        },
+        {
+            "name": "Compact Ghost disc is still circle disc",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-Ghost",
+            "exact": M_BR2 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 2",
+            "not": ["Foreign Dub", "CAM", "2160p Compact WEB Tier 2"],
+        },
+        {
+            "name": "Ghost QxR parenthetical is circle via QxR",
+            "title": "Movie (2024) (2160p BluRay x265 HDR - Ghost QxR)",
+            "exact": M_BR2 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 2",
+        },
+        {
+            "name": "German in the movie title is not a scene dub",
+            "title": "The.German.Doctor.2013.2160p.WEB.x265-Ghost",
+            "exact": M_WEB2,
+            "tier": "2160p Compact WEB Tier 2",
+            "not": ["Foreign Dub", "CAM"],
+        },
+        {
+            "name": "The French Dispatch is not a French dub",
+            "title": "The.French.Dispatch.2021.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 1",
+            "not": ["Foreign Dub"],
+        },
+        {
+            "name": "German dubbed elite disc keeps the dub penalty and the tier",
+            "title": "Movie.2024.GERMAN.DUBBED.DL.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR - 750,
+            "has": ["2160p Compact Bluray Tier 1", "Foreign Dub"],
+            "not": ["CAM"],
+        },
+        {
+            "name": "WEB-DL alone is not a foreign dub",
+            "title": "Movie.2024.2160p.WEB-DL.HDR.x265-FLUX",
+            "exact": 28800 + M_HDR,
+            "has": ["2160p Compact Streaming WEB-DL"],
+            "not": ["Foreign Dub", "CAM"],
+        },
+        {
+            "name": "Real CAM still matches",
+            "title": "Movie.2024.2160p.CAM.x265-SAMPLE",
+            "has": ["CAM"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "HDCAM still matches",
+            "title": "Movie.2024.2160p.HDCAM.x264-SAMPLE",
+            "has": ["CAM", "x264 (2160p)"],
+        },
+        {
+            "name": "HDTS still matches",
+            "title": "Movie.2024.2160p.HDTS.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "HDTC still matches",
+            "title": "Movie.2024.2160p.HDTC.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "SCREENER still matches",
+            "title": "Movie.2024.2160p.WEB-DL.SCREENER.x265-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "TELESYNC still matches",
+            "title": "Movie.2024.TELESYNC.2160p.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "TELECINE still matches",
+            "title": "Movie.2024.TELECINE.2160p.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "DVDScr still matches",
+            "title": "Movie.2024.2160p.DVDScr.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "LINE.DUBBED still matches CAM",
+            "title": "Movie.2024.2160p.LINE.DUBBED.x264-SAMPLE",
+            "has": ["CAM"],
+        },
+        {
+            "name": "Bare LD after the year is not CAM",
+            "title": "Movie.2024.LD.2160p.BluRay.HDR.x265-hallowed",
+            "has": ["2160p Compact Bluray Tier 1", "HDR"],
+            "not": ["CAM"],
+        },
+        {
+            "name": "Bare MD after the year is not CAM",
+            "title": "Movie.2024.MD.2160p.BluRay.HDR.x265-hallowed",
+            "not": ["CAM"],
+        },
+        {
+            "name": "A normal elite disc is not CAM",
+            "title": "Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP,
+            "not": ["CAM", "2160p SDR Bluray"],
+        },
+        {
+            "name": "TrueHD still rejects",
+            "title": "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 80 - 100000,
+            "has": ["TrueHD", "Atmos"],
+            "not": ["Dolby Digital +", "Dolby Digital"],
+        },
+        {
+            "name": "TrueHD plus DD+ still rejects on TrueHD",
+            "title": "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.DDP.5.1.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 80 - 100000,
+            "has": ["TrueHD", "Atmos"],
+            "not": ["Dolby Digital +", "Dolby Digital"],
+        },
+        {
+            "name": "DTS-HD MA still rejects",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.7.1.x265-BHDStudio",
+            "exact": M_BR1 + 30 + 500 - 100000,
+            "has": ["DTS-HD MA"],
+            "not": ["DTS", "DTS-HD HRA", "DTS-X", "Dolby Digital +"],
+        },
+        {
+            "name": "DTS-HD MA plus DD+ still rejects on DTS-HD MA",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.7.1.DDP.5.1.x265-BHDStudio",
+            "exact": M_BR1 + 30 + 500 - 100000,
+            "has": ["DTS-HD MA"],
+            "not": ["Dolby Digital +", "Dolby Digital", "DTS"],
+        },
+        {
+            "name": "DTS-X plus DD+ still rejects on DTS-X",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-X.7.1.DDP.5.1.x265-hallowed",
+            "has": ["DTS-X"],
+            "not": ["Dolby Digital +", "DTS", "DTS-HD MA"],
+        },
+        {
+            "name": "DTS-HD HRA plus DD+ still rejects on HRA",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.HRA.DDP.5.1.x265-hallowed",
+            "has": ["DTS-HD HRA"],
+            "not": ["Dolby Digital +", "DTS-HD MA", "DTS"],
+        },
+        {
+            "name": "DTSHDMA still matches DTS-HD MA",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTSHDMA.7.1.x265-hallowed",
+            "has": ["DTS-HD MA"],
+            "not": ["DTS"],
+        },
+        {
+            "name": "DTS-HD HRA matches HRA, not MA",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.HRA.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 - 100000,
+            "has": ["DTS-HD HRA"],
+            "not": ["DTS-HD MA", "DTS"],
+        },
+        {
+            "name": "DTS-X matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-X.7.1.x265-hallowed",
+            "has": ["DTS-X"],
+            "not": ["DTS-HD MA", "DTS", "Dolby Digital +"],
+        },
+        {
+            "name": "DTSX matches DTS-X",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTSX.7.1.x265-hallowed",
+            "has": ["DTS-X"],
+            "not": ["DTS"],
+        },
+        {
+            "name": "DTS-HD MA plus DTS-X keeps DTS-X",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.7.1.DTS-X.x265-hallowed",
+            "has": ["DTS-X"],
+            "not": ["DTS-HD MA", "DTS"],
+        },
+        {
+            "name": "Lossy DTS is DTS, not an HD-audio reject",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS.5.1.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 25,
+            "has": ["DTS"],
+            "not": ["DTS-HD MA", "DTS-HD HRA", "DTS-X", "TrueHD"],
+        },
+        {
+            "name": "DTS plus DD+ keeps DTS",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS.5.1.DDP.5.1.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 25,
+            "has": ["DTS"],
+            "not": ["Dolby Digital +", "Dolby Digital"],
+        },
+        {
+            "name": "DDP is Dolby Digital Plus",
+            "title": "Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP,
+            "has": ["Dolby Digital +"],
+            "not": ["Dolby Digital"],
+        },
+        {
+            "name": "DD+ symbol is Dolby Digital Plus",
+            "title": "Movie.2024.2160p.BluRay.HDR.DD+.5.1.x265-hallowed",
+            "has": ["Dolby Digital +"],
+            "not": ["Dolby Digital"],
+        },
+        {
+            "name": "EAC3 is Dolby Digital Plus",
+            "title": "Movie.2024.2160p.BluRay.HDR.EAC3.5.1.x265-hallowed",
+            "has": ["Dolby Digital +"],
+            "not": ["Dolby Digital", "Banned Groups"],
+        },
+        {
+            "name": "E-AC-3 is Dolby Digital Plus and not a banned group",
+            "title": "Movie.2024.2160p.BluRay.HDR.E-AC-3.5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP,
+            "has": ["Dolby Digital +"],
+            "not": ["Dolby Digital", "Banned Groups"],
+        },
+        {
+            "name": "EAC-3 is Dolby Digital Plus",
+            "title": "Movie.2024.2160p.BluRay.HDR.EAC-3.5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP,
+            "has": ["Dolby Digital +"],
+            "not": ["Dolby Digital", "Banned Groups"],
+        },
+        {
+            "name": "DD 5.1 is Dolby Digital, not Plus",
+            "title": "Movie.2024.2160p.BluRay.HDR.DD.5.1.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 20,
+            "has": ["Dolby Digital"],
+            "not": ["Dolby Digital +"],
+        },
+        {
+            "name": "AC3 is Dolby Digital",
+            "title": "Movie.2024.2160p.BluRay.HDR.AC3.5.1.x265-hallowed",
+            "has": ["Dolby Digital"],
+            "not": ["Dolby Digital +", "CAM"],
+        },
+        {
+            "name": "AAC alone matches AAC",
+            "title": "Movie.2024.2160p.BluRay.HDR.AAC.2.0.x265-hallowed",
+            "exact": M_BR1 + 30 + 500 + 5,
+            "has": ["AAC"],
+            "not": ["Dolby Digital", "Dolby Digital +"],
+        },
+        {
+            "name": "AAC plus DD+ keeps DD+",
+            "title": "Movie.2024.2160p.BluRay.HDR.AAC2.0.DDP5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP,
+            "has": ["Dolby Digital +"],
+            "not": ["AAC", "Dolby Digital"],
+        },
+        {
+            "name": "FLAC matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.FLAC.2.0.x265-hallowed",
+            "has": ["FLAC"],
+            "not": ["Dolby Digital", "AAC"],
+        },
+        {
+            "name": "FLAC plus DD+ keeps DD+",
+            "title": "Movie.2024.2160p.BluRay.HDR.FLAC.2.0.DDP5.1.x265-hallowed",
+            "has": ["Dolby Digital +"],
+            "not": ["FLAC"],
+        },
+        {
+            "name": "Atmos plus DD+ scores both",
+            "title": "Movie.2024.2160p.BluRay.HDR.Atmos.DDP5.1.x265-hallowed",
+            "exact": M_BR1 + M_HDR + M_DDP + 80,
+            "has": ["Atmos", "Dolby Digital +"],
+        },
+        {
+            "name": "WEB DTS-HD MA still rejects and is not Movies Anywhere",
+            "title": "Movie.2024.2160p.WEB-DL.HDR.DTS-HD.MA.5.1.x265-HONE",
+            "has": ["DTS-HD MA", "2160p Compact WEB Tier 1"],
+            "not": ["MA", "Dolby Digital +"],
+        },
+        {
+            "name": "Movies Anywhere stays +15",
+            "title": "Movie.2024.2160p.MA.WEB-DL.HDR.x265-HONE",
+            "exact": M_WEB1 + M_HDR + 15,
+            "has": ["MA"],
+            "not": ["DTS-HD MA"],
+        },
+        {
+            "name": "HMAX scores the same +15 storefront tie-break as MAX",
+            "title": "Movie.2024.2160p.HMAX.WEB-DL.HDR.H.265-FLUX",
+            "exact": 28800 + M_HDR + 15,
+            "has": ["HMAX", "2160p Compact Streaming WEB-DL"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "MAX.WEB-DL scores MAX +15",
+            "title": "Movie.2024.2160p.MAX.WEB-DL.HDR.H.265-FLUX",
+            "exact": 28800 + M_HDR + 15,
+            "has": ["MAX"],
+        },
+        {
+            "name": "UHD WEB-DL is WEB, not Blu-ray",
+            "title": "Movie.2024.2160p.UHD.WEB-DL.HDR.x265-HONE",
+            "exact": M_WEB1 + M_HDR,
+            "tier": "2160p Compact WEB Tier 1",
+            "not": ["2160p Compact Bluray Tier 1", "2160p SDR Bluray"],
+        },
+        {
+            "name": "Scene 2160p.WEB. is WEB-DL",
+            "title": "Movie.2024.2160p.WEB.HDR.x265-HONE",
+            "exact": M_WEB1 + M_HDR,
+            "tier": "2160p Compact WEB Tier 1",
+        },
+        {
+            "name": "WEBRip PSA is WEB tier 3, not a disc tier",
+            "title": "Movie.2024.2160p.WEBRip.HDR.x265-PSA",
+            "exact": M_WEB3 + M_HDR,
+            "tier": "2160p Compact WEB Tier 3",
+        },
+        {
+            "name": "FLUX on a Blu-ray is not a streaming or disc tier",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-FLUX",
+            "exact": M_HDR,
+            "not": list(tier_names),
+        },
+        {
+            "name": "NTb on a Blu-ray is not untouched WEB",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-NTb",
+            "exact": M_HDR,
+            "not": ["2160p WEB-DL HEVC", "2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "HEVC word encode is not a full disc",
+            "title": "Movie.2024.2160p.BluRay.HDR.HEVC-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "has": ["2160p Compact Bluray Tier 1", "HDR"],
+            "not": ["Full Disc", "x264 (2160p)", "2160p SDR Bluray"],
+        },
+        {
+            "name": "HEVC word SDR disc is SDR and not a full disc",
+            "title": "Movie.2024.2160p.BluRay.HEVC-hallowed",
+            "exact": M_BR1 - 100000,
+            "has": ["2160p SDR Bluray"],
+            "not": ["Full Disc", "HDR"],
+        },
+        {
+            "name": "Complete UHD Blu-ray is still a full disc",
+            "title": "Movie.2024.COMPLETE.UHD.BLURAY-TERRA",
+            "has": ["Full Disc", "2160p SDR Bluray"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "Remux in the name matches Remux and not a compact tier",
+            "title": "Movie.2024.2160p.BluRay.REMUX.HDR.HEVC-HONE",
+            "has": ["Remux", "HDR"],
+            "not": ["2160p Compact Bluray Tier 1", "Full Disc", "2160p SDR Bluray"],
+        },
+        {
+            "name": "x264 2160p matches and an x265 disc does not",
+            "title": "Movie.2024.2160p.BluRay.x264-HONE",
+            "has": ["x264 (2160p)", "2160p SDR Bluray"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "x265 is not x264",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-HONE",
+            "not": ["x264 (2160p)", "AV1", "Full Disc"],
+        },
+        {
+            "name": "AVC word is x264 and not a full disc",
+            "title": "Movie.2024.2160p.BluRay.AVC-HONE",
+            "has": ["x264 (2160p)"],
+            "not": ["Full Disc", "2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "AV1 is rejected and blocks the compact tier",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265.AV1-hallowed",
+            "has": ["AV1"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "3D matches",
+            "title": "Movie.2024.2160p.BluRay.3D.HDR.x265-hallowed",
+            "has": ["3D", "2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "A flat disc is not 3D",
+            "title": "Movie.2024.2160p.BluRay.HDR.DDP5.1.Atmos.x265-hallowed",
+            "not": ["3D", "Upscale", "Extras", "CAM", "Hardcoded Subtitles"],
+        },
+        {
+            "name": "Hardcoded HC matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.HC.x265-hallowed",
+            "has": ["Hardcoded Subtitles"],
+        },
+        {
+            "name": "HARDSUB matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.HARDSUB.x265-hallowed",
+            "has": ["Hardcoded Subtitles"],
+        },
+        {
+            "name": "Audio Description matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.Audio.Description.x265-hallowed",
+            "has": ["Audio Description"],
+        },
+        {
+            "name": "DVS matches Audio Description",
+            "title": "Movie.2024.2160p.BluRay.HDR.DVS.x265-hallowed",
+            "has": ["Audio Description"],
+        },
+        {
+            "name": "Ad Astra is not audio description",
+            "title": "Ad.Astra.2019.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+            "not": ["Audio Description", "Banned Groups"],
+        },
+        {
+            "name": "AI upscale matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.AI.Upscale.x265-SAMPLE",
+            "has": ["Upscale"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "A normal disc is not an upscale",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-hallowed",
+            "not": ["Upscale", "Extras", "3D", "Banned Groups"],
+        },
+        {
+            "name": "Extras match",
+            "title": "Movie.2024.2160p.BluRay.HDR.Extras.x265-hallowed",
+            "has": ["Extras"],
+        },
+        {
+            "name": "IMAX matches and NON-IMAX does not",
+            "title": "Movie.2024.2160p.BluRay.IMAX.HDR.x265-hallowed",
+            "has": ["IMAX"],
+            "not": ["IMAX Enhanced"],
+        },
+        {
+            "name": "NON-IMAX does not match IMAX",
+            "title": "Movie.2024.2160p.BluRay.NON-IMAX.HDR.x265-hallowed",
+            "not": ["IMAX", "IMAX Enhanced"],
+        },
+        {
+            "name": "Disney IMAX Enhanced matches that format only",
+            "title": "Movie.2024.2160p.IMAX.Enhanced.DSNP.WEB-DL.HDR.H.265-FLUX",
+            "has": ["IMAX Enhanced", "DSNP", "2160p Compact Streaming WEB-DL"],
+            "not": ["IMAX"],
+        },
+        {
+            "name": "edge2020HD is not edge2020",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-edge2020HD",
+            "exact": M_HDR,
+            "not": list(tier_names),
+        },
+        {
+            "name": "PSARips stays small, not PSA plus another tier",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-PSARips",
+            "exact": M_BR3 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 3",
+        },
+        {
+            "name": "ReELiTE stays small and is not also ELiTE twice",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-ReELiTE",
+            "exact": M_BR3 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 3",
+        },
+        {
+            "name": "Ghostbusters does not match the Ghost encoder",
+            "title": "Ghostbusters.2016.2160p.BluRay.HDR.x265-HONE",
+            "exact": M_BR1 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 1",
+        },
+        {
+            "name": "Silence of the Lambs does not match the Silence encoder",
+            "title": "The.Silence.of.the.Lambs.1991.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "tier": "2160p Compact Bluray Tier 1",
+        },
+        {
+            "name": "Ben-Hur is not the banned group BEN",
+            "title": "Ben.Hur.2016.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "not": ["Banned Groups"],
+        },
+        {
+            "name": "Mama the movie is not the banned group MAMA",
+            "title": "Mama.2013.2160p.BluRay.HDR.x265-hallowed",
+            "exact": M_BR1 + M_HDR,
+            "not": ["Banned Groups"],
+        },
+        {
+            "name": "Release group MAMA is banned",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-MAMA",
+            "has": ["Banned Groups"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "Release group BTM is banned",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-BTM",
+            "has": ["Banned Groups"],
+        },
+        {
+            "name": "Release group Saon is banned",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-Saon",
+            "has": ["Banned Groups"],
+            "not": ["2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "Opus 5.1 matches",
+            "title": "Movie.2024.2160p.BluRay.HDR.Opus.5.1.x265-hallowed",
+            "has": ["Opus 5.1 / 7.1"],
+        },
+        {
+            "name": "Hybrid matches",
+            "title": "Movie.2024.2160p.Hybrid.BluRay.HDR.x265-hallowed",
+            "has": ["Hybrid", "2160p Compact Bluray Tier 1"],
+        },
+        {
+            "name": "Proper matches Repack",
+            "title": "Movie.2024.PROPER.2160p.BluRay.HDR.x265-hallowed",
+            "has": ["Repack1"],
+            "not": ["Repack2", "Repack3"],
+        },
+        {
+            "name": "8-bit token matches",
+            "title": "Movie.2024.2160p.BluRay.8bit.SDR.x265-dkore",
+            "has": ["8-bit Depth", "2160p SDR Bluray"],
+        },
+        {
+            "name": "Compact disc still beats compact streaming WEB",
+            "title": "Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+            "above": "Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX",
+        },
+        {
+            "name": "Compact streaming WEB still beats PSA",
+            "title": "Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX",
+            "above": "Movie.2024.2160p.BluRay.HDR.x265-PSA",
+        },
+        {
+            "name": "PSA still beats untouched BYNDR",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-PSA",
+            "above": "Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR",
+        },
+        {
+            "name": "HMAX WEB does not beat an elite disc",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-hallowed",
+            "above": "Movie.2024.2160p.HMAX.WEB-DL.HDR.H.265-FLUX",
+        },
+    ]
+
+    tv_cases = [
+        {
+            "name": "TV HONE WEB score is unchanged",
+            "title": "Show.S01E01.2160p.WEB-DL.H265-HONE",
+            "profile": tv,
+            "exact": 8100,
+            "tier": "2160p Compact WEB Tier 1",
+        },
+        {
+            "name": "TV HONE disc score is unchanged",
+            "title": "Show.S01E01.2160p.BluRay.x265-HONE",
+            "profile": tv,
+            "exact": 5300,
+            "tier": "2160p Compact Bluray Tier 1",
+        },
+        {
+            "name": "TV Ghost WEB is still circle WEB",
+            "title": "Show.S01E01.2160p.WEB-DL.H265-Ghost",
+            "profile": tv,
+            "exact": 7400,
+            "tier": "2160p Compact WEB Tier 2",
+        },
+        {
+            "name": "TV German scene GHOST WEB is not circle",
+            "title": "Show.S01E01.German.AC3.LD.DL.2160p.WEB.x265-GHOST",
+            "profile": tv,
+            "not": ["2160p Compact WEB Tier 2", "CAM"],
+            "has": ["Foreign Dub"],
+        },
+        {
+            "name": "TV TrueHD plus DD+ still allows the file and scores TrueHD",
+            "title": "Show.S01E01.2160p.BluRay.TrueHD.DDP5.1.x265-HONE",
+            "profile": tv,
+            "exact": 5300 + 15,
+            "has": ["TrueHD", "2160p Compact Bluray Tier 1"],
+            "not": ["Dolby Digital +"],
+        },
+    ]
+
+    def check(case):
+        nonlocal passed, failed
+        profile = case.get("profile", movies)
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, case["title"], profile)
+        names = [name for name, _score in matched]
+        name_set = set(names)
+        ok = True
+        if "exact" in case and score != case["exact"]:
+            ok = False
+        for needed in case.get("has", []):
+            if needed not in name_set:
+                ok = False
+        for banned in case.get("not", []):
+            if banned in name_set:
+                ok = False
+        if "tier" in case:
+            hits = [name for name in names if name in tier_names]
+            if hits != [case["tier"]]:
+                ok = False
+        if "above" in case:
+            other, _mn, _up, _ok, _matched = evaluate_release(conn, case["above"], profile)
+            if not score > other:
+                ok = False
+        if "passes" in case and passed_cutoff != case["passes"]:
+            ok = False
+        if ok:
+            passed += 1
+            print(f"[PASS] {case['name']}")
+        else:
+            failed += 1
+            print(f"[FAIL] {case['name']}")
+            print(f"  Title: {case['title']}")
+            print(f"  Score: {score} pass {passed_cutoff}")
+            if "exact" in case:
+                print(f"  Expected score: {case['exact']}")
+            if "tier" in case:
+                print(f"  Tier: {[name for name in names if name in tier_names]} expected {case['tier']}")
+            missing = [name for name in case.get("has", []) if name not in name_set]
+            extra = [name for name in case.get("not", []) if name in name_set]
+            if missing:
+                print(f"  Missing: {missing}")
+            if extra:
+                print(f"  Unexpected: {extra}")
+            for cf, cf_score in matched:
+                print(f"    - {cf}: {cf_score:+}")
+        return ok
+
+    for case in cases:
+        check(case)
+    for case in tv_cases:
+        check(case)
+
+    tv_truehd = conn.execute(
+        "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = 'TrueHD'",
+        (tv,),
+    ).fetchone()[0]
+    movie_ma = conn.execute(
+        "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = 'MA'",
+        (movies,),
+    ).fetchone()[0]
+    guards = (
+        ("TV TrueHD score is still +15", tv_truehd == 15),
+        ("Movies Anywhere score is still +15", movie_ma == 15),
+    )
+    for label, ok in guards:
+        if ok:
+            passed += 1
+            print(f"[PASS] {label}")
+        else:
+            failed += 1
+            print(f"[FAIL] {label}")
+    print(f"Identification stress: {passed} passed, {failed} failed")
+    return passed, failed
 
 
 if __name__ == "__main__":
