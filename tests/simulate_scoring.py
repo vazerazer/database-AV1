@@ -2,13 +2,16 @@
 """
 PCD compact 4K HEVC scoring battery.
 
-Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray (hallowed,
-BHDStudio, in-window HONE), then a smaller disc such as QxR, then a compact
-streaming WEB-DL, then a PSA micro, then a big WEB-DL. 4K quality
-definitions cap bitrate at 200 MB/min. There is no gigabyte penalty, so a
-long movie at a mid-size bitrate keeps its score.
-TV 2160p HEVC Compact still prefers WEB over disc. Feature bonuses stay
-inside the 700-point gap, and Movies Anywhere does not flip a WEB over a disc.
+Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray. The whole elite
+list shares one score (hallowed, BHDStudio, HONE, and the rest). Then a
+smaller disc such as QxR, then compact streaming WEB, then a PSA micro, then
+a big WEB-DL. Dolby Vision is +1000, HDR and HDR10+ are +500, and Dolby
+Digital + is +125. The class gap is wider than that stack. 4K Blu-ray with
+no HDR is rejected. TrueHD and the DTS-HD formats are rejected for direct
+play. 4K quality definitions cap bitrate at 200 MB/min. There is no gigabyte
+penalty, so a long movie at a mid-size bitrate keeps its score.
+TV 2160p HEVC Compact still prefers WEB over disc. Its scores are unchanged.
+Movies Anywhere does not flip a WEB over a disc.
 """
 
 import sqlite3
@@ -330,6 +333,27 @@ def bitrate_blocked(limits, mb_per_min):
             return True
     return False
 
+# Movie class bases. 3200 is wider than Dolby Vision + HDR + HDR10+ + DD+
+# and the smaller tie-breaks. HDR in a title also matches 10-bit Depth (+30)
+# because that regex treats the letters HDR as a 10-bit marker.
+M_BR1 = 38400
+M_BR2 = 35200
+M_WEB1 = 32000
+M_STREAM = 28800
+M_WEB2 = 28800
+M_BR3 = 25600
+M_BR4 = 22400
+M_WEB3 = 19200
+M_WEB4 = 16000
+M_WEBDL = 12800
+M_HD1 = 9600
+M_HD2 = 6400
+M_HD3 = 3200
+M_HDR = 530  # HDR +500 and 10-bit Depth +30
+M_DV = 1000
+M_DDP = 125
+
+
 def run_simulation_battery():
     conn = build_compiled_db()
 
@@ -355,19 +379,54 @@ def run_simulation_battery():
     test_corpus = [
         {
             "category": "Movie elite disc (HONE)",
-            "title": "Movie.2024.2160p.BluRay.x265-HONE",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-HONE",
             "profile": movies,
             "expect_pass": True,
-            "exact": 8100,
+            "exact": M_BR1 + M_HDR,
             "tier": "2160p Compact Bluray Tier 1",
+        },
+        {
+            "category": "SDR 4K Blu-ray is rejected",
+            "title": "Movie.2024.2160p.BluRay.x265-HONE",
+            "profile": movies,
+            "expect_pass": False,
+            "max_band": 0,
+        },
+        {
+            "category": "TrueHD disc is rejected for direct play",
+            "title": "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.x265-hallowed",
+            "profile": movies,
+            "expect_pass": False,
+            "max_band": 0,
+        },
+        {
+            "category": "DTS-HD MA disc is rejected for direct play",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.x265-BHDStudio",
+            "profile": movies,
+            "expect_pass": False,
+            "max_band": 0,
+        },
+        {
+            "category": "DTS-HD HRA disc is rejected for direct play",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-HD.HRA.x265-HONE",
+            "profile": movies,
+            "expect_pass": False,
+            "max_band": 0,
+        },
+        {
+            "category": "DTS-X disc is rejected for direct play",
+            "title": "Movie.2024.2160p.BluRay.HDR.DTS-X.x265-DarQ",
+            "profile": movies,
+            "expect_pass": False,
+            "max_band": 0,
         },
         {
             "category": "Movie elite disc parenthetical (Vyndros)",
             "title": "Movie (2024) (2160p BluRay x265 HDR DV Atmos - Vyndros).mkv",
             "profile": movies,
             "expect_pass": True,
-            "min_band": 8100,
-            "max_band": 8800,
+            "min_band": M_BR1,
+            "max_band": M_BR1 + 2500,
             "tier": "2160p Compact Bluray Tier 1",
         },
         {
@@ -375,16 +434,16 @@ def run_simulation_battery():
             "title": "Movie (2024) (2160p BluRay x265 10bit HDR - Tigole).mkv",
             "profile": movies,
             "expect_pass": True,
-            "min_band": 7400,
-            "max_band": 8000,
+            "min_band": M_BR2,
+            "max_band": M_BR1 - 1,
             "tier": "2160p Compact Bluray Tier 2",
         },
         {
             "category": "Movie circle supergroup suffix (Goki / TAoE)",
-            "title": "Movie.2024.2160p.BluRay.x265-Goki)[TAoE].mkv",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-Goki)[TAoE].mkv",
             "profile": movies,
             "expect_pass": True,
-            "exact": 7400,
+            "exact": M_BR2 + M_HDR,
             "tier": "2160p Compact Bluray Tier 2",
         },
         {
@@ -392,7 +451,7 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.WEB-DL.H265-hallowed",
             "profile": movies,
             "expect_pass": True,
-            "exact": 6700,
+            "exact": M_WEB1,
             "tier": "2160p Compact WEB Tier 1",
         },
         {
@@ -400,7 +459,7 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.WEB-DL.H265-edge2020",
             "profile": movies,
             "expect_pass": True,
-            "exact": 6000,
+            "exact": M_WEB2,
             "tier": "2160p Compact WEB Tier 2",
         },
         {
@@ -408,8 +467,8 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.BluRay.HDR.x265-PSA",
             "profile": movies,
             "expect_pass": True,
-            "min_band": 5300,
-            "max_band": 5999,
+            "min_band": M_BR3,
+            "max_band": M_STREAM - 1,
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
@@ -417,23 +476,23 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.WEB-DL.x265-UTR",
             "profile": movies,
             "expect_pass": True,
-            "exact": 3200,
+            "exact": M_WEB4,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
             "category": "Movie RARBG disc is allowed and below PSA",
-            "title": "Movie.2024.2160p.BluRay.x265-RARBG",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-RARBG",
             "profile": movies,
             "expect_pass": True,
-            "exact": 4600,
+            "exact": M_BR4 + M_HDR,
             "tier": "2160p Compact Bluray Tier 4",
         },
         {
             "category": "Movie d3g disc is allowed under QxR",
-            "title": "Movie.2024.2160p.BluRay.x265-d3g",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-d3g",
             "profile": movies,
             "expect_pass": True,
-            "exact": 5300,
+            "exact": M_BR3 + M_HDR,
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
@@ -441,7 +500,7 @@ def run_simulation_battery():
             "title": "Show.Name.S01E01.2160p.WEBRip.x265-iVy",
             "profile": movies,
             "expect_pass": True,
-            "exact": 3200,
+            "exact": M_WEB4,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
@@ -449,7 +508,7 @@ def run_simulation_battery():
             "title": "The.Silence.of.the.Lambs.1991.2160p.WEB-DL.H265-NTb",
             "profile": movies,
             "expect_pass": True,
-            "exact": 2500,
+            "exact": M_WEBDL,
             "tier": "2160p WEB-DL HEVC",
         },
         {
@@ -457,7 +516,7 @@ def run_simulation_battery():
             "title": "Movie.2024.1080p.BluRay.x265-Vyndros",
             "profile": movies,
             "expect_pass": True,
-            "exact": 1800,
+            "exact": M_HD1,
             "tier": "1080p Compact HEVC Tier 1",
         },
         {
@@ -465,7 +524,7 @@ def run_simulation_battery():
             "title": "Movie.2024.1080p.WEBRip.H.265-TAoE",
             "profile": movies,
             "expect_pass": True,
-            "exact": 1100,
+            "exact": M_HD2,
             "tier": "1080p Compact HEVC Tier 2",
         },
         {
@@ -473,8 +532,8 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.BluRay.DV.HDR10+.HDR.DDP5.1.Atmos.x265-Tigole",
             "profile": movies,
             "expect_pass": True,
-            "min_band": 7400,
-            "max_band": 8099,
+            "min_band": M_BR2,
+            "max_band": M_BR1 - 1,
             "tier": "2160p Compact Bluray Tier 2",
         },
         {
@@ -482,7 +541,7 @@ def run_simulation_battery():
             "title": "Movie.2024.2160p.BluRay.DV.HDR.x265-FraMeSToR",
             "profile": movies,
             "expect_pass": False,
-            "max_band": 399,
+            "max_band": 2999,
         },
         {
             "category": "AV1 disc is rejected",
@@ -542,10 +601,10 @@ def run_simulation_battery():
         },
         {
             "category": "Ghostbusters does not match the Ghost encoder",
-            "title": "Ghostbusters.2016.2160p.BluRay.x265-HONE",
+            "title": "Ghostbusters.2016.2160p.BluRay.HDR.x265-HONE",
             "profile": movies,
             "expect_pass": True,
-            "exact": 8100,
+            "exact": M_BR1 + M_HDR,
             "tier": "2160p Compact Bluray Tier 1",
         },
         {
@@ -574,10 +633,10 @@ def run_simulation_battery():
         },
         {
             "category": "Bracket prefix still matches",
-            "title": "[TAoE] Movie.2024.2160p.BluRay.x265.mkv",
+            "title": "[TAoE] Movie.2024.2160p.BluRay.HDR.x265.mkv",
             "profile": movies,
             "expect_pass": True,
-            "exact": 7400,
+            "exact": M_BR2 + M_HDR,
             "tier": "2160p Compact Bluray Tier 2",
         },
     ]
@@ -759,6 +818,17 @@ def run_simulation_battery():
         ("Amazon tag scored on Kitsune", any(name == "AMZN" for name, _ in kitsune_matched)),
         ("Netflix tag scored on CMRG", any(name == "NF" for name, _ in cmrg_matched)),
         ("YTS still banned", not score_of("Movie.2024.2160p.BluRay.x265-YTS")[1]),
+        ("MeGusta still banned", not score_of("Movie.2024.2160p.WEBRip.x265-MeGusta")[1]),
+        ("Dolby Vision scores +1000 on the compact disc", any(name == "Dolby Vision" and s == M_DV for name, s in towers_disc_matched)),
+        ("HDR scores +500 on the compact disc", any(name == "HDR" and s == 500 for name, s in towers_disc_matched)),
+        ("DD+ scores +125 on the compact disc", any(name == "Dolby Digital +" and s == M_DDP for name, s in towers_disc_matched)),
+        ("hallowed, BHDStudio and HONE HDR discs share one score", len({score_of(f"Movie.2024.2160p.BluRay.HDR.x265-{g}")[0] for g in ("hallowed", "BHDStudio", "HONE", "DarQ", "DiscoD", "dkore", "HQMUX", "PTer", "Chivaman", "Weasley", "Vyndros")}) == 1),
+        ("IMAX is only a tie-break inside that class", score_of("Movie.2024.2160p.BluRay.HDR.IMAX.x265-hallowed")[0] - score_of("Movie.2024.2160p.BluRay.HDR.x265-hallowed")[0] == 40),
+        ("PSARip micro beats BYNDR", score_of("Movie.2024.2160p.BluRay.HDR.x265-PSARips")[0] > byndr),
+        ("d3g micro beats NTb", score_of("Movie.2024.2160p.BluRay.HDR.x265-d3g")[0] > score_of("Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-NTb")[0]),
+        ("Coyote-style PSA WEBRip beats a much larger BYNDR", score_of("Coyote.vs.Acme.2026.2160p.WEBRip.HDR.x265-PSA")[0] > score_of("Coyote.vs.Acme.2026.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR")[0]),
+        ("TV still prefers HONE WEB over HONE disc", evaluate_release(conn, "Show.S01E01.2160p.WEB-DL.H265-HONE", tv)[0] > evaluate_release(conn, "Show.S01E01.2160p.BluRay.HDR.x265-HONE", tv)[0]),
+        ("TV TrueHD disc is still allowed", evaluate_release(conn, "Show.S01E01.2160p.BluRay.HDR.TrueHD.x265-HONE", tv)[3]),
     )
     print(f"  Ocean's Twelve BHD {oceans_bhd} HONE {oceans_hone} upgrade {oceans_would_upgrade}")
     print(f"  Two Towers disc {towers_disc} BHD {towers_bhd} MA WEB {towers_web} pass {towers_web_pass} blocked {towers_web_blocked}")
@@ -792,9 +862,9 @@ def run_simulation_battery():
     ).fetchone()[0]
     print(f"\n=== UPGRADE INCREMENT ({inc}) ===")
     for name, existing, new, expect in (
-        ("Same score does not swap", 8100, 8100, False),
-        ("HDR tie-break upgrades inside a tier", 8100, 8280, True),
-        ("1080p compact upgrades to 4K circle", 1800, 7400, True),
+        ("Same score does not swap", M_BR1, M_BR1, False),
+        ("HDR tie-break upgrades inside a tier", M_BR1, M_BR1 + M_HDR, True),
+        ("1080p compact upgrades to 4K circle", M_HD1, M_BR2, True),
     ):
         fires = (new - existing) >= inc
         ok = fires == expect
@@ -815,10 +885,10 @@ def run_simulation_battery():
     print("\n=== GROUP LADDER ===")
     anomalies = []
     for group in elite:
-        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        title = f"Movie.2024.2160p.BluRay.HDR.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact Bluray Tier 1"] or score != 8100 or not passed:
+        if hits != ["2160p Compact Bluray Tier 1"] or score != M_BR1 + M_HDR or not passed:
             anomalies.append((group, "elite-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
         web = f"Show.S01E01.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, web, tv)
@@ -826,28 +896,28 @@ def run_simulation_battery():
         if hits != ["2160p Compact WEB Tier 1"] or score != 8100:
             anomalies.append((group, "elite-web", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in circle:
-        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        title = f"Movie.2024.2160p.BluRay.HDR.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact Bluray Tier 2"] or score != 7400:
+        if hits != ["2160p Compact Bluray Tier 2"] or score != M_BR2 + M_HDR:
             anomalies.append((group, "circle-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in small:
-        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        title = f"Movie.2024.2160p.BluRay.HDR.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact Bluray Tier 3"] or score != 5300:
+        if hits != ["2160p Compact Bluray Tier 3"] or score != M_BR3 + M_HDR:
             anomalies.append((group, "small-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in micro_ok:
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact WEB Tier 4"] or score != 3200:
+        if hits != ["2160p Compact WEB Tier 4"] or score != M_WEB4:
             anomalies.append((group, "micro-ok-web", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in streaming:
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact Streaming WEB-DL"] or score != 6000:
+        if hits != ["2160p Compact Streaming WEB-DL"] or score != M_STREAM:
             anomalies.append((group, "streaming-web", score, hits, [(n, s) for n, s in matched if s < 0]))
         tv_title = f"Show.S01E01.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, tv_title, tv)
@@ -858,7 +928,7 @@ def run_simulation_battery():
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p WEB-DL HEVC"] or score != 2500:
+        if hits != ["2160p WEB-DL HEVC"] or score != M_WEBDL:
             anomalies.append((group, "webdl", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in micro_ban:
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
