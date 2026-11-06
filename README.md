@@ -2,18 +2,18 @@
 
 [![PCD Audit & Simulation Battery](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml)
 
-A custom format database and quality profile suite for Radarr 4K, built to the Profilarr PCD v2 specification. It implements an AV1-first scoring ladder that prioritizes genuine AV1 releases while maintaining curated fallback bands for x265 and x264 releases when AV1 is unavailable.
+A custom format database and quality profile suite for Radarr and Sonarr, built to the Profilarr PCD v2 specification. The flagship profiles target compact 4K HEVC (x265) encodes: small files from vetted groups, with HDR, Dolby Vision and Atmos used only as tie-breakers inside a tier.
 
 ## Upstream
 
-Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database). This fork departs from upstream by placing verified AV1 encoders at the top of the quality hierarchy and structuring non-AV1 releases as temporary, upgradeable fallbacks.
+Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database). The ladder is aimed at a 55-inch 4K Mini LED and a 32-inch 4K monitor, where a soft encode shows and a phone would hide it. Dictionarry's compact circles (HONE, Vyndros, edge2020, QxR, TAoE) stay on top. PSA, d3g, SEV and ELiTE are the next step down: smaller, still clean. UTR/Joy, RARBG and iVy are allowed below that and get replaced when a better encode exists. YTS and MeGusta stay rejected because their 4K files break up on those two screens. Untouched WEB-DL groups such as NTb and FLUX are a larger fallback, not the target.
 
-## Features
+## Profiles
 
-* **AV1-First Prioritization:** Top scoring for verified AV1 disc masters (`CoSMiCSuRFeR`, `RandH`, `TAoE`, `dAV1nci`, `ChopperHitler`, etc.).
-* **IMAX Tie-Breaker:** Prioritizes 1.90:1 expanded aspect ratio releases (IMAX / IMAX Enhanced) over standard letterboxed widescreen.
-* **ARC-Optimized Bitstream Audio:** Universal Dolby Atmos, Dolby Digital Plus, and full-rate 1509 kbps DTS Core passthrough.
-* **Monotonic Fallback Tiers:** Strict score separation preventing tier inversion across 4K disc masters, 4K WEB-DLs, and archival 1080p fallbacks.
+* **Movies 2160p HEVC Compact** — 4K Blu-ray from the careful circles, then QxR/TAoE, then PSA/d3g/SEV/ELiTE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC.
+* **TV 2160p HEVC Compact** — the same groups, with WEB ranked above disc encodes.
+
+AV1, remuxes, 4K x264 and releases with no vetted group do not clear the minimum score. Tier gaps are 700 points, wider than the feature stack, so Dolby Vision cannot promote a lower group over a higher one.
 
 ## Usage
 
@@ -23,9 +23,9 @@ Import this repository into Profilarr to manage and sync custom formats to your 
 2. Add a new database:
    * **Repository URL:** `https://github.com/vazerazer/database-AV1`
    * **Branch:** `v2`
-3. Select the `Movies 2160p AV1 HQ` profile under your instance configuration and sync.
+3. Select `Movies 2160p HEVC Compact` for Radarr and `TV 2160p HEVC Compact` for Sonarr, then sync.
 
-*Note: Profilarr syncs custom format definitions and scores to the target profile. Root folder mappings, download clients, and indexers remain managed directly in Radarr.*
+*Note: Profilarr syncs custom format definitions and scores to the target profile. Root folder mappings, download clients, and indexers remain managed directly in the arrs.*
 
 ## Repository Layout
 

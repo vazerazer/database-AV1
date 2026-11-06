@@ -1,7 +1,7 @@
 {
-  "name": "AV1 Master Database",
-  "version": "1.0.0",
-  "description": "Curated AV1 Custom Formats and Quality Profiles for Radarr and Sonarr with Dumpstarr/TRaSH-grade tiering and audio optimization.",
+  "name": "HEVC Compact Database",
+  "version": "2.0.0",
+  "description": "Compact 4K HEVC custom formats and quality profiles for Radarr and Sonarr. Prefers small x265 encodes from vetted circles, with HDR and Atmos as tie-breakers.",
   "arr_types": [
     "radarr",
     "sonarr"
@@ -23,10 +23,11 @@
     "minimum_version": "2.0.0"
   },
   "tags": [
-    "av1",
+    "hevc",
+    "x265",
+    "2160p",
+    "compact",
     "hdr",
-    "dolby-vision",
-    "opus",
-    "high-efficiency"
+    "dolby-vision"
   ]
 }

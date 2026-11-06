@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 """
-PCD Flagship Quality Profile Simulation Battery (AV1-First, Dumpstarr 2160p Hybrid Standard)
-Evaluates:
-- Tier 1: Elite 4K Encoders (AV1 + Upstream x265/x264) -> +3000
-- Tier 2: Top 4K Encoders (WEB-DL + 2160p Bluray Tier 03/04) -> +2200
-- Tier 3: Archival 1080p Blu-ray Disc Encoders -> +1400
-- Feature Bonuses: Max stacking strictly capped < 800
-- Untiered Releases without Vetted Group: < 1000 (Fails profile minimum cutoff)
-- Sub-4K x265/HEVC: -10000 (x265 HD denied below 2160p)
-- Banned / Toxic Groups: -10000 (Hard rejected)
-- Full Alias Coverage Test: Verifies all aliases across tiers
+PCD compact 4K HEVC scoring battery.
+
+Movies 2160p HEVC Compact prefers small 2160p x265 disc encodes, then compact
+WEB, then untouched WEB-DL, then 1080p HEVC. TV 2160p HEVC Compact prefers
+compact WEB over disc. AV1, remuxes and micro encodes are rejected. Feature
+bonuses stay inside the 700-point tier gap.
 """
 
 import sqlite3
@@ -319,560 +315,384 @@ def evaluate_release(conn, release_title, profile_name, arr_type="radarr", size_
 def run_simulation_battery():
     conn = build_compiled_db()
 
+    movies = "Movies 2160p HEVC Compact"
+    tv = "TV 2160p HEVC Compact"
+    tier_cfs = {
+        "2160p Compact Bluray Tier 1",
+        "2160p Compact Bluray Tier 2",
+        "2160p Compact Bluray Tier 3",
+        "2160p Compact Bluray Tier 4",
+        "2160p Compact WEB Tier 1",
+        "2160p Compact WEB Tier 2",
+        "2160p Compact WEB Tier 3",
+        "2160p Compact WEB Tier 4",
+        "2160p WEB-DL HEVC",
+        "1080p Compact HEVC Tier 1",
+        "1080p Compact HEVC Tier 2",
+        "1080p Compact HEVC Tier 3",
+        "1080p Compact HEVC Tier 4",
+    }
+
     test_corpus = [
-        # --- 1. PURE AV1 4K ENCODES (Score 3200 - 4375) ---
         {
-            "category": "Pure AV1 2160p HQ (dAV1nci LOTR)",
-            "title": "The.Lord.of.the.Rings.The.Return.of.the.King.2003.Extended.2160p.HDR.UHD.BluRay.AV1.DDP5.1.Atmos-dAV1nci",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie elite disc (HONE)",
+            "title": "Movie.2024.2160p.BluRay.x265-HONE",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "exact": 8100,
+            "tier": "2160p Compact Bluray Tier 1",
         },
         {
-            "category": "Pure AV1 2160p HQ (ChopperHitler Matrix)",
-            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie elite disc parenthetical (Vyndros)",
+            "title": "Movie (2024) (2160p BluRay x265 HDR DV Atmos - Vyndros).mkv",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "min_band": 8100,
+            "max_band": 8800,
+            "tier": "2160p Compact Bluray Tier 1",
         },
         {
-            "category": "Pure AV1 2160p HQ (RandH / R&H Shawshank)",
-            "title": "The.Shawshank.Redemption.1994.2160p.BluRay.DV.HDR10.AV1.DTS.5.1-R&H",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie circle disc (Tigole / QxR)",
+            "title": "Movie (2024) (2160p BluRay x265 10bit HDR - Tigole).mkv",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "min_band": 7400,
+            "max_band": 8000,
+            "tier": "2160p Compact Bluray Tier 2",
         },
         {
-            "category": "Pure AV1 2160p HQ (CoSMiCSuRFeR Dune 2)",
-            "title": "Dune.Part.Two.2024.2160p.HDR.AV1-CoSMiCSuRFeR",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie circle supergroup suffix (Goki / TAoE)",
+            "title": "Movie.2024.2160p.BluRay.x265-Goki)[TAoE].mkv",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "exact": 7400,
+            "tier": "2160p Compact Bluray Tier 2",
         },
         {
-            "category": "Pure AV1 2160p HQ (UH LOTR)",
-            "title": "LOTR.The.Return.Of.The.King.2003.PROPER.Bluray.2160p.AV1.HDR10.OPUS.7.1-UH",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie compact WEB below disc (edge2020)",
+            "title": "Movie.2024.2160p.WEB-DL.H265-edge2020",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "exact": 5300,
+            "tier": "2160p Compact WEB Tier 1",
         },
         {
-            "category": "Pure AV1 1080p HQ (KIMJI The Hunt)",
-            "title": "The.Hunt.2012.1080p.BluRay.Opus.5.1.AV1-KIMJI",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie small-good disc (PSA)",
+            "title": "Movie.2024.2160p.BluRay.HDR.x265-PSA",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
+            "min_band": 6700,
+            "max_band": 7399,
+            "tier": "2160p Compact Bluray Tier 3",
         },
         {
-            "category": "Pure AV1 2160p HQ (TAoE Dune 2)",
-            "title": "Dune.Part.Two.2024.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.AV1-TAoE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie micro-ok WEB (UTR) below PSA",
+            "title": "Movie.2024.2160p.WEB-DL.x265-UTR",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3200
-        },
-
-        # --- 2. TIERED X265 4K FALLBACKS (Score 2200 - 3775) ---
-        {
-            "category": "Tier 1 4K x265 (hallowed Die My Love)",
-            "title": "Die.My.Love.2025.UHD.BluRay.2160p.DDP.5.1.HDR10+.x265-hallowed",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 3000
+            "exact": 3200,
+            "tier": "2160p Compact WEB Tier 4",
         },
         {
-            "category": "Tier 1 4K x265 (BHDStudio Blade Runner)",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie RARBG disc is allowed and below UTR bluray",
+            "title": "Movie.2024.2160p.BluRay.x265-RARBG",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3000
+            "exact": 6000,
+            "tier": "2160p Compact Bluray Tier 4",
         },
         {
-            "category": "Tier 2 4K WEB-DL (FLUX Arrival)",
-            "title": "Arrival.2016.2160p.WEB-DL.DDP5.1.Atmos.DV.HDR.x265-FLUX",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie d3g disc is allowed under QxR",
+            "title": "Movie.2024.2160p.BluRay.x265-d3g",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 2200,
-            "max_band": 3300
+            "exact": 6700,
+            "tier": "2160p Compact Bluray Tier 3",
         },
         {
-            "category": "Tier 2 4K WEB-DL (SiGMA AMZN)",
-            "title": "Movie.Title.2024.2160p.AMZN.WEB-DL.DDP.5.1.HDR.x265-SiGMA",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie iVy WEB is the low small tier",
+            "title": "Show.Name.S01E01.2160p.WEBRip.x265-iVy",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 2200,
-            "max_band": 3300
+            "exact": 3200,
+            "tier": "2160p Compact WEB Tier 4",
         },
         {
-            "category": "Tier 2 4K WEB-DL (HONE Dune 2)",
-            "title": "Dune.Part.Two.2024.2160p.UHD.WEB-DL.DDP5.1.Atmos.DV.HDR.x265-HONE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie untouched WEB-DL fallback (NTb)",
+            "title": "The.Silence.of.the.Lambs.1991.2160p.WEB-DL.H265-NTb",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 2200,
-            "max_band": 3300
-        },
-
-        # --- 3. ARCHIVAL 1080P BLURAY ENCODES (Score 1400 - 2175) ---
-        {
-            "category": "Archival 1080p BluRay (c0kE Drive)",
-            "title": "Drive.2011.1080p.BluRay.DTS.x264-c0kE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 2175
+            "exact": 2500,
+            "tier": "2160p WEB-DL HEVC",
         },
         {
-            "category": "Archival 1080p BluRay (CtrlHD Akira)",
-            "title": "Akira.1988.1080p.BluRay.FLAC.x264-CtrlHD",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie 1080p compact fallback (Vyndros)",
+            "title": "Movie.2024.1080p.BluRay.x265-Vyndros",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 2175
+            "exact": 1800,
+            "tier": "1080p Compact HEVC Tier 1",
         },
         {
-            "category": "Archival 1080p BluRay (ATELiER Blade Runner)",
-            "title": "Blade.Runner.1982.1080p.BluRay.DTS.x264-ATELiER",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Movie 1080p circle fallback (TAoE)",
+            "title": "Movie.2024.1080p.WEBRip.H.265-TAoE",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 2175
+            "exact": 1100,
+            "tier": "1080p Compact HEVC Tier 2",
         },
         {
-            "category": "Archival 1080p BluRay (SA89 Arrival)",
-            "title": "Arrival.2016.1080p.BluRay.DTS.x264-SA89",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Features cannot invert circle over elite",
+            "title": "Movie.2024.2160p.BluRay.DV.HDR10+.HDR.DDP5.1.Atmos.x265-Tigole",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 2175
+            "min_band": 7400,
+            "max_band": 8099,
+            "tier": "2160p Compact Bluray Tier 2",
         },
-
-        # --- 4. UNTIERED JUNK & LEAKS (< 1000 Cutoff) ---
         {
-            "category": "Untiered 1080p Release without Vetted Group",
-            "title": "Gladiator.2000.1080p.BluRay.x265.TrueHD.Atmos.7.1-RandomGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Untiered transparent disc stays under cutoff",
+            "title": "Movie.2024.2160p.BluRay.DV.HDR.x265-FraMeSToR",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": 999
+            "max_band": 399,
         },
         {
-            "category": "Untrusted Legacy x264 Sparks",
-            "title": "Generic.Movie.1080p.BluRay.x264-SPARKS",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "AV1 disc is rejected",
+            "title": "Movie.2024.2160p.BluRay.AV1.HDR-dAV1nci",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": 999
+            "max_band": 0,
         },
         {
-            "category": "Sub-4K x265 Reject (Dumpstarr Rule)",
-            "title": "Movie.2024.1080p.BluRay.x265-RandomGroup",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Hybrid AV1 tag cannot ride a compact group",
+            "title": "Movie.2024.2160p.BluRay.x265.AV1-Vyndros",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
-
-        # --- 5. BANNED GROUPS & HYGIENE REJECTIONS (-10000) ---
         {
-            "category": "Banned Micro-Group Saon",
-            "title": "Capernaum.2018.1080p.NF.WEB-DL.DDP5.1.AV1-Saon.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Remux is rejected",
+            "title": "Movie.2024.2160p.BluRay.Remux.HEVC-HONE",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
         {
-            "category": "Banned Group YIFY",
-            "title": "Movie.2024.1080p.BluRay.x264-YIFY",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "4K x264 is rejected",
+            "title": "Movie.2024.2160p.BluRay.x264-HONE",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
         {
-            "category": "Banned Group YTS",
-            "title": "Top.Gun.2022.1080p.AV1-YTS.mp4",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "YTS still rejected on a 4K panel",
+            "title": "Movie.2024.2160p.BluRay.x265-YTS",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
         {
-            "category": "Banned Audio Description",
-            "title": "Movie.Title.2024.1080p.WEB-DL.DDP5.1.DVS-FLUX",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "YTS.mx is rejected",
+            "title": "Movie.2024.2160p.BluRay.x265-YTS.mx",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
         {
-            "category": "Banned Line Audio",
-            "title": "Movie.Title.2024.1080p.LINE.Audio.x264-Group",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "MeGusta is rejected",
+            "title": "Movie.2024.2160p.WEBRip.x265-MeGusta",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 0,
         },
         {
-            "category": "Banned Hardcoded Subtitles KORSUB",
-            "title": "Gladiator.II.2024.2160p.KORSUB.HDR.AV1-Group",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "edge2020HD is not edge2020",
+            "title": "Movie.2024.2160p.BluRay.x265-edge2020HD",
+            "profile": movies,
             "expect_pass": False,
-            "max_band": -1
+            "max_band": 399,
         },
         {
-            "category": "Banned CAM",
-            "title": "Dune.Part.Two.2024.CAM.AV1-TestGroup.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Banned Upscale",
-            "title": "Gladiator.II.2024.1080p.Upscale.AV1-Test.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Banned 3D",
-            "title": "Avatar.The.Way.of.Water.2022.3D.1080p.AV1.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Banned Full Disc",
-            "title": "Gladiator.2000.2160p.UHD.COMPLETE.BLURAY.AV1.iso",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Banned Remux LEGi0N",
-            "title": "Die.My.Love.2025.2160p.UHD.BluRay.Remux.HEVC.DV.HDR.Atmos-LEGi0N.mkv",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": -1
-        },
-        {
-            "category": "Repack1 Micro-Ladder",
-            "title": "The.Matrix.1999.2160p.UHD.BluRay.PROPER.TrueHD.Atmos.AV1-ChopperHitler",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Ghostbusters does not match the Ghost encoder",
+            "title": "Ghostbusters.2016.2160p.BluRay.x265-HONE",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3000
+            "exact": 8100,
+            "tier": "2160p Compact Bluray Tier 1",
         },
         {
-            "category": "4K Remaster Tag",
-            "title": "Blade.Runner.1982.Final.Cut.2160p.UHD.BluRay.4K.Remaster.HDR.x265-BHDStudio",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "TV compact WEB outranks the same group's disc",
+            "title": "Show.S01E01.2160p.WEB-DL.H265-HONE",
+            "profile": tv,
             "expect_pass": True,
-            "min_band": 3000
+            "exact": 8100,
+            "tier": "2160p Compact WEB Tier 1",
         },
         {
-            "category": "Boutique Label Criterion Bonus",
-            "title": "Seven.Samurai.1954.2160p.UHD.BluRay.Criterion.Collection.HDR.AV1-ChopperHitler",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "TV disc is the lower tier",
+            "title": "Show.S01E01.2160p.BluRay.x265-HONE",
+            "profile": tv,
             "expect_pass": True,
-            "min_band": 3000
+            "exact": 5300,
+            "tier": "2160p Compact Bluray Tier 1",
         },
-
-        # --- 6. BLOCKER 4 AUDIO-TOKEN IMMUNITY REGRESSION CASES ---
         {
-            "category": "Blocker 4 Case 1: Tier 2 NTb with Atmos/DV/HDR10+",
-            "title": "Movie.2024.2160p.WEB-DL.DV.HDR10+.DDP5.1.Atmos.H265-NTb",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "TV circle WEB (RZeroX)",
+            "title": "Show.S02E04.2160p.WEBRip.H265-RZeroX",
+            "profile": tv,
             "expect_pass": True,
-            "min_band": 2200,
-            "max_band": 3300
+            "exact": 7400,
+            "tier": "2160p Compact WEB Tier 2",
         },
         {
-            "category": "Blocker 4 Case 2: Tier 1 hallowed with DTS-HD MA",
-            "title": "Movie.2023.2160p.BluRay.DTS-HD.MA.7.1.x265-hallowed",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
+            "category": "Bracket prefix still matches",
+            "title": "[TAoE] Movie.2024.2160p.BluRay.x265.mkv",
+            "profile": movies,
             "expect_pass": True,
-            "min_band": 3000
+            "exact": 7400,
+            "tier": "2160p Compact Bluray Tier 2",
         },
-        {
-            "category": "Blocker 4 Case 3: Untiered with DV/Atmos (No Group)",
-            "title": "Movie.2022.2160p.WEB-DL.DV.DDP5.1.Atmos.H.265",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": 999
-        },
-        {
-            "category": "Blocker 4 Case 4: Tier 3 c0kE 1080p BluRay",
-            "title": "Movie.2021.1080p.BluRay.DTS.x264-c0kE",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": True,
-            "min_band": 1400,
-            "max_band": 2175
-        },
-        {
-            "category": "Blocker 4 Case 5: Untiered DVSUX (No False DV Match)",
-            "title": "Movie.2020.2160p.WEB-DL.Atmos.DDP5.1-DVSUX",
-            "profile": "Movies 2160p AV1 HQ",
-            "arr_type": "radarr",
-            "expect_pass": False,
-            "max_band": 999
-        }
     ]
 
     print("================================================================================")
-    print("UNIFIED PURE TIERED QUALITY PROFILE SIMULATION BATTERY REPORT")
+    print("COMPACT 4K HEVC PROFILE SIMULATION")
     print("================================================================================")
 
     passed_tests = 0
     failed_tests = 0
 
-    for case in test_corpus:
-        title = case["title"]
-        profile = case["profile"]
-        arr_type = case["arr_type"]
-        expect_pass = case["expect_pass"]
-        category = case["category"]
-        size_gb = case.get("size_gb")
-
-        score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(conn, title, profile, arr_type, size_gb=size_gb)
-
-        test_success = (passed_cutoff == expect_pass)
+    def check(case):
+        nonlocal passed_tests, failed_tests
+        score, min_score, upgrade_until, passed_cutoff, matched = evaluate_release(
+            conn, case["title"], case["profile"], case.get("arr_type", "radarr")
+        )
+        ok = passed_cutoff == case["expect_pass"]
+        if "exact" in case and score != case["exact"]:
+            ok = False
         if "min_band" in case and score < case["min_band"]:
-            test_success = False
+            ok = False
         if "max_band" in case and score > case["max_band"]:
-            test_success = False
-
-        if test_success:
-            status_str = "[PASS]"
+            ok = False
+        tier_hits = [name for name, _ in matched if name in tier_cfs]
+        if "tier" in case and tier_hits != [case["tier"]]:
+            ok = False
+        status = "PASS" if ok else "FAIL"
+        if ok:
             passed_tests += 1
         else:
-            status_str = "[FAIL]"
             failed_tests += 1
+        print(f"\n[{status}] {case['category']}")
+        print(f"  Title: {case['title']}")
+        print(f"  Score: {score} cutoff {min_score} pass {passed_cutoff} expected {case['expect_pass']}")
+        if tier_hits or "tier" in case:
+            print(f"  Tier: {tier_hits} expected {case.get('tier')}")
+        if not ok:
+            for cf, s in matched:
+                print(f"    - {cf}: {s:+}")
+        return ok
 
-        print(f"\n{status_str} Category: {category}")
-        print(f"  Title:   {title}")
-        print(f"  Profile: {profile} (Min Cutoff: {min_score}, Upgrade Until: {upgrade_until})")
-        print(f"  Score:   {score} -> Clears Profile Minimum: {passed_cutoff} (Expected: {expect_pass})")
-        print(f"  Matched Formats:")
-        for cf, s in matched:
-            print(f"    - {cf:<30}: {s:>+6}")
+    for case in test_corpus:
+        check(case)
 
-    # --- UPGRADE SCORE INCREMENT BATTERY (increment = 1) ---
-    increment_cases = [
-        {"name": "Identical score swap (1400 vs 1400)", "existing": 1400, "new": 1400, "expect_upgrade": False},
-        {"name": "Positive feature upgrade (+50 pts)", "existing": 3800, "new": 3850, "expect_upgrade": True},
-        {"name": "Major AV1 upgrade (1400 x265 vs 3200 AV1)", "existing": 1400, "new": 3200, "expect_upgrade": True},
-        {"name": "Tier upgrade (1400 vs 1700)", "existing": 1400, "new": 1700, "expect_upgrade": True},
-    ]
-    inc_val = conn.execute("SELECT upgrade_score_increment FROM quality_profiles WHERE name = 'Movies 2160p AV1 HQ'").fetchone()[0]
-    print(f"\n=== UPGRADE SCORE INCREMENT BATTERY (increment = {inc_val}) ===")
-    for c in increment_cases:
-        delta = c["new"] - c["existing"]
-        fires = delta >= inc_val
-        passed = (fires == c["expect_upgrade"])
-        print(f"[{'PASS' if passed else 'FAIL'}] {c['name']} (Delta: +{delta}) -> Upgrade: {fires} (Expected: {c['expect_upgrade']})")
-        if not passed:
-            failed_tests += 1
-        else:
+    inc = conn.execute(
+        "SELECT upgrade_score_increment FROM quality_profiles WHERE name = ?",
+        (movies,),
+    ).fetchone()[0]
+    print(f"\n=== UPGRADE INCREMENT ({inc}) ===")
+    for name, existing, new, expect in (
+        ("Same score does not swap", 8100, 8100, False),
+        ("HDR tie-break upgrades inside a tier", 8100, 8280, True),
+        ("1080p compact upgrades to 4K circle", 1800, 7400, True),
+    ):
+        fires = (new - existing) >= inc
+        ok = fires == expect
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}")
+        if ok:
             passed_tests += 1
+        else:
+            failed_tests += 1
 
-    # --- PART 4 BUG 2 ALIAS COVERAGE BATTERY ---
-    print("\n================================================================================")
-    print("PART 4 BUG 2: ALIAS COVERAGE & MONOTONICITY BATTERY (208 ALIASES)")
-    print("================================================================================")
+    elite = ["HONE","Vyndros","edge2020","dkore","GRiMM","TimeDistortion","DarQ","Vialle","Chivaman","Ralphy","YELLO","noxxus","ToNaTo","R1GY3B","bluegreeen","Weasley","DiscoD"]
+    circle = ["QxR","afm72","Bandi","Bluespots","Celdra","FreetheFish","Garshasp","Ghost","Ime","Kappa","Langbard","LION","Panda","MONOLITH","Natty","r00t","RCVR","RZeroX","SAMPA","Silence","t3nzin","Tigole","YOGI","TAoE","Ainz","AJJMIN","ANONAZ","ArcX","bccornfo","DNU","DrainedDay","DUHIT","Erie","Frys","Goki","HxD","jb2049","JBENT","Nostradamus","r0b0t","Species180","TheSickle","xtrem3x","WEM","NAN0","SQS","LSt","SARTRE","honeyvera","MNHD"]
+    webdl = ["NTb","FLUX","CMRG","CMaRG","CMRioG","TEPES","MZABI","Kitsune","SMURF","XEBEC","4KBEC","CEBEX","BYNDR","HHWEB","DUSKLiGHT","playWEB","ABBIE","AJP69","BLUTONiUM","NOSiViD","SiC","SiGMA","RAWR","TOMMY"]
+    small = ["PSA","PSARips","d3g","ELiTE","ReELiTE","SEV","Kira","D0ct0rLew"]
+    micro_ok = ["UTR","Joy","RARBG","iVy"]
+    micro_ban = ["YTS","YIFY","MeGusta","GalaxyRG","Pahe","TGx","aXXo","ION10","ION265","RMTeam","QxC","EVO","HDHub4u"]
 
-    tier1_aliases = {
-        'ChopperHitler': (['CHOPPERHITLER', 'ChopperHitler', 'chopperhitler'], '2160p.UHD.BluRay.AV1'),
-        'dAV1nci': (['dAV1nci', 'DAV1NCI', 'dav1nci'], '2160p.UHD.BluRay.AV1'),
-        'RandH': (['RandH', 'RH', 'R&H', 'R and H', 'randh', 'rh'], '2160p.UHD.BluRay.AV1'),
-        'KIMJI': (['KIMJI', 'kimji'], '2160p.UHD.BluRay.AV1'),
-        'UH': (['UH', 'uh'], '2160p.UHD.BluRay.AV1'),
-        'TAoE': (['TAoE', 'taoe'], '2160p.UHD.BluRay.AV1'),
-        'CoSMiCSuRFeR': (['CoSMiCSuRFeR', 'cosmicsurfer'], '2160p.UHD.BluRay.AV1'),
-        'PRL': (['PRL', 'prl'], '2160p.UHD.BluRay.AV1'),
-        'CHD': (['CHD', 'chd'], '2160p.UHD.BluRay.AV1'),
-        'TiZU': (['TiZU', 'tizu'], '2160p.UHD.BluRay.AV1'),
-        'CtrlHD': (['CtrlHD', 'ctrlhd'], '2160p.BluRay'),
-        'DON': (['DON', 'don'], '2160p.BluRay'),
-        'MainFrame': (['MainFrame', 'mainframe'], '2160p.BluRay'),
-        'W4NK3R': (['W4NK3R', 'w4nk3r'], '2160p.BluRay'),
-        'REBORN': (['REBORN', 'reborn'], '2160p.BluRay'),
-        'SA89': (['SA89', 'sa89'], '2160p.BluRay'),
-        'SoLaR': (['SoLaR', 'solar'], '2160p.BluRay'),
-        'dkore': (['dkore', 'DKORE'], '2160p.BluRay.x265'),
-        'BHDStudio': (['BHDStudio', 'bhdstudio'], '2160p.BluRay'),
-        'hallowed': (['hallowed', 'HALLOWED'], '2160p.BluRay'),
-    }
-
-    tier2_aliases = {
-        'FLUX': (['FLUX', 'flux'], '2160p.WEB-DL'),
-        'NTb': (['NTb', 'ntb'], '2160p.WEB-DL'),
-        'TheFarm': (['TheFarm', 'thefarm'], '2160p.WEB-DL'),
-        'BYNDR': (['BYNDR', 'byndr'], '2160p.WEB-DL'),
-        'CMRG': (['CMRG', 'cmrg', 'CMaRG', 'CMRioG'], '2160p.WEB-DL'),
-        'Kitsune': (['Kitsune', 'kitsune'], '2160p.WEB-DL'),
-        'playWEB': (['playWEB', 'playweb'], '2160p.WEB-DL'),
-        'TEPES': (['TEPES', 'tepes'], '2160p.WEB-DL'),
-        'ABBIE': (['ABBIE', 'ABBiE', 'abbie'], '2160p.WEB-DL'),
-        'AJP69': (['AJP69', 'ajp69'], '2160p.WEB-DL'),
-        'APEX': (['APEX', 'apex'], '2160p.WEB-DL'),
-        'BLUTONiUM': (['BLUTONiUM', 'blutonium'], '2160p.WEB-DL'),
-        'CRFW': (['CRFW', 'crfw'], '2160p.WEB-DL'),
-        'CRUD': (['CRUD', 'crud'], '2160p.WEB-DL'),
-        'GNOME': (['GNOME', 'gnome'], '2160p.WEB-DL'),
-        'KiNGS': (['KiNGS', 'kings'], '2160p.WEB-DL'),
-        'MADSKY': (['MADSKY', 'madsky'], '2160p.WEB-DL'),
-        'NOSiViD': (['NOSiViD', 'nosivid'], '2160p.WEB-DL'),
-        'NTG': (['NTG', 'ntg'], '2160p.WEB-DL'),
-        'RAWR': (['RAWR', 'rawr'], '2160p.WEB-DL'),
-        'SiC': (['SiC', 'sic'], '2160p.WEB-DL'),
-        'ZoroSenpai': (['ZoroSenpai', 'zorosenpai'], '2160p.WEB-DL'),
-        'CasStudio': (['CasStudio', 'casstudio'], '2160p.WEB-DL'),
-        'monkee': (['monkee', 'MONKEE'], '2160p.WEB-DL'),
-        'QOQ': (['QOQ', 'qoq'], '2160p.WEB-DL'),
-        'RTN': (['RTN', 'rtn'], '2160p.WEB-DL'),
-        'T6D': (['T6D', 't6d'], '2160p.WEB-DL'),
-        'TOMMY': (['TOMMY', 'tommy'], '2160p.WEB-DL'),
-        'ViSUM': (['ViSUM', 'visum'], '2160p.WEB-DL'),
-        'dB': (['dB', 'db'], '2160p.WEB-DL'),
-        'MiU': (['MiU', 'miu'], '2160p.WEB-DL'),
-        'MZABI': (['MZABI', 'mzabi'], '2160p.WEB-DL'),
-        'PHOENiX': (['PHOENiX', 'phoenix'], '2160p.WEB-DL'),
-        'SbR': (['SbR', 'sbr'], '2160p.WEB-DL'),
-        'SMURF': (['SMURF', 'smurf'], '2160p.WEB-DL'),
-        'XEBEC': (['XEBEC', 'xebec', '4KBEC', 'CEBEX'], '2160p.WEB-DL'),
-        'SiGMA': (['SiGMA', 'SIGMA', 'sigma'], '2160p.WEB-DL'),
-        'EDPH': (['EDPH', 'edph'], '2160p.BluRay'),
-        'TDD': (['TDD', 'tdd'], '2160p.BluRay'),
-        'Chotab': (['Chotab', 'chotab'], '2160p.BluRay'),
-        'D-Z0N3': (['D-Z0N3', 'd-z0n3'], '2160p.BluRay'),
-        'c0kE': (['c0kE', 'c0ke'], '2160p.BluRay'),
-        'ATELiER': (['ATELiER', 'atelier'], '2160p.BluRay'),
-        'BSTD': (['BSTD', 'bstd'], '2160p.BluRay'),
-        'BlzT': (['BlzT', 'blzt'], '2160p.BluRay'),
-        'ESiR': (['ESiR', 'esir'], '2160p.BluRay'),
-        'LESTiN': (['LESTiN', 'lestin'], '2160p.BluRay'),
-        'NCmt': (['NCmt', 'ncmt'], '2160p.BluRay'),
-        'Softboat': (['Softboat', 'softboat'], '2160p.BluRay'),
-        'faBR': (['faBR', 'fabr'], '2160p.BluRay'),
-        'iFT': (['iFT', 'ift'], '2160p.BluRay'),
-        'HiDt': (['HiDt', 'hidt'], '2160p.BluRay'),
-        'HQMUX': (['HQMUX', 'hqmux'], '2160p.BluRay'),
-        'RandomBytes': (['RandomBytes', 'randombytes'], '2160p.BluRay'),
-        'PTer': (['PTer', 'pter'], '2160p.BluRay'),
-        'SPHD': (['SPHD', 'sphd'], '2160p.BluRay'),
-        'WEBDV': (['WEBDV', 'webdv'], '2160p.WEB-DL'),
-        'HONE': (['HONE', 'hone'], '2160p.WEB-DL')
-    }
-
-    tier3_aliases = {
-        'BBQ': (['BBQ', 'bbq'], '1080p.BluRay.x264'),
-        'BMF': (['BMF', 'bmf'], '1080p.BluRay.x264'),
-        'CRiSC': (['CRiSC', 'crisc'], '1080p.BluRay.x264'),
-        'Dariush': (['Dariush', 'dariush'], '1080p.BluRay.x264'),
-        'decibeL': (['decibeL', 'decibel'], '1080p.BluRay.x264'),
-        'EA': (['EA', 'ea'], '1080p.BluRay.x264'),
-        'HiSD': (['HiSD', 'hisd'], '1080p.BluRay.x264'),
-        'LolHD': (['LolHD', 'lolhd'], '1080p.BluRay.x264'),
-        'TnP': (['TnP', 'tnp'], '1080p.BluRay.x264'),
-        'ZQ': (['ZQ', 'zq'], '1080p.BluRay.x264'),
-        'coffee': (['coffee', 'COFFEE'], '1080p.BluRay.x264'),
-        'TeamSyndicate': (['TeamSyndicate', 'teamsyndicate'], '1080p.BluRay.x264'),
-        'playHD': (['playHD', 'playhd'], '1080p.BluRay.x264'),
-        'sbR': (['sbR', 'SBR'], '1080p.BluRay.x264'),
-        'VietHD': (['VietHD', 'viethd'], '1080p.BluRay.x264'),
-        'Geek': (['Geek', 'geek'], '1080p.BluRay.x264'),
-        'LoRD': (['LoRD', 'lord'], '1080p.BluRay.x264'),
-        'HiFi': (['HiFi', 'hifi'], '1080p.BluRay.x264'),
-        'EbP': (['EbP', 'ebp'], '1080p.BluRay.x264'),
-        'TayTO': (['TayTO', 'tayto'], '1080p.BluRay.x264')
-    }
-
-    tier_cf_names = {
-        'AV1 Quality Encoders', '2160p Quality Tier 1', '2160p Quality Tier 2', '2160p Balanced Tier 1',
-        '2160p Balanced Tier 2', '2160p Balanced Tier 3', 'WEB-DL Tier 1', 'WEB-DL Tier 2', 'WEB-DL Tier 3',
-        '2160p Quality Tier 3', '2160p Quality Tier 4', 'HONE Bluray', 'HONE WEB',
-        '1080p Quality Tier 1', '1080p Quality Tier 2', '1080p Quality Tier 3', '1080p Balanced Tier 1', '1080p Balanced Tier 2'
-    }
-
-    total_alias_count = 0
+    print("\n=== GROUP LADDER ===")
     anomalies = []
+    for group in elite:
+        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact Bluray Tier 1"] or score != 8100 or not passed:
+            anomalies.append((group, "elite-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
+        web = f"Show.S01E01.2160p.WEB-DL.H265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, web, tv)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact WEB Tier 1"] or score != 8100:
+            anomalies.append((group, "elite-web", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in circle:
+        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact Bluray Tier 2"] or score != 7400:
+            anomalies.append((group, "circle-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in small:
+        title = f"Movie.2024.2160p.BluRay.x265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact Bluray Tier 3"] or score != 6700:
+            anomalies.append((group, "small-disc", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in micro_ok:
+        title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p Compact WEB Tier 4"] or score != 3200:
+            anomalies.append((group, "micro-ok-web", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in webdl:
+        title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        if hits != ["2160p WEB-DL HEVC"] or score != 2500:
+            anomalies.append((group, "webdl", score, hits, [(n, s) for n, s in matched if s < 0]))
+    for group in micro_ban:
+        title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
+        score, _, _, passed, matched = evaluate_release(conn, title, movies)
+        if passed or score > 0:
+            anomalies.append((group, "micro-ban", score, [n for n, _ in matched], []))
 
-    all_tier_tests = [
-        (tier1_aliases, "Tier 1", 3000),
-        (tier2_aliases, "Tier 2", 2200),
-        (tier3_aliases, "Tier 3", 1400)
-    ]
+    # Negative boundaries
+    for title in (
+        "Movie.2024.2160p.BluRay.x265-XYZRH",
+        "Movie.2024.2160p.BluRay.x265-edge2020HD",
+        "The.Silence.of.the.Lambs.1991.2160p.BluRay.x265-NTb",
+    ):
+        score, _, _, _, matched = evaluate_release(conn, title, movies)
+        hits = [n for n, _ in matched if n in tier_cfs]
+        # NTb bluray must not take the WEB-DL tier (source is bluray). Silence must not take the circle.
+        if title.endswith("-NTb"):
+            if hits:
+                anomalies.append(("NTb-bluray", "negative", score, hits, []))
+        elif hits:
+            anomalies.append((title, "negative", score, hits, []))
 
-    for alias_map, t_name, min_expected in all_tier_tests:
-        for group, (aliases, media_tag) in alias_map.items():
-            for alias in aliases:
-                total_alias_count += 1
-                synthetic_title = f"Movie.2024.{media_tag}-{alias}"
-                score, min_s, upg, passed, matched = evaluate_release(conn, synthetic_title, "Movies 2160p AV1 HQ")
-
-                matched_tier_cfs = [m for m in matched if m[0] in tier_cf_names]
-                if len(matched_tier_cfs) != 1 or score < min_expected:
-                    anomalies.append({
-                        "group": group,
-                        "alias": alias,
-                        "tier": t_name,
-                        "matched_tier_cfs": matched_tier_cfs,
-                        "score": score,
-                        "expected_score": min_expected
-                    })
-
-    # Negative short alias boundary test
-    neg_title = "Movie.2024.2160p.BluRay-XYZRH"
-    score_neg, _, _, _, matched_neg = evaluate_release(conn, neg_title, "Movies 2160p AV1 HQ")
-    neg_tier_cfs = [m for m in matched_neg if m[0] in tier_cf_names]
-    if len(neg_tier_cfs) != 0:
-        anomalies.append({"group": "XYZRH", "alias": "XYZRH", "tier": "Negative", "matched": neg_tier_cfs})
-
-    print(f"Total Canonical Groups: {len(tier1_aliases) + len(tier2_aliases) + len(tier3_aliases)}")
-    print(f"Total Aliases Screened: {total_alias_count}")
-    print(f"Anomalies (0 or >=2 tier matches): {len(anomalies)}")
-
+    print(f"Aliases screened: {len(elite) + len(circle) + len(small) + len(micro_ok) + len(webdl) + len(micro_ban)}")
+    print(f"Anomalies: {len(anomalies)}")
     if anomalies:
-        for a in anomalies:
-            print(f"  [ANOMALY] {a}")
+        for row in anomalies:
+            print("  [ANOMALY]", row)
         failed_tests += len(anomalies)
     else:
-        print("[PASS] 100% of all aliases matched EXACTLY ONE tier CF with identical score!")
+        print("[PASS] Every compact alias landed on exactly one tier")
         passed_tests += 1
 
     print("\n================================================================================")
-    print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed (Total: {passed_tests + failed_tests})")
+    print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
     print("================================================================================")
-
     return failed_tests == 0
+
 
 if __name__ == "__main__":
     success = run_simulation_battery()
