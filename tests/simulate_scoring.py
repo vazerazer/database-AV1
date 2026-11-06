@@ -8,7 +8,10 @@ smaller disc such as QxR, then compact streaming WEB, then a PSA micro, then
 a big WEB-DL. Dolby Vision is +1000, HDR and HDR10+ are +500, and Dolby
 Digital + is +125. The class gap is wider than that stack. 4K Blu-ray with
 no HDR is rejected. TrueHD and the DTS-HD formats are rejected for direct
-play. 4K quality definitions cap bitrate at 200 MB/min. There is no gigabyte
+play. CAM, hardcoded subtitles, 3D, upscales, extras, sing-along, audio
+description, and a non-HEVC codec on a tiered disc miss the same way.
+A tiered Dolby Vision WEB with no HDR token still clears the cutoff.
+4K quality definitions cap bitrate at 200 MB/min. There is no gigabyte
 penalty, so a long movie at a mid-size bitrate keeps its score.
 TV 2160p HEVC Compact still prefers WEB over disc. Its scores are unchanged.
 Movies Anywhere does not flip a WEB over a disc.
@@ -996,6 +999,904 @@ def run_simulation_battery():
     return failed_tests == 0
 
 
+def _compact_parity_cases():
+    """Dumpstarr/Dictionarry edge cases for Movies 2160p HEVC Compact.
+
+    Hard rejects on a tiered HDR disc have to miss cutoff 3000. A -10000
+    penalty does not, because the class base is 38400. Dolby Vision WEB
+    without an HDR token stays grabable for a tiered group. German scene
+    dubs with a channel count (DDP5.1.DL) are dubs. Disney+ and Apple TV+
+    still count when the plus sign sits against a dot.
+    """
+    out = []
+
+    def add(name, title, **kw):
+        if "absent" in kw:
+            kw["not"] = kw.pop("absent")
+        if "not_" in kw:
+            kw["not"] = kw.pop("not_")
+        out.append({"name": name, "title": title, **kw})
+
+    elite = M_BR1 + M_HDR
+    ban = elite - 100000
+    stream = M_STREAM + M_HDR
+
+    # Each of these is a real reject stacked on an elite HDR encode.
+    # The tier still matches. The penalty has to clear it.
+    for name, title, flag in (
+        ("Elite HDR CAM misses cutoff", "Movie.2024.2160p.BluRay.HDR.CAM.x265-HONE", "CAM"),
+        ("Elite HDR HDCAM misses cutoff", "Movie.2024.2160p.BluRay.HDR.HDCAM.x265-HONE", "CAM"),
+        ("Elite HDR TELESYNC misses cutoff", "Movie.2024.2160p.BluRay.HDR.TELESYNC.x265-hallowed", "CAM"),
+        ("Elite HDR TS misses cutoff", "Movie.2024.2160p.BluRay.HDR.TS.x265-HONE", "CAM"),
+        ("Elite HDR SCREENER misses cutoff", "Movie.2024.2160p.BluRay.HDR.SCREENER.x265-HONE", "CAM"),
+        ("Elite HDR WORKPRINT misses cutoff", "Movie.2024.2160p.BluRay.HDR.WORKPRINT.x265-HONE", "CAM"),
+        ("Elite HDR ProRes misses cutoff", "Movie.2024.2160p.BluRay.HDR.ProRes.x265-HONE", "CAM"),
+        ("Elite HDR HC misses cutoff", "Movie.2024.2160p.BluRay.HDR.HC.x265-HONE", "Hardcoded Subtitles"),
+        ("Elite HDR HARDSUB misses cutoff", "Movie.2024.2160p.BluRay.HDR.HARDSUB.x265-HONE", "Hardcoded Subtitles"),
+        ("Elite HDR HARDSUBBED misses cutoff", "Movie.2024.2160p.BluRay.HDR.HARDSUBBED.x265-HONE", "Hardcoded Subtitles"),
+        ("Elite HDR KORSUB misses cutoff", "Movie.2024.2160p.BluRay.HDR.KORSUB.x265-HONE", "Hardcoded Subtitles"),
+        ("Elite HDR VFF.HC misses cutoff", "Movie.2024.2160p.BluRay.HDR.VFF.HC.x265-HONE", "Hardcoded Subtitles"),
+        ("Subbed before the resolution misses cutoff", "Movie.2024.Subbed.2160p.BluRay.HDR.x265-HONE", "Hardcoded Subtitles"),
+        ("Elite HDR 3D misses cutoff", "Movie.2024.2160p.BluRay.HDR.3D.x265-HONE", "3D"),
+        ("Elite HDR Upscaled misses cutoff", "Movie.2024.2160p.BluRay.HDR.Upscaled.x265-HONE", "Upscale"),
+        ("Elite HDR AI Enhanced misses cutoff", "Movie.2024.2160p.BluRay.HDR.AI.Enhanced.HEVC-HONE", "Upscale"),
+        ("Elite HDR Extras misses cutoff", "Movie.2024.2160p.BluRay.HDR.Extras.x265-HONE", "Extras"),
+        ("Elite HDR Bonus misses cutoff", "Movie.2024.2160p.BluRay.HDR.Bonus.x265-HONE", "Extras"),
+        ("Elite HDR Deleted Scenes misses cutoff", "Movie.2024.2160p.BluRay.HDR.Deleted.Scenes.x265-HONE", "Extras"),
+        ("Elite HDR Extended Clip is extras and misses cutoff", "Movie.2024.2160p.BluRay.HDR.Extended.Clip.x265-HONE", "Extras"),
+        ("Elite HDR Sing Along misses cutoff", "Movie.2024.2160p.BluRay.HDR.Sing.Along.x265-HONE", "Sing Along"),
+        ("Elite HDR Audio Description misses cutoff", "Movie.2024.2160p.BluRay.HDR.Audio.Description.x265-HONE", "Audio Description"),
+        ("Elite HDR ASL misses cutoff", "Movie.2024.2160p.BluRay.HDR.ASL.x265-HONE", "Audio Description"),
+        ("Elite HDR DVS misses cutoff", "Movie.2024.2160p.BluRay.HDR.DVS.x265-HONE", "Audio Description"),
+        ("Elite HDR BSL misses cutoff", "Movie.2024.2160p.BluRay.HDR.BSL.x265-HONE", "Audio Description"),
+        ("AVC named beside x265 misses cutoff", "Movie.2024.2160p.BluRay.HDR.AVC.x265-HONE", "x264 (2160p)"),
+        ("VP9 named beside x265 misses cutoff", "Movie.2024.2160p.BluRay.HDR.VP9.x265-HONE", "VP9"),
+        ("VVC named beside HEVC misses cutoff", "Movie.2024.2160p.BluRay.HDR.HEVC.VVC-HONE", "VVC"),
+    ):
+        add(
+            name,
+            title,
+            exact=ban,
+            passes=False,
+            has=[flag, "2160p Compact Bluray Tier 1", "HDR"],
+            absent=["2160p SDR Bluray", "Dolby Vision (Without Fallback)"],
+        )
+    add(
+        "Special Features is extras and also the loose Special token",
+        "Movie.2024.2160p.BluRay.HDR.Special.Features.x265-HONE",
+        exact=ban + 20,
+        passes=False,
+        has=["Extras", "Special Edition", "2160p Compact Bluray Tier 1"],
+        absent=["2160p SDR Bluray"],
+    )
+
+    add(
+        "English Subbed after the resolution is not hardcoded",
+        "Movie.2024.2160p.BluRay.HDR.English.Subbed.x265-HONE",
+        exact=elite,
+        passes=True,
+        has=["2160p Compact Bluray Tier 1"],
+        absent=["Hardcoded Subtitles", "CAM", "Extras"],
+    )
+    add(
+        "Anchorman is not hardcoded",
+        "Anchorman.The.Legend.of.Ron.Burgundy.2004.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        passes=True,
+        absent=["Hardcoded Subtitles", "CAM", "Banned Groups"],
+    )
+    add(
+        "The Machinist is not hardcoded",
+        "The.Machinist.2004.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        passes=True,
+        absent=["Hardcoded Subtitles"],
+    )
+    add(
+        "Chapter is not hardcoded and not a special edition",
+        "John.Wick.Chapter.4.2023.2160p.BluRay.HDR.DDP5.1.x265-HONE",
+        exact=M_BR1 + M_HDR + M_DDP,
+        passes=True,
+        absent=["Hardcoded Subtitles", "Special Edition", "Extras", "CAM"],
+    )
+    add(
+        "A plain elite HDR disc matches none of the hard rejects",
+        "Movie.2024.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        passes=True,
+        has=["2160p Compact Bluray Tier 1", "HDR", "10-bit Depth"],
+        absent=[
+            "CAM", "Hardcoded Subtitles", "3D", "Upscale", "Extras", "Sing Along",
+            "Audio Description", "x264 (2160p)", "AV1", "VP9", "VVC", "Full Disc",
+            "Remux", "Foreign Dub", "2160p SDR Bluray", "Banned Groups",
+            "Dolby Vision (Without Fallback)", "Special Edition",
+        ],
+    )
+
+    # HDR implies one 10-bit score. A second 10bit token does not add another +30.
+    add(
+        "HDR implies 10-bit without a 10bit token",
+        "Movie.2024.2160p.BluRay.HDR.x265-hallowed",
+        exact=elite,
+        has=["10-bit Depth", "HDR"],
+        absent=["HDR10+", "8-bit Depth"],
+    )
+    add(
+        "Explicit 10bit next to HDR is still one 10-bit score",
+        "Movie.2024.2160p.BluRay.HDR.10bit.x265-hallowed",
+        exact=elite,
+        has=["10-bit Depth", "HDR"],
+    )
+    add(
+        "8-bit token is a tie-break, not a ban",
+        "Movie.2024.2160p.BluRay.8bit.HDR.x265-dkore",
+        exact=elite - 800,
+        passes=True,
+        has=["8-bit Depth", "HDR", "2160p Compact Bluray Tier 1"],
+        absent=["2160p SDR Bluray"],
+    )
+
+    # Editions. DC after the year is a director's cut. Words before the year are not.
+    for name, title in (
+        ("Directors Cut is a special edition", "Movie.2024.2160p.BluRay.HDR.Directors.Cut.x265-HONE"),
+        ("DC token is a special edition", "Movie.2024.2160p.BluRay.HDR.DC.x265-HONE"),
+        ("Extended is a special edition", "Movie.2024.2160p.BluRay.HDR.Extended.x265-HONE"),
+        ("Unrated is a special edition", "Movie.2024.2160p.BluRay.HDR.Unrated.x265-HONE"),
+        ("Uncut after the year is a special edition", "Movie.2024.2160p.BluRay.HDR.Uncut.x265-HONE"),
+        ("Special Edition words score once", "Movie.2024.2160p.BluRay.HDR.Special.Edition.x265-HONE"),
+    ):
+        add(name, title, exact=elite + 20, passes=True, has=["Special Edition"], absent=["Extras", "2160p SDR Bluray"])
+    add(
+        "Uncut Gems before the year is not a special edition",
+        "Uncut.Gems.2019.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        absent=["Special Edition", "Extras"],
+    )
+    add(
+        "Dune Part Two is not a special edition",
+        "Dune.Part.Two.2024.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        absent=["Special Edition", "Extras", "3D"],
+    )
+    add(
+        "The Batman is not a special edition",
+        "The.Batman.2022.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        absent=["Special Edition"],
+    )
+    add(
+        "Theatrical is not a special edition",
+        "Movie.2024.2160p.BluRay.Theatrical.HDR.x265-HONE",
+        exact=elite,
+        absent=["Special Edition", "Extras"],
+    )
+    add(
+        "Open Matte is not a special edition",
+        "Movie.2024.2160p.BluRay.Open.Matte.HDR.x265-HONE",
+        exact=elite,
+        absent=["Special Edition"],
+    )
+    add(
+        "Extended Clip is extras, not a special edition",
+        "Movie.2024.2160p.BluRay.Extended.Clip.HDR.x265-HONE",
+        exact=ban,
+        passes=False,
+        has=["Extras"],
+        absent=["Special Edition"],
+    )
+
+    # Disc vs WEB, encode vs full disc.
+    add(
+        "HEVC word on a Blu-ray encode is not a full disc",
+        "Movie.2024.2160p.UHD.BluRay.HEVC.HDR.x265-BHDStudio",
+        exact=elite,
+        passes=True,
+        has=["2160p Compact Bluray Tier 1"],
+        absent=["Full Disc", "Remux", "2160p Compact WEB Tier 1"],
+    )
+    add(
+        "COMPLETE next to HEVC is an encode, not a full disc",
+        "Movie.2024.2160p.UHD.BluRay.COMPLETE.HDR.HEVC-HONE",
+        exact=elite,
+        passes=True,
+        absent=["Full Disc", "Remux"],
+    )
+    add(
+        "BD50 next to HEVC is an encode, not a full disc",
+        "Movie.2024.2160p.BluRay.BD50.HDR.HEVC-HONE",
+        exact=elite,
+        passes=True,
+        absent=["Full Disc"],
+    )
+    add(
+        "COMPLETE UHD Blu-ray without a codec is a full disc",
+        "Movie.2024.COMPLETE.UHD.BLURAY-TERRA",
+        passes=False,
+        has=["Full Disc"],
+        absent=["2160p Compact Bluray Tier 1", "2160p Compact WEB Tier 1", "HDR"],
+    )
+    add(
+        "COMPLETE UHD Blu-ray HDR without a codec misses cutoff",
+        "Movie.2024.COMPLETE.UHD.BLURAY.HDR-HONE",
+        passes=False,
+        has=["Full Disc", "HDR"],
+        absent=["2160p Compact Bluray Tier 1", "2160p SDR Bluray"],
+    )
+    add(
+        "BD50 without a codec is a full disc",
+        "Movie.2024.UHD.BluRay.BD50-GROUP",
+        passes=False,
+        has=["Full Disc"],
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "UHD66 without a codec is a full disc",
+        "Movie.2024.UHD66.BluRay-GROUP",
+        passes=False,
+        has=["Full Disc"],
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "ISO without a codec is a full disc",
+        "Movie.2024.2160p.BluRay.ISO-HONE",
+        passes=False,
+        has=["Full Disc"],
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "REMUX does not take a compact tier",
+        "Movie.2024.2160p.UHD.BluRay.REMUX.HDR.HEVC-HONE",
+        passes=False,
+        has=["Remux", "HDR"],
+        absent=["2160p Compact Bluray Tier 1", "Full Disc", "2160p SDR Bluray"],
+    )
+    add(
+        "HONE Blu-ray is not a WEB tier",
+        "Movie.2024.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        tier="2160p Compact Bluray Tier 1",
+        absent=["2160p Compact WEB Tier 1", "2160p Compact Streaming WEB-DL", "2160p WEB-DL HEVC"],
+    )
+    add(
+        "HONE WEB is not a Blu-ray tier",
+        "Movie.2024.2160p.WEB-DL.HDR.x265-HONE",
+        exact=M_WEB1 + M_HDR,
+        tier="2160p Compact WEB Tier 1",
+        absent=["2160p Compact Bluray Tier 1", "2160p SDR Bluray", "2160p Compact Streaming WEB-DL"],
+    )
+    add(
+        "Scene WEB token is WEB-DL",
+        "Movie.2024.2160p.WEB.HDR.H.265-HONE",
+        exact=M_WEB1 + M_HDR,
+        tier="2160p Compact WEB Tier 1",
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "WEBRip is not a disc tier",
+        "Movie.2024.2160p.WEBRip.HDR.x265-PSA",
+        exact=M_WEB3 + M_HDR,
+        tier="2160p Compact WEB Tier 3",
+        absent=["2160p Compact Bluray Tier 3"],
+    )
+    add(
+        "FLUX on Blu-ray is not streaming and not elite disc",
+        "Movie.2024.2160p.BluRay.HDR.x265-FLUX",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Streaming WEB-DL", "2160p Compact Bluray Tier 1", "2160p Compact WEB Tier 1"],
+    )
+    add(
+        "HDTV is not a compact tier",
+        "Movie.2024.2160p.HDTV.HDR.x265-HONE",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 1", "2160p Compact WEB Tier 1"],
+    )
+
+    # German scene dubs, including a channel count between the codec and DL.
+    dub_web = 30 + 500 + 125 - 750
+    add(
+        "German DDP5.1.DL WEB GHOST is a dub and not circle WEB",
+        "Movie.2024.GERMAN.DDP5.1.DL.2160p.WEB.HDR.x265-GHOST",
+        exact=dub_web,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital +", "HDR"],
+        absent=["CAM", "2160p Compact WEB Tier 2", "2160p Compact Bluray Tier 2", "2160p SDR Bluray"],
+    )
+    add(
+        "German DDP.5.1.DL WEB GHOST is a dub and not circle WEB",
+        "Movie.2024.German.DDP.5.1.DL.2160p.WEB.HDR.x265-GHOST",
+        exact=dub_web,
+        passes=False,
+        has=["Foreign Dub"],
+        absent=["2160p Compact WEB Tier 2", "CAM"],
+    )
+    add(
+        "German EAC3.5.1.DL WEB GHOST is a dub and not circle WEB",
+        "Movie.2024.German.EAC3.5.1.DL.2160p.WEB.x265-GHOST",
+        exact=125 - 750,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital +"],
+        absent=["2160p Compact WEB Tier 2", "Dolby Digital", "CAM"],
+    )
+    add(
+        "German DD+.5.1.DL WEB GHOST is a dub",
+        "Movie.2024.German.DD+.5.1.DL.2160p.WEB.HDR.x265-GHOST",
+        exact=dub_web,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital +"],
+        absent=["2160p Compact WEB Tier 2"],
+    )
+    add(
+        "German EC3.DL WEB GHOST is a dub",
+        "Movie.2024.German.EC3.DL.2160p.WEB.HDR.x265-GHOST",
+        exact=dub_web,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital +"],
+        absent=["2160p Compact WEB Tier 2", "Dolby Digital"],
+    )
+    add(
+        "German DD5.1.DL WEB GHOST is a dub",
+        "Movie.2024.German.DD5.1.DL.2160p.WEB.HDR.x265-GHOST",
+        exact=30 + 500 + 20 - 750,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital"],
+        absent=["Dolby Digital +", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "German AC3.5.1.DL Blu-ray keeps the elite tier",
+        "Movie.2024.German.AC3.5.1.DL.2160p.BluRay.HDR.x265-hallowed",
+        exact=M_BR1 + M_HDR + 20 - 750,
+        passes=True,
+        has=["2160p Compact Bluray Tier 1", "Foreign Dub", "Dolby Digital"],
+        absent=["CAM", "Full Disc", "Dolby Digital +", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "German DDP5.1.DL on a Ghost Blu-ray stays circle disc",
+        "Movie.2024.German.DDP5.1.DL.2160p.BluRay.HDR.x265-Ghost",
+        exact=M_BR2 + M_HDR + M_DDP - 750,
+        passes=True,
+        tier="2160p Compact Bluray Tier 2",
+        has=["Foreign Dub", "Dolby Digital +"],
+        absent=["CAM", "2160p Compact WEB Tier 2", "Full Disc"],
+    )
+    add(
+        "Italian AC3.MD WEB GHOST is a dub and not circle",
+        "Movie.2024.Italian.AC3.MD.2160p.WEB.HDR.x265-GHOST",
+        exact=30 + 500 + 20 - 750,
+        passes=False,
+        has=["Foreign Dub", "Dolby Digital"],
+        absent=["CAM", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "Spanish DL WEB GHOST is a dub",
+        "Movie.2024.Spanish.DL.2160p.WEB.x265-GHOST",
+        exact=-750,
+        passes=False,
+        has=["Foreign Dub"],
+        absent=["CAM", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "French AC3.LD Blu-ray Ghost stays circle",
+        "Movie.2024.FRENCH.AC3.LD.2160p.BluRay.HDR.x265-Ghost",
+        exact=M_BR2 + M_HDR + 20 - 750,
+        passes=True,
+        tier="2160p Compact Bluray Tier 2",
+        has=["Foreign Dub"],
+        absent=["CAM", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "German DDP5.1 WEB-DL without a dub tag is not a dub",
+        "Movie.2024.German.DDP5.1.2160p.WEB-DL.HDR.x265-FLUX",
+        exact=stream + M_DDP,
+        passes=True,
+        tier="2160p Compact Streaming WEB-DL",
+        absent=["Foreign Dub", "CAM", "2160p Compact WEB Tier 2"],
+    )
+    add(
+        "German.WEB-DL is not a dub",
+        "Movie.2024.German.WEB-DL.2160p.HDR.x265-FLUX",
+        exact=stream,
+        passes=True,
+        absent=["Foreign Dub", "CAM"],
+    )
+    add(
+        "WEB-DL.German is not a dub",
+        "Movie.2024.WEB-DL.German.2160p.HDR.x265-FLUX",
+        exact=stream,
+        passes=True,
+        absent=["Foreign Dub"],
+    )
+    add(
+        "GERMAN.ML is not a dub",
+        "Movie.2024.GERMAN.ML.2160p.BluRay.HDR.x265-hallowed",
+        exact=elite,
+        passes=True,
+        absent=["Foreign Dub", "CAM", "Full Disc"],
+    )
+    add(
+        "English GHOST WEB stays circle",
+        "Movie.2024.2160p.WEB-DL.HDR.x265-GHOST",
+        exact=M_WEB2 + M_HDR,
+        passes=True,
+        tier="2160p Compact WEB Tier 2",
+        absent=["Foreign Dub", "CAM"],
+    )
+    add(
+        "GHOSTS is not the Ghost encoder",
+        "Movie.2024.2160p.BluRay.HDR.x265-GHOSTS",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 2", "2160p Compact WEB Tier 2", "Foreign Dub"],
+    )
+    add(
+        "Ghostbusters is not the Ghost encoder",
+        "Ghostbusters.2016.2160p.BluRay.HDR.x265-HONE",
+        exact=elite,
+        tier="2160p Compact Bluray Tier 1",
+        absent=["2160p Compact Bluray Tier 2"],
+    )
+
+    # Audio. Lossy DTS beside DD+ keeps DTS. HD audio beside DD+ still rejects.
+    add(
+        "TrueHD Atmos DDP rejects on TrueHD and not on DD+",
+        "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.DDP5.1.x265-hallowed",
+        exact=elite + 80 - 100000,
+        passes=False,
+        has=["TrueHD", "Atmos"],
+        absent=["Dolby Digital +", "Dolby Digital", "DTS-HD MA"],
+    )
+    add(
+        "DTS-HD MA beside DD+ rejects",
+        "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.DDP5.1.x265-BHDStudio",
+        exact=elite - 100000,
+        passes=False,
+        has=["DTS-HD MA"],
+        absent=["Dolby Digital +", "DTS", "MA"],
+    )
+    add(
+        "DTS-HD HRA beside DD+ rejects",
+        "Movie.2024.2160p.BluRay.HDR.DTS-HD.HRA.DDP5.1.x265-HONE",
+        exact=elite - 100000,
+        passes=False,
+        has=["DTS-HD HRA"],
+        absent=["Dolby Digital +", "DTS-HD MA"],
+    )
+    add(
+        "DTS-X beside DD+ rejects",
+        "Movie.2024.2160p.BluRay.HDR.DTS-X.DDP5.1.x265-DarQ",
+        exact=elite - 100000,
+        passes=False,
+        has=["DTS-X"],
+        absent=["Dolby Digital +", "DTS"],
+    )
+    add(
+        "WEB FLUX DTS-HD MA beside DDP still rejects",
+        "Movie.2024.2160p.WEB-DL.DTS-HD.MA.7.1.DDP.5.1.HDR.H.265-FLUX",
+        passes=False,
+        has=["DTS-HD MA", "2160p Compact Streaming WEB-DL"],
+        absent=["Dolby Digital +", "MA"],
+    )
+    add(
+        "Lossy DTS beside DD+ keeps DTS",
+        "Movie.2024.2160p.BluRay.HDR.DTS.DDP5.1.x265-hallowed",
+        exact=elite + 25,
+        passes=True,
+        has=["DTS"],
+        absent=["Dolby Digital +", "DTS-HD MA", "TrueHD"],
+    )
+    add(
+        "EC3 is Dolby Digital Plus",
+        "Movie.2024.2160p.BluRay.HDR.EC3.5.1.x265-hallowed",
+        exact=elite + M_DDP,
+        has=["Dolby Digital +"],
+        absent=["Dolby Digital", "Banned Groups"],
+    )
+    add(
+        "LPCM is not TrueHD and is not banned",
+        "Movie.2024.2160p.BluRay.HDR.LPCM.5.1.x265-hallowed",
+        exact=elite,
+        passes=True,
+        has=["2160p Compact Bluray Tier 1", "HDR"],
+        absent=["TrueHD", "DTS-HD MA", "DTS-X", "Dolby Digital +", "2160p SDR Bluray"],
+    )
+    add(
+        "PCM is not TrueHD and is not banned",
+        "Movie.2024.2160p.BluRay.HDR.PCM.7.1.x265-hallowed",
+        exact=elite,
+        passes=True,
+        absent=["TrueHD", "DTS-HD MA"],
+    )
+
+    # Storefronts. ATV stays +10. Apple TV+ and Disney+ have to survive a dot after the plus.
+    add(
+        "ATVP is +15 and not ATV",
+        "Movie.2024.2160p.ATVP.WEB-DL.HDR.H.265-Kitsune",
+        exact=stream + 15,
+        passes=True,
+        has=["ATVP", "2160p Compact Streaming WEB-DL"],
+        absent=["ATV", "iT"],
+    )
+    add(
+        "ATV is +10 and not ATVP",
+        "Movie.2024.2160p.ATV.WEB-DL.HDR.H.265-Kitsune",
+        exact=stream + 10,
+        passes=True,
+        has=["ATV", "2160p Compact Streaming WEB-DL"],
+        absent=["ATVP", "iT"],
+    )
+    add(
+        "Apple.TV+ scores ATVP",
+        "Movie.2024.2160p.Apple.TV+.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        passes=True,
+        has=["ATVP"],
+        absent=["ATV", "iT"],
+    )
+    add(
+        "Apple TV+ with a space scores ATVP",
+        "Movie.2024.2160p.Apple TV+.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["ATVP"],
+        absent=["ATV"],
+    )
+    add(
+        "DSNP is +15",
+        "Movie.2024.2160p.DSNP.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["DSNP"],
+        absent=["HULU", "ATVP"],
+    )
+    add(
+        "Disney+ before a dot scores DSNP",
+        "Movie.2024.2160p.Disney+.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        passes=True,
+        has=["DSNP"],
+        absent=["HULU", "ATVP"],
+    )
+    add(
+        "DSNY scores DSNP",
+        "Movie.2024.2160p.DSNY.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["DSNP"],
+    )
+    add(
+        "Glued DSNPWEB does not score DSNP",
+        "Movie.2024.2160p.DSNPWEB.WEB-DL.HDR.H.265-FLUX",
+        exact=stream,
+        absent=["DSNP"],
+    )
+    add(
+        "HMAX is +15 and not MAX",
+        "Movie.2024.2160p.HMAX.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["HMAX"],
+        absent=["MAX"],
+    )
+    add(
+        "MAX.WEB-DL is +15 and not HMAX",
+        "Movie.2024.2160p.MAX.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["MAX"],
+        absent=["HMAX"],
+    )
+    add(
+        "HBO.MAX.WEB-DL is HMAX and not MAX",
+        "Movie.2024.2160p.HBO.MAX.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["HMAX"],
+        absent=["MAX"],
+    )
+    add(
+        "AMZN is +15",
+        "Movie.2024.2160p.AMZN.WEB-DL.HDR.H.265-Kitsune",
+        exact=stream + 15,
+        has=["AMZN"],
+    )
+    add(
+        "AMAZON.WEB-DL is AMZN",
+        "Movie.2024.2160p.AMAZON.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15,
+        has=["AMZN"],
+    )
+    add(
+        "NF is +15",
+        "Movie.2024.2160p.NF.WEB-DL.HDR.H.265-CMRG",
+        exact=stream + 15,
+        has=["NF"],
+    )
+    add(
+        "Netflix word is NF",
+        "Movie.2024.2160p.Netflix.WEB-DL.HDR.H.265-CMRG",
+        exact=stream + 15,
+        has=["NF"],
+    )
+    add(
+        "iT.WEB-DL is +10",
+        "Movie.2024.2160p.iT.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 10,
+        has=["iT"],
+        absent=["ATVP", "ATV"],
+    )
+    add(
+        "iTunes.WEB-DL is iT",
+        "Movie.2024.2160p.iTunes.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 10,
+        has=["iT"],
+        absent=["ATVP"],
+    )
+    add(
+        "HULU is +10",
+        "Movie.2024.2160p.HULU.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 10,
+        has=["HULU"],
+        absent=["DSNP"],
+    )
+    add(
+        "MA WEB is +15 and does not beat an elite disc",
+        "Movie.2024.2160p.MA.WEB-DL.DV.HDR.DDP5.1.H.265-HONE",
+        passes=True,
+        has=["MA", "2160p Compact WEB Tier 1", "Dolby Vision"],
+        absent=["2160p Compact Bluray Tier 1", "DTS-HD MA"],
+        above="Movie.2024.2160p.BluRay.HDR.x265-PSA",
+    )
+    add(
+        "Elite disc beats that MA WEB",
+        "Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+        above="Movie.2024.2160p.MA.WEB-DL.DV.HDR.DDP5.1.H.265-HONE",
+    )
+    add(
+        "MA on a Blu-ray without WEB does not score",
+        "Movie.2024.2160p.MA.BluRay.HDR.x265-hallowed",
+        exact=elite,
+        absent=["MA"],
+    )
+    add(
+        "DTS-HD MA Blu-ray is not Movies Anywhere",
+        "Movie.2024.2160p.BluRay.DTS-HD.MA.7.1.HDR.x265-hallowed",
+        passes=False,
+        has=["DTS-HD MA"],
+        absent=["MA"],
+    )
+
+    # HDR spellings, DV fallback, hybrid, IMAX.
+    for name, title, has, absent in (
+        ("HDR10PLUS uppercase is HDR10+", "Movie.2024.2160p.UHD.BluRay.HDR10PLUS.x265-hallowed", ["HDR10+"], ["HDR", "2160p SDR Bluray"]),
+        ("Bracketed HDR10Plus is HDR10+", "Movie.2024.2160p.UHD.BluRay.[HDR10Plus].x265-hallowed", ["HDR10+", "2160p Compact Bluray Tier 1"], ["2160p SDR Bluray", "HDR"]),
+        ("Bracketed DV HDR10Plus scores both once", "Dark.Phoenix.2019.2160p.BluRay.[DV.HDR10Plus].x265-BHDStudio", ["Dolby Vision", "HDR10+", "2160p Compact Bluray Tier 1"], ["HDR", "2160p SDR Bluray", "Dolby Vision (Without Fallback)"]),
+        ("Scene HDR is HDR, not HDR10+", "X-Men.Dark.Phoenix.2019.UHD.BluRay.2160p.HDR.x265-BHDStudio", ["HDR", "2160p Compact Bluray Tier 1"], ["HDR10+", "2160p SDR Bluray"]),
+    ):
+        add(name, title, has=has, not_=absent)
+
+    add(
+        "WEB DV without HDR from FLUX still clears cutoff",
+        "Movie.2024.2160p.WEB-DL.DV.x265-FLUX",
+        exact=M_STREAM + 30 + 1000 - 10000,
+        passes=True,
+        has=["2160p Compact Streaming WEB-DL", "Dolby Vision", "Dolby Vision (Without Fallback)"],
+        absent=["HDR", "HDR10+", "2160p SDR Bluray"],
+    )
+    add(
+        "Untiered WEB DV without HDR misses cutoff",
+        "Movie.2024.2160p.WEB-DL.DV.x265-NOGROUP",
+        passes=False,
+        has=["Dolby Vision", "Dolby Vision (Without Fallback)"],
+        absent=["2160p Compact Streaming WEB-DL", "HDR"],
+    )
+    add(
+        "WEB DV with HDR is not without-fallback",
+        "Movie.2024.2160p.WEB-DL.DV.HDR.x265-FLUX",
+        exact=stream + 1000,
+        passes=True,
+        has=["Dolby Vision", "HDR"],
+        absent=["Dolby Vision (Without Fallback)", "2160p SDR Bluray"],
+    )
+    add(
+        "WEB DoVi SDR is without-fallback and still a tiered WEB",
+        "Movie.2024.2160p.WEB-DL.DoVi.SDR.x265-FLUX",
+        exact=M_STREAM + 30 + 1000 - 10000,
+        passes=True,
+        has=["Dolby Vision (Without Fallback)"],
+        absent=["HDR", "2160p SDR Bluray"],
+    )
+    add(
+        "Blu-ray DV without HDR is not SDR and not without-fallback",
+        "Movie.2024.2160p.BluRay.DV.x265-hallowed",
+        exact=M_BR1 + 30 + 1000,
+        passes=True,
+        has=["Dolby Vision"],
+        absent=["2160p SDR Bluray", "Dolby Vision (Without Fallback)", "HDR"],
+    )
+    add(
+        "WEB SDR without HDR is allowed",
+        "Movie.2024.2160p.WEB.SDR.x265-FLUX",
+        exact=M_STREAM,
+        passes=True,
+        has=["2160p Compact Streaming WEB-DL"],
+        absent=["2160p SDR Bluray", "HDR", "Dolby Vision"],
+    )
+    add(
+        "WEB SDR plus HDR scores HDR and is not an SDR Blu-ray",
+        "Movie.2024.2160p.WEB-DL.SDR.HDR.x265-FLUX",
+        exact=stream,
+        has=["HDR"],
+        absent=["2160p SDR Bluray", "Dolby Vision (Without Fallback)"],
+    )
+    add(
+        "Hybrid Blu-ray is a tie-break inside the elite class",
+        "Movie.2024.2160p.Hybrid.BluRay.HDR.x265-hallowed",
+        exact=elite + 15,
+        passes=True,
+        has=["Hybrid", "2160p Compact Bluray Tier 1"],
+        absent=["2160p Compact Streaming WEB-DL"],
+    )
+    add(
+        "The Hybrid as a title still only adds the tie-break",
+        "The.Hybrid.2024.2160p.BluRay.HDR.x265-HONE",
+        exact=elite + 15,
+        has=["Hybrid"],
+    )
+    add(
+        "HYBRID WEB scores Hybrid and not a disc tier",
+        "Movie.2024.2160p.HYBRID.WEB-DL.DV.HDR.H.265-FLUX",
+        exact=stream + 1000 + 15,
+        has=["Hybrid", "Dolby Vision", "HDR"],
+        absent=["Dolby Vision (Without Fallback)", "2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "Plain IMAX is IMAX and not IMAX Enhanced",
+        "Movie.2024.2160p.BluRay.HDR.IMAX.x265-hallowed",
+        exact=elite + 40,
+        has=["IMAX"],
+        absent=["IMAX Enhanced"],
+    )
+    add(
+        "WEB IMAX without a Disney token is IMAX",
+        "Movie.2024.2160p.WEB-DL.IMAX.HDR.H.265-FLUX",
+        exact=stream + 40,
+        has=["IMAX", "2160p Compact Streaming WEB-DL"],
+        absent=["IMAX Enhanced"],
+    )
+    add(
+        "DSNP IMAX is IMAX Enhanced and not IMAX",
+        "Movie.2024.2160p.IMAX.Enhanced.DSNP.WEB-DL.HDR.H.265-FLUX",
+        exact=stream + 15 + 40,
+        has=["IMAX Enhanced", "DSNP"],
+        absent=["IMAX"],
+    )
+    add(
+        "DSNP IMAX without the Enhanced words is still IMAX Enhanced",
+        "Movie.2024.2160p.DSNP.WEB-DL.IMAX.HDR.H.265-CMRG",
+        exact=stream + 15 + 40,
+        has=["IMAX Enhanced", "DSNP"],
+        absent=["IMAX"],
+    )
+    add(
+        "NON-IMAX is neither IMAX format",
+        "Movie.2024.2160p.BluRay.NON-IMAX.HDR.x265-hallowed",
+        exact=elite,
+        absent=["IMAX", "IMAX Enhanced"],
+    )
+
+    # Groups that must not be promoted, and short banned-group traps.
+    add(
+        "Release group E is banned",
+        "Movie.2024.2160p.BluRay.HDR.x265-E",
+        passes=False,
+        has=["Banned Groups"],
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "E-AC-3 is not the banned group E",
+        "Movie.2024.2160p.BluRay.HDR.E-AC-3.x265-HONE",
+        exact=elite + M_DDP,
+        passes=True,
+        absent=["Banned Groups"],
+    )
+    add(
+        "E.T. is not the banned group E",
+        "E.T.1982.2160p.BluRay.HDR.x265-hallowed",
+        exact=elite,
+        absent=["Banned Groups"],
+    )
+    add(
+        "ELiTE is the small tier and not banned",
+        "Movie.2024.2160p.BluRay.HDR.x265-ELiTE",
+        exact=M_BR3 + M_HDR,
+        passes=True,
+        tier="2160p Compact Bluray Tier 3",
+        absent=["Banned Groups", "2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "Saon is banned",
+        "Movie.2024.2160p.BluRay.HDR.x265-Saon",
+        passes=False,
+        has=["Banned Groups"],
+        absent=["2160p Compact Bluray Tier 1", "2160p Compact Bluray Tier 2"],
+    )
+    add(
+        "Saonara is not Saon",
+        "Movie.2024.2160p.BluRay.HDR.x265-Saonara",
+        exact=M_HDR,
+        passes=False,
+        absent=["Banned Groups", "2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "PiRaTeS is not added to a tier",
+        "Movie.2024.2160p.BluRay.HDR.x265-PiRaTeS",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 1", "2160p WEB-DL HEVC", "2160p Compact Streaming WEB-DL"],
+    )
+    add(
+        "PiRaTeS WEB is not added to a tier",
+        "Movie.2024.2160p.WEB-DL.HDR.x265-PiRaTeS",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p WEB-DL HEVC", "2160p Compact WEB Tier 1"],
+    )
+    add(
+        "ZAX is not added to a tier",
+        "Movie.2024.2160p.BluRay.HDR.x265-ZAX",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "edge2020HD is not edge2020",
+        "Movie.2024.2160p.BluRay.HDR.x265-edge2020HD",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 2", "2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "HONE-HiFi is not HONE",
+        "Movie.2024.2160p.BluRay.HDR.x265-HONE-HiFi",
+        exact=M_HDR,
+        passes=False,
+        absent=["2160p Compact Bluray Tier 1"],
+    )
+    add(
+        "Silence of the Lambs from hallowed is elite, not the Silence encoder",
+        "The.Silence.of.the.Lambs.1991.2160p.BluRay.HDR.x265-hallowed",
+        exact=elite,
+        tier="2160p Compact Bluray Tier 1",
+        absent=["2160p Compact Bluray Tier 2"],
+    )
+    add(
+        "YTS.mx stays banned",
+        "Movie.2024.2160p.BluRay.HDR.x265-YTS.mx",
+        passes=False,
+        has=["Banned Micro Encodes"],
+        absent=["2160p Compact Bluray Tier 4"],
+    )
+    add(
+        "REPACK3 is only the third repack score",
+        "Movie.2024.REPACK3.2160p.BluRay.HDR.x265-HONE",
+        exact=elite + 7,
+        has=["Repack3"],
+        absent=["Repack1", "Repack2"],
+    )
+    add(
+        "Streaming WEB still beats PSA and loses to an elite disc",
+        "Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX",
+        above="Movie.2024.2160p.BluRay.HDR.x265-PSA",
+    )
+    add(
+        "Elite disc still beats compact streaming WEB",
+        "Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed",
+        above="Movie.2024.2160p.ATVP.WEB-DL.DV.HDR.DDP5.1.H.265-FLUX",
+    )
+    add(
+        "PSA still beats untouched BYNDR",
+        "Movie.2024.2160p.BluRay.HDR.x265-PSA",
+        above="Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR",
+    )
+
+    return out
+
+
 def run_identification_stress(conn, movies, tv):
     """Adversarial titles for every Movies 2160p HEVC Compact format class.
 
@@ -1897,6 +2798,8 @@ def run_identification_stress(conn, movies, tv):
             for cf, cf_score in matched:
                 print(f"    - {cf}: {cf_score:+}")
         return ok
+
+    cases.extend(_compact_parity_cases())
 
     for case in cases:
         check(case)
