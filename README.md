@@ -6,11 +6,11 @@ A custom format database and quality profile suite for Radarr and Sonarr, built 
 
 ## Upstream
 
-Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database). The ladder is aimed at a 55-inch 4K Mini LED and a 32-inch 4K monitor, where a soft encode shows and a phone would hide it. Dictionarry's compact circles (HONE, Vyndros, edge2020, QxR, TAoE) stay on top. PSA, d3g, SEV and ELiTE are the next step down: smaller, still clean. UTR/Joy, RARBG and iVy are allowed below that and get replaced when a better encode exists. YTS and MeGusta stay rejected because their 4K files break up on those two screens. Untouched WEB-DL groups such as NTb and FLUX are a larger fallback, not the target.
+Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database), then widened from tracker and forum notes on middle-size 4K HEVC (r/trackers, r/sonarr, TRaSH group requests). The ladder is aimed at a 55-inch 4K Mini LED and a 32-inch 4K monitor, where a soft encode shows and a phone would hide it. The top circle is the mid-size careful encodes: HONE, hallowed, Vyndros, edge2020, dkore, HQMUX and PTer, typically around 12–20 GB with Dolby Vision and soft subs. QxR, TAoE, BHDStudio, HeVK, KeepFRDS and Prof sit one step down. PSA, d3g, SEV, ELiTE, HiQVE, HODL, DEFLATE and their peers are the smaller encodes that still stay clean. UTR/Joy, RARBG, iVy, t0paz and POF are allowed below that and get replaced when a better encode exists. YTS and MeGusta stay rejected because their 4K files break up on those two screens. Transparent 30–50 GB groups (MainFrame, CtrlHD, W4NK3R, FraMeSToR) stay out, as do NVENC tags such as KONTRAST. Untouched WEB-DL groups such as NTb and FLUX are a larger fallback, not the target.
 
 ## Profiles
 
-* **Movies 2160p HEVC Compact** — 4K Blu-ray from the careful circles, then QxR/TAoE, then PSA/d3g/SEV/ELiTE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC.
+* **Movies 2160p HEVC Compact** — 4K Blu-ray from the mid-size circles (HONE, hallowed, HQMUX, PTer), then QxR/TAoE/BHDStudio, then PSA/HiQVE/DEFLATE, then UTR/RARBG/iVy, then untouched WEB-DL, then 1080p HEVC.
 * **TV 2160p HEVC Compact** — the same groups, with WEB ranked above disc encodes.
 
 AV1, remuxes, 4K x264 and releases with no vetted group do not clear the minimum score. Tier gaps are 700 points, wider than the feature stack, so Dolby Vision cannot promote a lower group over a higher one.
