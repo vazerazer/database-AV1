@@ -4,11 +4,13 @@ PCD compact 4K HEVC scoring battery.
 
 Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray. The whole elite
 list shares one score (hallowed, BHDStudio, HONE, and the rest). Then a
-smaller disc such as QxR, then compact streaming WEB, then a PSA micro, then
-a big WEB-DL. Inside a class, Dolby Vision is +1000, HDR is +500, and
+smaller disc such as QxR, then compact streaming WEB, then PSA, then a
+micro. An untouched 4K WEB-DL such as BYNDR or NTb scores 0 and misses the
+minimum, so the next grab is 1080p: elite HEVC, then the circle, then
+FLUX/Kitsune/CMRG, then PSA, then a micro. Inside a class, Dolby Vision is +1000, HDR is +500, and
 HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
 500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
-+25, and AAC is +10. The class gap is wider than that stack. 4K Blu-ray
++25, and AAC is +10. The 4K class gap is wider than that stack. 4K Blu-ray
 with no HDR is rejected. A Dolby Vision WEB with no HDR token misses the
 cutoff. TrueHD and the DTS-HD formats are rejected for direct play. LPCM,
 FLAC, and lossy DTS are not. CAM, hardcoded subtitles, 3D, upscales,
@@ -376,10 +378,12 @@ M_BR3 = 25600
 M_BR4 = 22400
 M_WEB3 = 19200
 M_WEB4 = 16000
-M_WEBDL = 12800
+M_WEBDL = 0  # untouched 4K WEB-DL is identified and does not clear min 3000
 M_HD1 = 9600
 M_HD2 = 6400
-M_HD3 = 3200
+M_HD_STREAM = 5200
+M_HD3 = 4100
+M_HD4 = 3000
 M_HDR = 530  # HDR +500 and 10-bit Depth +30
 M_HDR10 = 600
 M_DV = 1000
@@ -415,6 +419,7 @@ def run_simulation_battery():
         "2160p Compact Streaming WEB-DL",
         "1080p Compact HEVC Tier 1",
         "1080p Compact HEVC Tier 2",
+        "1080p Compact Streaming WEB-DL",
         "1080p Compact HEVC Tier 3",
         "1080p Compact HEVC Tier 4",
     }
@@ -547,11 +552,12 @@ def run_simulation_battery():
             "tier": "2160p Compact WEB Tier 4",
         },
         {
-            "category": "Movie untouched WEB-DL fallback (NTb)",
+            "category": "Movie untouched WEB-DL is not a 4K grab (NTb)",
             "title": "The.Silence.of.the.Lambs.1991.2160p.WEB-DL.H265-NTb",
             "profile": movies,
-            "expect_pass": True,
+            "expect_pass": False,
             "exact": M_WEBDL,
+            "max_band": 2999,
             "tier": "2160p WEB-DL HEVC",
         },
         {
@@ -848,8 +854,8 @@ def run_simulation_battery():
         ("HONE MA WEB score does not depend on file gigabytes", towers_web == towers_web_small),
         ("Return of the King hallowed at 179 MB/min stays inside the cap", rotk_pass and not rotk_blocked),
         ("A 230 MB/min HONE disc is rejected", hone_cap_blocked),
-        ("PSA beats a typical BYNDR WEB-DL", psa > byndr and psa_pass and byndr_pass and not byndr_blocked),
-        ("A 36 GiB BYNDR at 160 MB/min scores the same and still loses to PSA", byndr_long == byndr and psa > byndr_long and byndr_long_pass and not byndr_long_blocked),
+        ("PSA outscores BYNDR, and BYNDR misses the minimum", psa > byndr and psa_pass and (not byndr_pass) and byndr < 3000 and not byndr_blocked),
+        ("A 36 GiB BYNDR at 160 MB/min scores the same and still misses the minimum", byndr_long == byndr and (not byndr_long_pass) and byndr_long < 3000 and not byndr_long_blocked),
         ("A 36 GiB HONE WEB at 160 MB/min is not bitrate-blocked", long_web_pass and not long_web_blocked),
         ("A long in-cap WEB scores the same as the small copy", long_web == long_web_small and long_web_matched == long_web_small_matched),
         ("That long WEB stays under the compact disc and above PSA", towers_disc > long_web > psa),
@@ -971,7 +977,7 @@ def run_simulation_battery():
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p WEB-DL HEVC"] or score != M_WEBDL:
+        if hits != ["2160p WEB-DL HEVC"] or score != M_WEBDL or passed:
             anomalies.append((group, "webdl", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in micro_ban:
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
@@ -1011,6 +1017,10 @@ def run_simulation_battery():
     tie_passed, tie_failed = run_dumpstarr_tiebreak_order(conn)
     passed_tests += tie_passed
     failed_tests += tie_failed
+
+    ladder_passed, ladder_failed = run_movie_fallback_ladder(conn, movies, tv)
+    passed_tests += ladder_passed
+    failed_tests += ladder_failed
 
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
@@ -1940,6 +1950,7 @@ def run_identification_stress(conn, movies, tv):
         "2160p Compact Streaming WEB-DL",
         "1080p Compact HEVC Tier 1",
         "1080p Compact HEVC Tier 2",
+        "1080p Compact Streaming WEB-DL",
         "1080p Compact HEVC Tier 3",
         "1080p Compact HEVC Tier 4",
     }
@@ -3082,6 +3093,175 @@ def run_dumpstarr_tiebreak_order(conn):
     )
 
     print(f"Tie-break order: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_movie_fallback_ladder(conn, movies, tv):
+    """Pickup order after the 4K class scores from op 972.
+
+    Untouched 4K WEB-DL stays on the profile at 0, under min 3000, including
+    when Dolby Vision and HDR are named. 4K streaming stays at 28800 and
+    keeps its 2160p resolution requirement. 1080p repeats the ladder under
+    that: elite, circle, FLUX/Kitsune/CMRG, PSA, micro. The micro still
+    clears 3000. TV scores are not part of this ladder.
+    """
+    print("\n=== MOVIE FALLBACK LADDER ===")
+    passed = 0
+    failed = 0
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    def score(title, profile=movies):
+        return evaluate_release(conn, title, profile)
+
+    def tier_score(fmt, profile=movies):
+        row = conn.execute(
+            "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = ?",
+            (profile, fmt),
+        ).fetchone()
+        return None if row is None else row[0]
+
+    for fmt, expected in (
+        ("2160p Compact Bluray Tier 1", M_BR1),
+        ("2160p Compact Bluray Tier 2", M_BR2),
+        ("2160p Compact WEB Tier 1", M_WEB1),
+        ("2160p Compact Streaming WEB-DL", M_STREAM),
+        ("2160p Compact WEB Tier 2", M_WEB2),
+        ("2160p Compact Bluray Tier 3", M_BR3),
+        ("2160p Compact Bluray Tier 4", M_BR4),
+        ("2160p Compact WEB Tier 3", M_WEB3),
+        ("2160p Compact WEB Tier 4", M_WEB4),
+        ("2160p WEB-DL HEVC", M_WEBDL),
+        ("1080p Compact HEVC Tier 1", M_HD1),
+        ("1080p Compact HEVC Tier 2", M_HD2),
+        ("1080p Compact Streaming WEB-DL", M_HD_STREAM),
+        ("1080p Compact HEVC Tier 3", M_HD3),
+        ("1080p Compact HEVC Tier 4", M_HD4),
+    ):
+        expect(f"{fmt} scores {expected}", tier_score(fmt) == expected, f"got {tier_score(fmt)}")
+
+    streaming_res = conn.execute(
+        "SELECT resolution FROM condition_resolutions WHERE custom_format_name = '2160p Compact Streaming WEB-DL'"
+    ).fetchall()
+    expect(
+        "4K streaming format still requires 2160p",
+        streaming_res == [("2160p",)],
+        f"{streaming_res}",
+    )
+    hd_streaming_res = conn.execute(
+        "SELECT resolution FROM condition_resolutions WHERE custom_format_name = '1080p Compact Streaming WEB-DL'"
+    ).fetchall()
+    expect(
+        "1080p streaming format requires 1080p",
+        hd_streaming_res == [("1080p",)],
+        f"{hd_streaming_res}",
+    )
+
+    byndr = score("Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR")
+    ntb = score("The.Silence.of.the.Lambs.1991.2160p.WEB-DL.H265-NTb")
+    xebec = score("Movie.2024.2160p.WEB-DL.HDR.H.265-XEBEC")
+    hhweb = score("Movie.2024.2160p.WEB-DL.DV.HDR10+.H.265-HHWEB")
+    for label, result in (("BYNDR", byndr), ("NTb", ntb), ("XEBEC", xebec), ("HHWEB", hhweb)):
+        total, minimum, _until, ok, matched = result
+        names = [name for name, _s in matched]
+        expect(
+            f"{label} untouched 4K WEB-DL scores below 3000",
+            (not ok) and total < minimum and total < 3000 and "2160p WEB-DL HEVC" in names,
+            f"score {total} names {names}",
+        )
+
+    elite_disc = score("Movie.2024.2160p.BluRay.HDR.x265-Ralphy")
+    circle_disc = score("Movie.2024.2160p.BluRay.HDR.x265-QxR")
+    psa = score("Movie.2024.2160p.BluRay.HDR.x265-PSA")
+    micro = score("Movie.2024.2160p.WEB-DL.x265-iVy")
+    expect(
+        "4K PSA clears the minimum and beats a 4K micro",
+        psa[3] and psa[0] >= 3000 and psa[0] > micro[0] and micro[3],
+        f"PSA {psa[0]} micro {micro[0]}",
+    )
+
+    for group in ("FLUX", "Kitsune", "CMRG"):
+        plain = score(f"Movie.2024.2160p.WEB-DL.H265-{group}")
+        tagged = score(f"Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.H.265-{group}")
+        names = [name for name, _s in plain[4]]
+        expect(
+            f"4K {group} stays in the streaming class",
+            plain[3] and plain[0] == M_STREAM and names == ["2160p Compact Streaming WEB-DL"],
+            f"score {plain[0]} names {names}",
+        )
+        expect(
+            f"4K {group} beats PSA and loses to a compact Blu-ray encode",
+            tagged[0] > psa[0] and tagged[0] < circle_disc[0] and tagged[0] < elite_disc[0],
+            f"{group} {tagged[0]} PSA {psa[0]} circle {circle_disc[0]} elite {elite_disc[0]}",
+        )
+
+    ralphy = score("Movie.2024.1080p.BluRay.x265-Ralphy")
+    hallowed = score("Movie.2024.1080p.BluRay.HEVC-hallowed")
+    bhdstudio = score("Movie.2024.1080p.BluRay.x265-BHDStudio")
+    circle_hd = score("Movie.2024.1080p.BluRay.x265-TAoE")
+    flux_hd = score("Movie.2024.1080p.WEB-DL.H265-FLUX")
+    kitsune_hd = score("Movie.2024.1080p.WEB-DL.H.265-Kitsune")
+    cmrg_hd = score("Movie.2024.1080p.WEB-DL.x265-CMRG")
+    psa_hd = score("Movie.2024.1080p.BluRay.x265-PSA")
+    ivy_hd = score("Movie.2024.1080p.WEB-DL.x265-iVy")
+    rarbg_hd = score("Movie.2024.1080p.BluRay.x265-RARBG")
+    expect(
+        "1080p elite encodes share one score",
+        ralphy[0] == hallowed[0] == bhdstudio[0] == M_HD1 and ralphy[3],
+        f"Ralphy {ralphy[0]} hallowed {hallowed[0]} BHDStudio {bhdstudio[0]}",
+    )
+    expect(
+        "1080p elite beats streaming, which beats PSA, which beats a micro",
+        ralphy[0] > flux_hd[0] > psa_hd[0] > ivy_hd[0]
+        and flux_hd[0] == kitsune_hd[0] == cmrg_hd[0] == M_HD_STREAM
+        and psa_hd[0] == M_HD3
+        and ivy_hd[0] == rarbg_hd[0] == M_HD4
+        and circle_hd[0] == M_HD2
+        and circle_hd[0] > flux_hd[0],
+        f"elite {ralphy[0]} circle {circle_hd[0]} stream {flux_hd[0]} PSA {psa_hd[0]} micro {ivy_hd[0]}",
+    )
+    flux_hd_names = [name for name, _s in flux_hd[4]]
+    expect(
+        "1080p FLUX does not receive the 4K streaming score",
+        flux_hd[0] != M_STREAM
+        and flux_hd[0] == M_HD_STREAM
+        and "2160p Compact Streaming WEB-DL" not in flux_hd_names
+        and "1080p Compact Streaming WEB-DL" in flux_hd_names,
+        f"score {flux_hd[0]} names {flux_hd_names}",
+    )
+    expect(
+        "1080p micro still clears the minimum",
+        ivy_hd[3] and rarbg_hd[3] and ivy_hd[0] >= 3000 and rarbg_hd[0] >= 3000,
+        f"iVy {ivy_hd[0]} RARBG {rarbg_hd[0]}",
+    )
+    flux_dv = score("Movie.2024.1080p.WEB-DL.DV.HDR.H.265-FLUX")
+    expect(
+        "1080p streaming with Dolby Vision still loses to a plain elite encode",
+        flux_dv[0] < ralphy[0] and flux_dv[0] < M_STREAM,
+        f"FLUX {flux_dv[0]} Ralphy {ralphy[0]}",
+    )
+
+    expect("TV untouched WEB-DL stays 2500", tier_score("2160p WEB-DL HEVC", tv) == 2500)
+    expect("TV streaming WEB stays 5300", tier_score("2160p Compact Streaming WEB-DL", tv) == 5300)
+    expect("TV 1080p tier 1 stays 1800", tier_score("1080p Compact HEVC Tier 1", tv) == 1800)
+    expect("TV 1080p tier 4 stays 400", tier_score("1080p Compact HEVC Tier 4", tv) == 400)
+    expect(
+        "TV does not score the 1080p streaming format",
+        tier_score("1080p Compact Streaming WEB-DL", tv) is None,
+    )
+    gates = conn.execute(
+        "SELECT minimum_custom_format_score, upgrade_until_score FROM quality_profiles WHERE name = ?",
+        (movies,),
+    ).fetchone()
+    expect("Movie minimum and cutoff stay 3000 / 41600", gates == (3000, 41600), f"{gates}")
+
+    print(f"Fallback ladder: {passed} passed, {failed} failed")
     return passed, failed
 
 
