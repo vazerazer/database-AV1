@@ -4,10 +4,11 @@ PCD compact 4K HEVC scoring battery.
 
 Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray. The whole elite
 list shares one score (hallowed, BHDStudio, HONE, and the rest). Then a
-smaller disc such as QxR, then compact streaming WEB, then PSA, then a
-micro. An untouched 4K WEB-DL such as BYNDR or NTb scores 0 and misses the
-minimum, so the next grab is 1080p: elite HEVC, then the circle, then
-FLUX/Kitsune/CMRG, then PSA, then a micro. Inside a class, Dolby Vision is +1000, HDR is +500, and
+smaller disc such as QxR, then compact streaming WEB, then PSA. A 4K
+micro (RARBG, UTR, iVy, Joy, t0paz, POF) scores 0 and misses the minimum,
+the same way an untouched 4K WEB-DL such as BYNDR or NTb does. The next
+grab is 1080p: elite HEVC, then the circle, then FLUX/Kitsune/CMRG, then
+PSA, then a micro that still clears 3000. Inside a class, Dolby Vision is +1000, HDR is +500, and
 HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
 500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
 +25, and AAC is +10. The 4K class gap is wider than that stack. 4K Blu-ray
@@ -15,13 +16,13 @@ with no HDR is rejected. A Dolby Vision WEB with no HDR token misses the
 cutoff. TrueHD and the DTS-HD formats are rejected for direct play. LPCM,
 FLAC, and lossy DTS are not. CAM, hardcoded subtitles, 3D, upscales,
 extras, sing-along, audio description, and a non-HEVC codec on a tiered
-disc miss the same way. Radarr quality definitions that this database
-capped are min 0, preferred 1999, max 0. Max 0 is unlimited, the same
-end state as Dumpstarr after op 367. Preferred 1999 only tie-breaks two
-releases that already share a quality and a custom format score. There
-is no gigabyte penalty, so a long movie keeps its score. TV 2160p HEVC
-Compact still prefers WEB over disc. Its scores and Sonarr size rows are
-unchanged. Movies Anywhere does not flip a WEB over a disc.
+disc miss the same way. Radarr max size stays 0, so nothing is rejected
+for bitrate. Preferred size is the tie-break: 130 MB/min on 2160p encode
+qualities and 18 MB/min on 1080p encode qualities. Remux stays preferred
+1999 and stays off the compact profiles. There is no gigabyte penalty,
+so a long movie keeps its score. TV 2160p HEVC Compact still prefers WEB
+over disc. Its scores and Sonarr size rows are unchanged. Movies Anywhere
+does not flip a WEB over a disc.
 """
 
 import sqlite3
@@ -386,9 +387,9 @@ M_WEB1 = 32000
 M_STREAM = 28800
 M_WEB2 = 28800
 M_BR3 = 25600
-M_BR4 = 22400
+M_BR4 = 0  # 4K micro disc misses min 3000 so Radarr can take 1080p instead
 M_WEB3 = 19200
-M_WEB4 = 16000
+M_WEB4 = 0  # 4K micro WEB misses min 3000; the format stays assigned
 M_WEBDL = 0  # untouched 4K WEB-DL is identified and does not clear min 3000
 M_HD1 = 9600
 M_HD2 = 6400
@@ -531,19 +532,21 @@ def run_simulation_battery():
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
-            "category": "Movie micro-ok WEB (UTR) below PSA",
+            "category": "Movie micro-ok WEB (UTR) misses the minimum",
             "title": "Movie.2024.2160p.WEB-DL.x265-UTR",
             "profile": movies,
-            "expect_pass": True,
+            "expect_pass": False,
             "exact": M_WEB4,
+            "max_band": 2999,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
-            "category": "Movie RARBG disc is allowed and below PSA",
+            "category": "Movie RARBG disc misses the minimum",
             "title": "Movie.2024.2160p.BluRay.HDR.x265-RARBG",
             "profile": movies,
-            "expect_pass": True,
+            "expect_pass": False,
             "exact": M_BR4 + M_HDR,
+            "max_band": 2999,
             "tier": "2160p Compact Bluray Tier 4",
         },
         {
@@ -555,11 +558,12 @@ def run_simulation_battery():
             "tier": "2160p Compact Bluray Tier 3",
         },
         {
-            "category": "Movie iVy WEB is the low small tier",
+            "category": "Movie iVy WEB misses the minimum",
             "title": "Show.Name.S01E01.2160p.WEBRip.x265-iVy",
             "profile": movies,
-            "expect_pass": True,
+            "expect_pass": False,
             "exact": M_WEB4,
+            "max_band": 2999,
             "tier": "2160p Compact WEB Tier 4",
         },
         {
@@ -871,7 +875,8 @@ def run_simulation_battery():
     # Above the old 1080p max of 40. Ralphy, DarQ, HONE, Tigole and TAoE
     # fallbacks already in a library often sit here.
     hd_large_blocked = bitrate_blocked(hd_limits, 80)
-    unlimited = lambda rows, n: len(rows) == n and all(row[1] == 0 and row[2] == 1999 and row[3] == 0 for row in rows)
+    def size_window(rows, n, preferred):
+        return len(rows) == n and all(row[1] == 0 and row[2] == preferred and row[3] == 0 for row in rows)
     no_size_penalty = conn.execute(
         "SELECT COUNT(*) FROM custom_formats WHERE name = '2160p Bloated WEB'"
     ).fetchone()[0] == 0
@@ -883,9 +888,9 @@ def run_simulation_battery():
     oceans_would_upgrade = (oceans_hone - oceans_bhd) >= upgrade_inc and not oceans_hone_blocked
 
     proof = (
-        ("4K size is min 0, preferred 1999, max 0", unlimited(limit_rows, 4)),
-        ("1080p size is min 0, preferred 1999, max 0", unlimited(hd_rows, 4)),
-        ("Remux size is min 0, preferred 1999, max 0", unlimited(remux_rows, 2)),
+        ("4K size is min 0, preferred 130, max 0", size_window(limit_rows, 4, 130)),
+        ("1080p size is min 0, preferred 18, max 0", size_window(hd_rows, 4, 18)),
+        ("Remux size is min 0, preferred 1999, max 0", size_window(remux_rows, 2, 1999)),
         ("720p stays min 0, preferred 1990, max 0", len(untouched_rows) == 4 and all(row[1] == 0 and row[2] == 1990 and row[3] == 0 for row in untouched_rows)),
         ("Sonarr 2160p size stays 6 / 130 / 200", sonarr_2160 == [(6, 130, 200)]),
         ("Sonarr 1080p size stays 2 / 10 / 30", sonarr_1080 == [(2, 10, 30)]),
@@ -1006,7 +1011,7 @@ def run_simulation_battery():
         title = f"Movie.2024.2160p.WEB-DL.x265-{group}"
         score, _, _, passed, matched = evaluate_release(conn, title, movies)
         hits = [n for n, _ in matched if n in tier_cfs]
-        if hits != ["2160p Compact WEB Tier 4"] or score != M_WEB4:
+        if hits != ["2160p Compact WEB Tier 4"] or score != M_WEB4 or passed:
             anomalies.append((group, "micro-ok-web", score, hits, [(n, s) for n, s in matched if s < 0]))
     for group in streaming:
         title = f"Movie.2024.2160p.WEB-DL.H265-{group}"
@@ -3112,18 +3117,30 @@ def run_dumpstarr_tiebreak_order(conn):
         (movies,),
     ).fetchone()
     expect("min, cutoff, and upgrade increment are unchanged", gates == (3000, 41600, 1), f"{gates}")
-    caps = conn.execute(
+    uhd_pref = conn.execute(
         """
         SELECT COUNT(*) FROM radarr_quality_definitions
-        WHERE quality_name IN (
-            'Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p',
-            'Bluray-1080p', 'WEBDL-1080p', 'WEBRip-1080p', 'HDTV-1080p',
-            'Remux-2160p', 'Remux-1080p'
-        )
-        AND min_size = 0 AND preferred_size = 1999 AND max_size = 0
+        WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p')
+          AND min_size = 0 AND preferred_size = 130 AND max_size = 0
         """
     ).fetchone()[0]
-    expect("Capped Radarr qualities are min 0, preferred 1999, max 0", caps == 10, f"rows {caps}")
+    hd_pref = conn.execute(
+        """
+        SELECT COUNT(*) FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-1080p', 'WEBDL-1080p', 'WEBRip-1080p', 'HDTV-1080p')
+          AND min_size = 0 AND preferred_size = 18 AND max_size = 0
+        """
+    ).fetchone()[0]
+    remux_pref = conn.execute(
+        """
+        SELECT COUNT(*) FROM radarr_quality_definitions
+        WHERE quality_name IN ('Remux-2160p', 'Remux-1080p')
+          AND min_size = 0 AND preferred_size = 1999 AND max_size = 0
+        """
+    ).fetchone()[0]
+    expect("4K encode size is min 0, preferred 130, max 0", uhd_pref == 4, f"rows {uhd_pref}")
+    expect("1080p encode size is min 0, preferred 18, max 0", hd_pref == 4, f"rows {hd_pref}")
+    expect("Remux size stays min 0, preferred 1999, max 0", remux_pref == 2, f"rows {remux_pref}")
     untouched = conn.execute(
         "SELECT COUNT(*) FROM radarr_quality_definitions WHERE quality_name = 'Bluray-720p' AND min_size = 0 AND preferred_size = 1990 AND max_size = 0"
     ).fetchone()[0]
@@ -3167,10 +3184,12 @@ def run_movie_fallback_ladder(conn, movies, tv):
     """Pickup order after the 4K class scores from op 972.
 
     Untouched 4K WEB-DL stays on the profile at 0, under min 3000, including
-    when Dolby Vision and HDR are named. 4K streaming stays at 28800 and
-    keeps its 2160p resolution requirement. 1080p repeats the ladder under
-    that: elite, circle, FLUX/Kitsune/CMRG, PSA, micro. The micro still
-    clears 3000. TV scores are not part of this ladder.
+    when Dolby Vision and HDR are named. 4K streaming stays at 28800, above
+    PSA at 25600, and keeps its 2160p resolution requirement. 4K Tier 4
+    scores 0, so a micro misses the minimum and Radarr can grab 1080p
+    instead. 1080p repeats the ladder under that: elite, circle,
+    FLUX/Kitsune/CMRG, PSA, micro. The 1080p micro still clears 3000.
+    TV scores are not part of this ladder.
     """
     print("\n=== MOVIE FALLBACK LADDER ===")
     passed = 0
@@ -3248,9 +3267,29 @@ def run_movie_fallback_ladder(conn, movies, tv):
     psa = score("Movie.2024.2160p.BluRay.HDR.x265-PSA")
     micro = score("Movie.2024.2160p.WEB-DL.x265-iVy")
     expect(
-        "4K PSA clears the minimum and beats a 4K micro",
-        psa[3] and psa[0] >= 3000 and psa[0] > micro[0] and micro[3],
-        f"PSA {psa[0]} micro {micro[0]}",
+        "4K PSA clears the minimum and beats a 4K micro that misses it",
+        psa[3] and psa[0] >= 3000 and psa[0] > micro[0] and micro[0] < 3000 and not micro[3],
+        f"PSA {psa[0]} micro {micro[0]} pass {micro[3]}",
+    )
+    streaming_plain = score("Movie.2024.2160p.WEB-DL.H265-FLUX")
+    expect(
+        "4K streaming stays above PSA",
+        streaming_plain[0] == M_STREAM and streaming_plain[0] > psa[0],
+        f"streaming {streaming_plain[0]} PSA {psa[0]}",
+    )
+    rarbg_4k = score("Movie.2024.2160p.BluRay.HDR.x265-RARBG")
+    stacked_micro = score("Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.10bit.x265-iVy")
+    expect(
+        "4K RARBG and iVy micros score below 3000",
+        (not rarbg_4k[3]) and rarbg_4k[0] < 3000 and (not micro[3]) and micro[0] < 3000
+        and "2160p Compact Bluray Tier 4" in [name for name, _s in rarbg_4k[4]]
+        and "2160p Compact WEB Tier 4" in [name for name, _s in micro[4]],
+        f"RARBG {rarbg_4k[0]} iVy {micro[0]}",
+    )
+    expect(
+        "4K micro plus the feature stack still misses 3000",
+        (not stacked_micro[3]) and stacked_micro[0] < 3000,
+        f"stacked {stacked_micro[0]}",
     )
 
     for group in ("FLUX", "Kitsune", "CMRG"):
@@ -3284,6 +3323,11 @@ def run_movie_fallback_ladder(conn, movies, tv):
         f"Ralphy {ralphy[0]} hallowed {hallowed[0]} BHDStudio {bhdstudio[0]}",
     )
     expect(
+        "1080p elite is grabbed when the 4K micro misses the minimum",
+        ralphy[3] and ralphy[0] == M_HD1 and ralphy[0] >= 3000 and not micro[3] and not rarbg_4k[3],
+        f"1080p {ralphy[0]} iVy {micro[0]} RARBG {rarbg_4k[0]}",
+    )
+    expect(
         "1080p elite beats streaming, which beats PSA, which beats a micro",
         ralphy[0] > flux_hd[0] > psa_hd[0] > ivy_hd[0]
         and flux_hd[0] == kitsune_hd[0] == cmrg_hd[0] == M_HD_STREAM
@@ -3314,6 +3358,8 @@ def run_movie_fallback_ladder(conn, movies, tv):
         f"FLUX {flux_dv[0]} Ralphy {ralphy[0]}",
     )
 
+    expect("TV 4K bluray tier 4 stays 3200", tier_score("2160p Compact Bluray Tier 4", tv) == 3200)
+    expect("TV 4K web tier 4 stays 6000", tier_score("2160p Compact WEB Tier 4", tv) == 6000)
     expect("TV untouched WEB-DL stays 2500", tier_score("2160p WEB-DL HEVC", tv) == 2500)
     expect("TV streaming WEB stays 5300", tier_score("2160p Compact Streaming WEB-DL", tv) == 5300)
     expect("TV 1080p tier 1 stays 1800", tier_score("1080p Compact HEVC Tier 1", tv) == 1800)
