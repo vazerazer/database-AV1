@@ -5,16 +5,18 @@ PCD compact 4K HEVC scoring battery.
 Movies 2160p HEVC Compact prefers a mid-size 2160p Blu-ray. The whole elite
 list shares one score (hallowed, BHDStudio, HONE, and the rest). Then a
 smaller disc such as QxR, then compact streaming WEB, then a PSA micro, then
-a big WEB-DL. Dolby Vision is +1000, HDR and HDR10+ are +500, and Dolby
-Digital + is +125. The class gap is wider than that stack. 4K Blu-ray with
-no HDR is rejected. TrueHD and the DTS-HD formats are rejected for direct
-play. CAM, hardcoded subtitles, 3D, upscales, extras, sing-along, audio
-description, and a non-HEVC codec on a tiered disc miss the same way.
-A tiered Dolby Vision WEB with no HDR token still clears the cutoff.
-4K quality definitions cap bitrate at 200 MB/min. There is no gigabyte
-penalty, so a long movie at a mid-size bitrate keeps its score.
-TV 2160p HEVC Compact still prefers WEB over disc. Its scores are unchanged.
-Movies Anywhere does not flip a WEB over a disc.
+a big WEB-DL. Inside a class, Dolby Vision is +1000, HDR is +500, and
+HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
+500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
++25, and AAC is +10. The class gap is wider than that stack. 4K Blu-ray
+with no HDR is rejected. A Dolby Vision WEB with no HDR token misses the
+cutoff. TrueHD and the DTS-HD formats are rejected for direct play. LPCM,
+FLAC, and lossy DTS are not. CAM, hardcoded subtitles, 3D, upscales,
+extras, sing-along, audio description, and a non-HEVC codec on a tiered
+disc miss the same way. 4K quality definitions cap bitrate at 200 MB/min.
+There is no gigabyte penalty, so a long movie at a mid-size bitrate keeps
+its score. TV 2160p HEVC Compact still prefers WEB over disc. Its scores
+are unchanged. Movies Anywhere does not flip a WEB over a disc.
 """
 
 import sqlite3
@@ -361,9 +363,10 @@ def bitrate_blocked(limits, mb_per_min):
             return True
     return False
 
-# Movie class bases. 3200 is wider than Dolby Vision + HDR + HDR10+ + DD+
-# and the smaller tie-breaks. HDR in a title also matches 10-bit Depth (+30)
-# because that regex treats the letters HDR as a 10-bit marker.
+# Movie class bases. 3200 is wider than the largest realistic extra stack.
+# HDR in a title also matches 10-bit Depth (+30) because that regex treats
+# the letters HDR as a 10-bit marker. HDR10+ does not also match HDR, so
+# its score is Dumpstarr's combined HDR + HDR10+ weight.
 M_BR1 = 38400
 M_BR2 = 35200
 M_WEB1 = 32000
@@ -378,8 +381,20 @@ M_HD1 = 9600
 M_HD2 = 6400
 M_HD3 = 3200
 M_HDR = 530  # HDR +500 and 10-bit Depth +30
+M_HDR10 = 600
 M_DV = 1000
 M_DDP = 125
+M_DD = 115
+M_ATMOS = 25
+M_AAC = 10
+M_SE = 125
+M_DTS = 0
+M_MA = 15
+M_DSNP = 10  # Disney+ and iTunes
+M_ATVP = 5   # Apple TV+, Max, HBO Max
+M_SHOP = 2   # Amazon, Netflix, ATV, Hulu
+M_IMF = 75
+M_DV_BARE = -100000
 
 
 def run_simulation_battery():
@@ -851,7 +866,7 @@ def run_simulation_battery():
         ("HDR scores +500 on the compact disc", any(name == "HDR" and s == 500 for name, s in towers_disc_matched)),
         ("DD+ scores +125 on the compact disc", any(name == "Dolby Digital +" and s == M_DDP for name, s in towers_disc_matched)),
         ("hallowed, BHDStudio and HONE HDR discs share one score", len({score_of(f"Movie.2024.2160p.BluRay.HDR.x265-{g}")[0] for g in ("hallowed", "BHDStudio", "HONE", "DarQ", "DiscoD", "dkore", "HQMUX", "PTer", "Chivaman", "Weasley", "Vyndros")}) == 1),
-        ("IMAX is only a tie-break inside that class", score_of("Movie.2024.2160p.BluRay.HDR.IMAX.x265-hallowed")[0] - score_of("Movie.2024.2160p.BluRay.HDR.x265-hallowed")[0] == 40),
+        ("IMAX adds no movie score, so it cannot beat Atmos", score_of("Movie.2024.2160p.BluRay.HDR.IMAX.x265-hallowed")[0] - score_of("Movie.2024.2160p.BluRay.HDR.x265-hallowed")[0] == 0),
         ("PSARip micro beats BYNDR", score_of("Movie.2024.2160p.BluRay.HDR.x265-PSARips")[0] > byndr),
         ("d3g micro beats NTb", score_of("Movie.2024.2160p.BluRay.HDR.x265-d3g")[0] > score_of("Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-NTb")[0]),
         ("Coyote-style PSA WEBRip beats a much larger BYNDR", score_of("Coyote.vs.Acme.2026.2160p.WEBRip.HDR.x265-PSA")[0] > score_of("Coyote.vs.Acme.2026.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR")[0]),
@@ -993,6 +1008,10 @@ def run_simulation_battery():
     passed_tests += stress_passed
     failed_tests += stress_failed
 
+    tie_passed, tie_failed = run_dumpstarr_tiebreak_order(conn)
+    passed_tests += tie_passed
+    failed_tests += tie_failed
+
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
     print("================================================================================")
@@ -1004,9 +1023,9 @@ def _compact_parity_cases():
 
     Hard rejects on a tiered HDR disc have to miss cutoff 3000. A -10000
     penalty does not, because the class base is 38400. Dolby Vision WEB
-    without an HDR token stays grabable for a tiered group. German scene
-    dubs with a channel count (DDP5.1.DL) are dubs. Disney+ and Apple TV+
-    still count when the plus sign sits against a dot.
+    without an HDR token misses cutoff the same way. German scene dubs
+    with a channel count (DDP5.1.DL) are a -750 penalty, not a ban.
+    Disney+ and Apple TV+ still count when the plus sign sits against a dot.
     """
     out = []
 
@@ -1064,7 +1083,7 @@ def _compact_parity_cases():
     add(
         "Special Features is extras and also the loose Special token",
         "Movie.2024.2160p.BluRay.HDR.Special.Features.x265-HONE",
-        exact=ban + 20,
+        exact=ban + M_SE,
         passes=False,
         has=["Extras", "Special Edition", "2160p Compact Bluray Tier 1"],
         absent=["2160p SDR Bluray"],
@@ -1145,7 +1164,7 @@ def _compact_parity_cases():
         ("Uncut after the year is a special edition", "Movie.2024.2160p.BluRay.HDR.Uncut.x265-HONE"),
         ("Special Edition words score once", "Movie.2024.2160p.BluRay.HDR.Special.Edition.x265-HONE"),
     ):
-        add(name, title, exact=elite + 20, passes=True, has=["Special Edition"], absent=["Extras", "2160p SDR Bluray"])
+        add(name, title, exact=elite + M_SE, passes=True, has=["Special Edition"], absent=["Extras", "2160p SDR Bluray"])
     add(
         "Uncut Gems before the year is not a special edition",
         "Uncut.Gems.2019.2160p.BluRay.HDR.x265-HONE",
@@ -1338,7 +1357,7 @@ def _compact_parity_cases():
     add(
         "German DD5.1.DL WEB GHOST is a dub",
         "Movie.2024.German.DD5.1.DL.2160p.WEB.HDR.x265-GHOST",
-        exact=30 + 500 + 20 - 750,
+        exact=30 + 500 + M_DD - 750,
         passes=False,
         has=["Foreign Dub", "Dolby Digital"],
         absent=["Dolby Digital +", "2160p Compact WEB Tier 2"],
@@ -1346,7 +1365,7 @@ def _compact_parity_cases():
     add(
         "German AC3.5.1.DL Blu-ray keeps the elite tier",
         "Movie.2024.German.AC3.5.1.DL.2160p.BluRay.HDR.x265-hallowed",
-        exact=M_BR1 + M_HDR + 20 - 750,
+        exact=M_BR1 + M_HDR + M_DD - 750,
         passes=True,
         has=["2160p Compact Bluray Tier 1", "Foreign Dub", "Dolby Digital"],
         absent=["CAM", "Full Disc", "Dolby Digital +", "2160p Compact WEB Tier 2"],
@@ -1363,7 +1382,7 @@ def _compact_parity_cases():
     add(
         "Italian AC3.MD WEB GHOST is a dub and not circle",
         "Movie.2024.Italian.AC3.MD.2160p.WEB.HDR.x265-GHOST",
-        exact=30 + 500 + 20 - 750,
+        exact=30 + 500 + M_DD - 750,
         passes=False,
         has=["Foreign Dub", "Dolby Digital"],
         absent=["CAM", "2160p Compact WEB Tier 2"],
@@ -1379,7 +1398,7 @@ def _compact_parity_cases():
     add(
         "French AC3.LD Blu-ray Ghost stays circle",
         "Movie.2024.FRENCH.AC3.LD.2160p.BluRay.HDR.x265-Ghost",
-        exact=M_BR2 + M_HDR + 20 - 750,
+        exact=M_BR2 + M_HDR + M_DD - 750,
         passes=True,
         tier="2160p Compact Bluray Tier 2",
         has=["Foreign Dub"],
@@ -1441,7 +1460,7 @@ def _compact_parity_cases():
     add(
         "TrueHD Atmos DDP rejects on TrueHD and not on DD+",
         "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.DDP5.1.x265-hallowed",
-        exact=elite + 80 - 100000,
+        exact=elite + M_ATMOS - 100000,
         passes=False,
         has=["TrueHD", "Atmos"],
         absent=["Dolby Digital +", "Dolby Digital", "DTS-HD MA"],
@@ -1480,7 +1499,7 @@ def _compact_parity_cases():
     add(
         "Lossy DTS beside DD+ keeps DTS",
         "Movie.2024.2160p.BluRay.HDR.DTS.DDP5.1.x265-hallowed",
-        exact=elite + 25,
+        exact=elite + M_DTS,
         passes=True,
         has=["DTS"],
         absent=["Dolby Digital +", "DTS-HD MA", "TrueHD"],
@@ -1508,19 +1527,20 @@ def _compact_parity_cases():
         absent=["TrueHD", "DTS-HD MA"],
     )
 
-    # Storefronts. ATV stays +10. Apple TV+ and Disney+ have to survive a dot after the plus.
+    # Storefronts stay small. Dumpstarr's order, divided by 5 so MA stays +15:
+    # MA, then DSNP and iTunes, then ATVP / MAX / HMAX, then ATV / AMZN / NF / HULU.
     add(
-        "ATVP is +15 and not ATV",
+        "ATVP is +5 and not ATV",
         "Movie.2024.2160p.ATVP.WEB-DL.HDR.H.265-Kitsune",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         passes=True,
         has=["ATVP", "2160p Compact Streaming WEB-DL"],
         absent=["ATV", "iT"],
     )
     add(
-        "ATV is +10 and not ATVP",
+        "ATV is +2 and not ATVP",
         "Movie.2024.2160p.ATV.WEB-DL.HDR.H.265-Kitsune",
-        exact=stream + 10,
+        exact=stream + M_SHOP,
         passes=True,
         has=["ATV", "2160p Compact Streaming WEB-DL"],
         absent=["ATVP", "iT"],
@@ -1528,7 +1548,7 @@ def _compact_parity_cases():
     add(
         "Apple.TV+ scores ATVP",
         "Movie.2024.2160p.Apple.TV+.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         passes=True,
         has=["ATVP"],
         absent=["ATV", "iT"],
@@ -1536,21 +1556,21 @@ def _compact_parity_cases():
     add(
         "Apple TV+ with a space scores ATVP",
         "Movie.2024.2160p.Apple TV+.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         has=["ATVP"],
         absent=["ATV"],
     )
     add(
-        "DSNP is +15",
+        "DSNP is +10",
         "Movie.2024.2160p.DSNP.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_DSNP,
         has=["DSNP"],
         absent=["HULU", "ATVP"],
     )
     add(
         "Disney+ before a dot scores DSNP",
         "Movie.2024.2160p.Disney+.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_DSNP,
         passes=True,
         has=["DSNP"],
         absent=["HULU", "ATVP"],
@@ -1558,7 +1578,7 @@ def _compact_parity_cases():
     add(
         "DSNY scores DSNP",
         "Movie.2024.2160p.DSNY.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_DSNP,
         has=["DSNP"],
     )
     add(
@@ -1568,68 +1588,68 @@ def _compact_parity_cases():
         absent=["DSNP"],
     )
     add(
-        "HMAX is +15 and not MAX",
+        "HMAX is +5 and not MAX",
         "Movie.2024.2160p.HMAX.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         has=["HMAX"],
         absent=["MAX"],
     )
     add(
-        "MAX.WEB-DL is +15 and not HMAX",
+        "MAX.WEB-DL is +5 and not HMAX",
         "Movie.2024.2160p.MAX.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         has=["MAX"],
         absent=["HMAX"],
     )
     add(
         "HBO.MAX.WEB-DL is HMAX and not MAX",
         "Movie.2024.2160p.HBO.MAX.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_ATVP,
         has=["HMAX"],
         absent=["MAX"],
     )
     add(
-        "AMZN is +15",
+        "AMZN is +2",
         "Movie.2024.2160p.AMZN.WEB-DL.HDR.H.265-Kitsune",
-        exact=stream + 15,
+        exact=stream + M_SHOP,
         has=["AMZN"],
     )
     add(
         "AMAZON.WEB-DL is AMZN",
         "Movie.2024.2160p.AMAZON.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15,
+        exact=stream + M_SHOP,
         has=["AMZN"],
     )
     add(
-        "NF is +15",
+        "NF is +2",
         "Movie.2024.2160p.NF.WEB-DL.HDR.H.265-CMRG",
-        exact=stream + 15,
+        exact=stream + M_SHOP,
         has=["NF"],
     )
     add(
         "Netflix word is NF",
         "Movie.2024.2160p.Netflix.WEB-DL.HDR.H.265-CMRG",
-        exact=stream + 15,
+        exact=stream + M_SHOP,
         has=["NF"],
     )
     add(
         "iT.WEB-DL is +10",
         "Movie.2024.2160p.iT.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 10,
+        exact=stream + M_DSNP,
         has=["iT"],
         absent=["ATVP", "ATV"],
     )
     add(
         "iTunes.WEB-DL is iT",
         "Movie.2024.2160p.iTunes.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 10,
+        exact=stream + M_DSNP,
         has=["iT"],
         absent=["ATVP"],
     )
     add(
-        "HULU is +10",
+        "HULU is +2",
         "Movie.2024.2160p.HULU.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 10,
+        exact=stream + M_SHOP,
         has=["HULU"],
         absent=["DSNP"],
     )
@@ -1670,10 +1690,10 @@ def _compact_parity_cases():
         add(name, title, has=has, not_=absent)
 
     add(
-        "WEB DV without HDR from FLUX still clears cutoff",
+        "WEB DV without HDR from FLUX misses cutoff",
         "Movie.2024.2160p.WEB-DL.DV.x265-FLUX",
-        exact=M_STREAM + 30 + 1000 - 10000,
-        passes=True,
+        exact=M_STREAM + 30 + M_DV + M_DV_BARE,
+        passes=False,
         has=["2160p Compact Streaming WEB-DL", "Dolby Vision", "Dolby Vision (Without Fallback)"],
         absent=["HDR", "HDR10+", "2160p SDR Bluray"],
     )
@@ -1693,10 +1713,10 @@ def _compact_parity_cases():
         absent=["Dolby Vision (Without Fallback)", "2160p SDR Bluray"],
     )
     add(
-        "WEB DoVi SDR is without-fallback and still a tiered WEB",
+        "WEB DoVi SDR is without-fallback and misses cutoff",
         "Movie.2024.2160p.WEB-DL.DoVi.SDR.x265-FLUX",
-        exact=M_STREAM + 30 + 1000 - 10000,
-        passes=True,
+        exact=M_STREAM + 30 + M_DV + M_DV_BARE,
+        passes=False,
         has=["Dolby Vision (Without Fallback)"],
         absent=["HDR", "2160p SDR Bluray"],
     )
@@ -1747,28 +1767,28 @@ def _compact_parity_cases():
     add(
         "Plain IMAX is IMAX and not IMAX Enhanced",
         "Movie.2024.2160p.BluRay.HDR.IMAX.x265-hallowed",
-        exact=elite + 40,
+        exact=elite,
         has=["IMAX"],
         absent=["IMAX Enhanced"],
     )
     add(
         "WEB IMAX without a Disney token is IMAX",
         "Movie.2024.2160p.WEB-DL.IMAX.HDR.H.265-FLUX",
-        exact=stream + 40,
+        exact=stream,
         has=["IMAX", "2160p Compact Streaming WEB-DL"],
         absent=["IMAX Enhanced"],
     )
     add(
         "DSNP IMAX is IMAX Enhanced and not IMAX",
         "Movie.2024.2160p.IMAX.Enhanced.DSNP.WEB-DL.HDR.H.265-FLUX",
-        exact=stream + 15 + 40,
+        exact=stream + M_DSNP,
         has=["IMAX Enhanced", "DSNP"],
         absent=["IMAX"],
     )
     add(
         "DSNP IMAX without the Enhanced words is still IMAX Enhanced",
         "Movie.2024.2160p.DSNP.WEB-DL.IMAX.HDR.H.265-CMRG",
-        exact=stream + 15 + 40,
+        exact=stream + M_DSNP,
         has=["IMAX Enhanced", "DSNP"],
         absent=["IMAX"],
     )
@@ -1928,35 +1948,35 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "Ministry hallowed HDR10Plus is not SDR",
             "title": "The.Ministry.of.Ungentlemanly.Warfare.2024.UHD.BluRay.2160p.DDP.7.1.HDR10Plus.x265-hallowed",
-            "exact": 39055,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP,
             "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +", "10-bit Depth"],
             "not": ["2160p SDR Bluray", "HDR", "CAM", "Dolby Digital"],
         },
         {
             "name": "HDR10+ symbol is HDR10+ and 10-bit, not SDR",
             "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10+.x265-hallowed",
-            "exact": 39055,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP,
             "has": ["HDR10+", "10-bit Depth"],
             "not": ["2160p SDR Bluray", "HDR"],
         },
         {
             "name": "HDR10P is HDR10+ and 10-bit, not SDR",
             "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10P.x265-hallowed",
-            "exact": 39055,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP,
             "has": ["HDR10+"],
             "not": ["2160p SDR Bluray", "HDR"],
         },
         {
             "name": "HDR10plus is HDR10+ and 10-bit, not SDR",
             "title": "Movie.2024.2160p.UHD.BluRay.DDP.7.1.HDR10plus.x265-hallowed",
-            "exact": 39055,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP,
             "has": ["HDR10+"],
             "not": ["2160p SDR Bluray", "HDR"],
         },
         {
             "name": "HDR+ is the HDR10+ format",
             "title": "Movie.2024.2160p.BluRay.HDR+.x265-hallowed",
-            "exact": M_BR1 + 30 + 500,
+            "exact": M_BR1 + 30 + M_HDR10,
             "has": ["HDR10+", "10-bit Depth"],
             "not": ["HDR", "2160p SDR Bluray"],
         },
@@ -1977,7 +1997,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "HDR and HDR10+ together score HDR10+ once",
             "title": "Movie.2024.2160p.BluRay.HDR.HDR10+.x265-hallowed",
-            "exact": M_BR1 + 30 + 500,
+            "exact": M_BR1 + 30 + M_HDR10,
             "has": ["HDR10+"],
             "not": ["HDR", "2160p SDR Bluray"],
         },
@@ -2005,7 +2025,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "Dark Phoenix hallowed HDR10Plus is not SDR",
             "title": "X-Men.Dark.Phoenix.2019.UHD.BluRay.2160p.DDP.7.1.HDR10Plus.x265-hallowed",
-            "exact": 39055,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP,
             "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +"],
             "not": ["2160p SDR Bluray", "HDR"],
         },
@@ -2019,7 +2039,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "Mutiny hallowed HDR10Plus disc is elite, not SDR",
             "title": "Mutiny 2026 UHD BluRay 2160p DDP 5 1 Atmos HDR10Plus x265-hallowed",
-            "exact": 39135,
+            "exact": M_BR1 + 30 + M_HDR10 + M_DDP + M_ATMOS,
             "has": ["2160p Compact Bluray Tier 1", "HDR10+", "Dolby Digital +", "Atmos", "10-bit Depth"],
             "not": ["2160p SDR Bluray", "CAM"],
         },
@@ -2068,14 +2088,15 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "DV plus HDR10Plus scores DV and HDR10+ once",
             "title": "Movie.2024.2160p.BluRay.DV.HDR10Plus.x265-hallowed",
-            "exact": M_BR1 + 30 + 1000 + 500,
+            "exact": M_BR1 + 30 + M_DV + M_HDR10,
             "has": ["Dolby Vision", "HDR10+", "10-bit Depth"],
             "not": ["HDR", "2160p SDR Bluray", "Dolby Vision (Without Fallback)"],
         },
         {
             "name": "WEB DV without HDR is Dolby Vision without fallback",
             "title": "Movie.2024.2160p.WEB-DL.DV.x265-FLUX",
-            "exact": 28800 + 30 + 1000 - 10000,
+            "exact": M_STREAM + 30 + M_DV + M_DV_BARE,
+            "passes": False,
             "has": ["2160p Compact Streaming WEB-DL", "Dolby Vision", "Dolby Vision (Without Fallback)"],
             "not": ["HDR", "2160p SDR Bluray", "2160p Compact Bluray Tier 1"],
         },
@@ -2089,7 +2110,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "WEB DV with HDR10Plus has a fallback",
             "title": "Movie.2024.2160p.WEB-DL.DV.HDR10Plus.x265-FLUX",
-            "exact": 28800 + 30 + 1000 + 500,
+            "exact": M_STREAM + 30 + M_DV + M_HDR10,
             "has": ["HDR10+", "Dolby Vision"],
             "not": ["Dolby Vision (Without Fallback)", "HDR", "2160p SDR Bluray"],
         },
@@ -2109,14 +2130,14 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "German AC3.LD WEB is not CAM and is not circle WEB",
             "title": "Mutiny.2026.German.AC3.LD.DL.2160p.WEB.HDR.x265-GHOST",
-            "exact": 30 + 20 + 500 - 750,
+            "exact": 30 + M_DD + 500 - 750,
             "has": ["Foreign Dub", "HDR", "Dolby Digital", "10-bit Depth"],
             "not": ["CAM", "2160p Compact WEB Tier 2", "2160p Compact Bluray Tier 2", "2160p SDR Bluray", "HDR10+"],
         },
         {
             "name": "German AC3.MD Blu-ray is not CAM; disc Ghost stays circle",
             "title": "Mutiny.2026.German.AC3.MD.DL.2160p.BluRay.HDR.x265-GHOST",
-            "exact": M_BR2 + 30 + 20 + 500 - 750,
+            "exact": M_BR2 + 30 + M_DD + 500 - 750,
             "has": ["2160p Compact Bluray Tier 2", "Foreign Dub", "HDR"],
             "not": ["CAM", "2160p Compact WEB Tier 2", "2160p SDR Bluray"],
         },
@@ -2144,7 +2165,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "WEBRip before the German tag is still not circle WEB",
             "title": "Movie.2024.2160p.WEBRip.German.AC3.LD.DL.x265-GHOST",
-            "exact": 20 - 750,
+            "exact": M_DD - 750,
             "has": ["Foreign Dub", "Dolby Digital"],
             "not": ["2160p Compact WEB Tier 2", "CAM", "2160p SDR Bluray"],
         },
@@ -2277,14 +2298,14 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "TrueHD still rejects",
             "title": "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 80 - 100000,
+            "exact": M_BR1 + 30 + 500 + M_ATMOS - 100000,
             "has": ["TrueHD", "Atmos"],
             "not": ["Dolby Digital +", "Dolby Digital"],
         },
         {
             "name": "TrueHD plus DD+ still rejects on TrueHD",
             "title": "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.DDP.5.1.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 80 - 100000,
+            "exact": M_BR1 + 30 + 500 + M_ATMOS - 100000,
             "has": ["TrueHD", "Atmos"],
             "not": ["Dolby Digital +", "Dolby Digital"],
         },
@@ -2348,14 +2369,14 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "Lossy DTS is DTS, not an HD-audio reject",
             "title": "Movie.2024.2160p.BluRay.HDR.DTS.5.1.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 25,
+            "exact": M_BR1 + 30 + 500 + M_DTS,
             "has": ["DTS"],
             "not": ["DTS-HD MA", "DTS-HD HRA", "DTS-X", "TrueHD"],
         },
         {
             "name": "DTS plus DD+ keeps DTS",
             "title": "Movie.2024.2160p.BluRay.HDR.DTS.5.1.DDP.5.1.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 25,
+            "exact": M_BR1 + 30 + 500 + M_DTS,
             "has": ["DTS"],
             "not": ["Dolby Digital +", "Dolby Digital"],
         },
@@ -2395,7 +2416,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "DD 5.1 is Dolby Digital, not Plus",
             "title": "Movie.2024.2160p.BluRay.HDR.DD.5.1.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 20,
+            "exact": M_BR1 + 30 + 500 + M_DD,
             "has": ["Dolby Digital"],
             "not": ["Dolby Digital +"],
         },
@@ -2408,7 +2429,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "AAC alone matches AAC",
             "title": "Movie.2024.2160p.BluRay.HDR.AAC.2.0.x265-hallowed",
-            "exact": M_BR1 + 30 + 500 + 5,
+            "exact": M_BR1 + 30 + 500 + M_AAC,
             "has": ["AAC"],
             "not": ["Dolby Digital", "Dolby Digital +"],
         },
@@ -2434,7 +2455,7 @@ def run_identification_stress(conn, movies, tv):
         {
             "name": "Atmos plus DD+ scores both",
             "title": "Movie.2024.2160p.BluRay.HDR.Atmos.DDP5.1.x265-hallowed",
-            "exact": M_BR1 + M_HDR + M_DDP + 80,
+            "exact": M_BR1 + M_HDR + M_DDP + M_ATMOS,
             "has": ["Atmos", "Dolby Digital +"],
         },
         {
@@ -2451,16 +2472,16 @@ def run_identification_stress(conn, movies, tv):
             "not": ["DTS-HD MA"],
         },
         {
-            "name": "HMAX scores the same +15 storefront tie-break as MAX",
+            "name": "HMAX scores the same +5 storefront tie-break as MAX",
             "title": "Movie.2024.2160p.HMAX.WEB-DL.HDR.H.265-FLUX",
-            "exact": 28800 + M_HDR + 15,
+            "exact": M_STREAM + M_HDR + M_ATVP,
             "has": ["HMAX", "2160p Compact Streaming WEB-DL"],
             "not": ["2160p Compact Bluray Tier 1"],
         },
         {
-            "name": "MAX.WEB-DL scores MAX +15",
+            "name": "MAX.WEB-DL scores MAX +5",
             "title": "Movie.2024.2160p.MAX.WEB-DL.HDR.H.265-FLUX",
-            "exact": 28800 + M_HDR + 15,
+            "exact": M_STREAM + M_HDR + M_ATVP,
             "has": ["MAX"],
         },
         {
@@ -2826,6 +2847,241 @@ def run_identification_stress(conn, movies, tv):
             failed += 1
             print(f"[FAIL] {label}")
     print(f"Identification stress: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_dumpstarr_tiebreak_order(conn):
+    """Dumpstarr-relative extras inside one Movies 2160p HEVC Compact class.
+
+    HDR and HDR10+ are mutually exclusive here, so HDR10+ carries Dumpstarr's
+    combined 500+100. Audio order is DD+ Atmos, DD Atmos, DD+, DD, Atmos, AAC,
+    then lossy DTS with no bonus. Storefronts keep that same order under a
+    +15 ceiling. HD audio Dumpstarr denies misses cutoff. LPCM, FLAC, and
+    lossy DTS do not, because Dumpstarr does not deny them. A tiered DV WEB
+    with no HDR token misses cutoff. Class order is unchanged.
+    """
+    movies = "Movies 2160p HEVC Compact"
+    tv = "TV 2160p HEVC Compact"
+    passed = 0
+    failed = 0
+
+    def score(title, profile=movies):
+        return evaluate_release(conn, title, profile)
+
+    def expect(name, cond, detail=""):
+        nonlocal passed, failed
+        if cond:
+            passed += 1
+            print(f"[PASS] {name}")
+        else:
+            failed += 1
+            print(f"[FAIL] {name} {detail}")
+
+    base_title = "Movie.2024.2160p.BluRay.HDR.x265-hallowed"
+    base = score(base_title)[0]
+
+    def disc(extra):
+        return score(f"Movie.2024.2160p.BluRay.HDR.{extra}.x265-hallowed")[0]
+
+    hdr10 = score("Movie.2024.2160p.BluRay.HDR10+.x265-hallowed")[0]
+    dv_hdr = score("Movie.2024.2160p.BluRay.DV.HDR.x265-hallowed")[0]
+    dv_hdr10 = score("Movie.2024.2160p.BluRay.DV.HDR10+.x265-hallowed")[0]
+    expect(
+        "DV+HDR10+ beats DV+HDR beats HDR10+ beats HDR",
+        dv_hdr10 > dv_hdr > hdr10 > base,
+        f"{dv_hdr10} {dv_hdr} {hdr10} {base}",
+    )
+    expect("HDR10+ leads plain HDR by 100", hdr10 - base == 100, f"delta {hdr10 - base}")
+    expect("Dolby Vision adds 1000 on top of HDR", dv_hdr - base == M_DV, f"delta {dv_hdr - base}")
+
+    ddp_atmos = disc("DDP5.1.Atmos")
+    dd_atmos = disc("DD.5.1.Atmos")
+    ddp = disc("DDP5.1")
+    dd = disc("DD.5.1")
+    atmos = disc("Atmos")
+    aac = disc("AAC.2.0")
+    dts = disc("DTS.5.1")
+    expect(
+        "DD+ Atmos > DD Atmos > DD+ > DD > Atmos > AAC > lossy DTS",
+        ddp_atmos > dd_atmos > ddp > dd > atmos > aac > dts and dts == base,
+        f"{ddp_atmos} {dd_atmos} {ddp} {dd} {atmos} {aac} {dts} base {base}",
+    )
+    expect("DD+ Atmos is +150", ddp_atmos - base == M_DDP + M_ATMOS)
+    expect("DD Atmos is +140", dd_atmos - base == M_DD + M_ATMOS)
+    expect("DD+ is +125", ddp - base == M_DDP)
+    expect("DD is +115", dd - base == M_DD)
+    expect("Atmos is +25", atmos - base == M_ATMOS)
+    expect("AAC is +10", aac - base == M_AAC)
+
+    dts_ddp, _, _, dts_ddp_ok, dts_ddp_matched = score(
+        "Movie.2024.2160p.BluRay.HDR.DTS.5.1.DDP.5.1.x265-hallowed"
+    )
+    dts_names = [name for name, _s in dts_ddp_matched]
+    expect(
+        "Lossy DTS beside DD+ scores DTS and not DD+",
+        dts_ddp == dts and dts_ddp_ok and "DTS" in dts_names and "Dolby Digital +" not in dts_names,
+        f"score {dts_ddp} names {dts_names}",
+    )
+    truehd, truehd_min, _, truehd_ok, truehd_matched = score(
+        "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.DDP5.1.x265-hallowed"
+    )
+    truehd_names = [name for name, _s in truehd_matched]
+    expect(
+        "TrueHD beside DD+ still misses cutoff",
+        (not truehd_ok) and truehd < truehd_min and "TrueHD" in truehd_names and "Dolby Digital +" not in truehd_names,
+        f"score {truehd}",
+    )
+
+    extended = disc("Extended")
+    expect("Special Edition matches the DD+ weight", extended - base == M_SE and extended == ddp)
+
+    def web(tag):
+        if tag:
+            title = f"Movie.2024.2160p.{tag}.WEB-DL.HDR.H.265-FLUX"
+        else:
+            title = "Movie.2024.2160p.WEB-DL.HDR.H.265-FLUX"
+        return score(title)[0]
+
+    plain = web("")
+    ma = web("MA")
+    dsnp = web("DSNP")
+    itunes = web("iT")
+    atvp = web("ATVP")
+    hmax = web("HMAX")
+    max_web = web("MAX")
+    atv = web("ATV")
+    amzn = web("AMZN")
+    nf = web("NF")
+    hulu = web("HULU")
+    expect(
+        "MA > DSNP = iTunes > ATVP = HMAX = MAX > ATV = AMZN = NF = HULU",
+        ma > dsnp == itunes > atvp == hmax == max_web > atv == amzn == nf == hulu > plain,
+        f"{ma} {dsnp} {itunes} {atvp} {hmax} {max_web} {atv} {amzn} {nf} {hulu} {plain}",
+    )
+    expect("MA storefront is +15", ma - plain == M_MA)
+    expect("DSNP storefront is +10", dsnp - plain == M_DSNP)
+    expect("ATVP storefront is +5", atvp - plain == M_ATVP)
+    expect("AMZN storefront is +2", amzn - plain == M_SHOP)
+
+    elite_ddp = score("Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-hallowed")[0]
+    bhdstudio = score("Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-BHDStudio")[0]
+    darq = score("Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-DarQ")[0]
+    discod = score("Movie.2024.2160p.BluRay.HDR.DDP5.1.x265-DiscoD")[0]
+    flux_ma = score("Movie.2024.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-FLUX")[0]
+    hone_ma = score("Movie.2024.2160p.MA.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-HONE")[0]
+    psa = score("Movie.2024.2160p.BluRay.HDR.x265-PSA")[0]
+    byndr = score("Movie.2024.2160p.WEB-DL.DV.HDR.DDP5.1.Atmos.H.265-BYNDR")[0]
+    expect("hallowed DD+ HDR beats FLUX MA WEB", elite_ddp > flux_ma, f"{elite_ddp} vs {flux_ma}")
+    expect("hallowed DD+ HDR beats HONE MA WEB", elite_ddp > hone_ma, f"{elite_ddp} vs {hone_ma}")
+    expect("hallowed DD+ HDR beats PSA", elite_ddp > psa, f"{elite_ddp} vs {psa}")
+    expect("BHDStudio, DarQ, and DiscoD tie that hallowed disc", bhdstudio == darq == discod == elite_ddp)
+    expect("PSA beats a stacked untouched WEB", psa > byndr, f"{psa} vs {byndr}")
+
+    circle = score("Movie.2024.2160p.BluRay.DV.HDR10+.DDP5.1.Atmos.Extended.Hybrid.x265-QxR")[0]
+    expect(
+        "A stacked circle disc still loses to a plain elite HDR disc",
+        circle < base,
+        f"{circle} vs {base}",
+    )
+
+    for label, title in (
+        ("TrueHD", "Movie.2024.2160p.BluRay.HDR.TrueHD.Atmos.x265-hallowed"),
+        ("DTS-HD MA", "Movie.2024.2160p.BluRay.HDR.DTS-HD.MA.x265-hallowed"),
+        ("DTS-HD HRA", "Movie.2024.2160p.BluRay.HDR.DTS-HD.HRA.x265-hallowed"),
+        ("DTS-X", "Movie.2024.2160p.BluRay.HDR.DTS-X.x265-hallowed"),
+    ):
+        total, minimum, _until, ok, _matched = score(title)
+        expect(f"{label} on an elite HDR disc misses cutoff", (not ok) and total < minimum, f"score {total}")
+
+    for label, title in (
+        ("LPCM", "Movie.2024.2160p.BluRay.HDR.LPCM.5.1.x265-hallowed"),
+        ("PCM", "Movie.2024.2160p.BluRay.HDR.PCM.7.1.x265-hallowed"),
+        ("FLAC", "Movie.2024.2160p.BluRay.HDR.FLAC.2.0.x265-hallowed"),
+        ("lossy DTS", "Movie.2024.2160p.BluRay.HDR.DTS.5.1.x265-hallowed"),
+    ):
+        total, minimum, _until, ok, matched = score(title)
+        names = [name for name, _s in matched]
+        expect(
+            f"{label} stays playable on an elite HDR disc",
+            ok and total >= minimum and "TrueHD" not in names and "DTS-HD MA" not in names,
+            f"score {total} names {names}",
+        )
+
+    for group in ("FLUX", "Kitsune", "CMRG"):
+        total, minimum, _until, ok, matched = score(f"Movie.2024.2160p.WEB-DL.DV.x265-{group}")
+        names = [name for name, _s in matched]
+        expect(
+            f"{group} DV WEB with no HDR token misses cutoff",
+            (not ok) and total < minimum and "Dolby Vision (Without Fallback)" in names and "HDR" not in names,
+            f"score {total} names {names}",
+        )
+    fallback, _mn, _until, fallback_ok, fallback_matched = score("Movie.2024.2160p.WEB-DL.DV.HDR.x265-FLUX")
+    fallback_names = [name for name, _s in fallback_matched]
+    expect(
+        "FLUX DV with an HDR token still clears cutoff",
+        fallback_ok and "Dolby Vision (Without Fallback)" not in fallback_names,
+        f"score {fallback}",
+    )
+
+    dub, _mn, _until, dub_ok, dub_matched = score("Movie.2024.German.AC3.LD.2160p.BluRay.HDR.x265-hallowed")
+    dub_names = [name for name, _s in dub_matched]
+    plain_dd = score("Movie.2024.2160p.BluRay.HDR.DD.5.1.x265-hallowed")[0]
+    dub_dd = score("Movie.2024.German.AC3.5.1.DL.2160p.BluRay.HDR.x265-hallowed")[0]
+    ddp_dub, _mn, _until, ddp_dub_ok, ddp_dub_matched = score(
+        "Movie.2024.German.DDP5.1.DL.2160p.BluRay.HDR.x265-hallowed"
+    )
+    expect(
+        "German AC3.LD is a dub and still clears cutoff",
+        dub_ok and "Foreign Dub" in dub_names and "CAM" not in dub_names,
+        f"score {dub} names {dub_names}",
+    )
+    expect(
+        "German DDP5.1.DL is a dub and still clears cutoff",
+        ddp_dub_ok and "Foreign Dub" in [name for name, _s in ddp_dub_matched] and "CAM" not in [name for name, _s in ddp_dub_matched],
+        f"score {ddp_dub}",
+    )
+    expect("German dub penalty is -750, not a hard reject", plain_dd - dub_dd == 750, f"{plain_dd} - {dub_dd}")
+
+    imf = score("Coyote.vs.Acme.2026.2160p.WEBRip.IMF.HDR.x265-PSA")[0]
+    no_imf = score("Coyote.vs.Acme.2026.2160p.WEBRip.HDR.x265-PSA")[0]
+    expect("IMF WEBRip is +75 and still loses to streaming WEB", imf - no_imf == M_IMF and imf < plain)
+
+    gates = conn.execute(
+        "SELECT minimum_custom_format_score, upgrade_until_score, upgrade_score_increment FROM quality_profiles WHERE name = ?",
+        (movies,),
+    ).fetchone()
+    expect("min, cutoff, and upgrade increment are unchanged", gates == (3000, 41600, 1), f"{gates}")
+    caps = conn.execute(
+        "SELECT COUNT(*) FROM radarr_quality_definitions WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p') AND min_size = 6 AND preferred_size = 130 AND max_size = 200"
+    ).fetchone()[0]
+    expect("4K bitrate cap stays 6 / 130 / 200", caps == 4, f"rows {caps}")
+
+    positive = conn.execute(
+        "SELECT COALESCE(SUM(score), 0) FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND score > 0 AND score < 3000",
+        (movies,),
+    ).fetchone()[0]
+    expect("Every positive extra together stays under the 3200 class gap", positive < 3200, f"sum {positive}")
+
+    def tv_score(fmt):
+        return conn.execute(
+            "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = ?",
+            (tv, fmt),
+        ).fetchone()[0]
+
+    expect("TV TrueHD stays +15", tv_score("TrueHD") == 15)
+    expect("TV HDR10+ stays +50", tv_score("HDR10+") == 50)
+    expect("TV Atmos stays +80", tv_score("Atmos") == 80)
+    expect("TV Dolby Digital stays +20", tv_score("Dolby Digital") == 20)
+    expect("TV IMAX stays +40", tv_score("IMAX") == 40)
+    expect("TV DV without fallback stays -10000", tv_score("Dolby Vision (Without Fallback)") == -10000)
+    tv_truehd, _mn, _until, tv_ok, tv_matched = score("Show.S01E01.2160p.BluRay.HDR.TrueHD.x265-HONE", tv)
+    expect(
+        "TV TrueHD disc is still allowed",
+        tv_ok and "TrueHD" in [name for name, _s in tv_matched],
+        f"score {tv_truehd}",
+    )
+
+    print(f"Tie-break order: {passed} passed, {failed} failed")
     return passed, failed
 
 
