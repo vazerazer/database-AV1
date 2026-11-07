@@ -11,7 +11,9 @@ grab is 1080p: elite HEVC, then the circle, then FLUX/Kitsune/CMRG, then
 PSA, then a micro that still clears 3000. An unrecognized 1080p HEVC
 Blu-ray, WEB-DL, or WEBRip scores that same 3000, and so does any 1080p
 AVC from those sources. Neither stacks on a 1080p tier that already
-matched, and neither matches 2160p. Inside a class, Dolby Vision is +1000, HDR is +500, and
+matched, and neither matches 2160p. A 720p HEVC or AVC Blu-ray, WEB-DL,
+or WEBRip then scores 3000 in its own quality group under every 1080p
+quality. Inside a class, Dolby Vision is +1000, HDR is +500, and
 HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
 500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
 +25, and AAC is +10. The 4K class gap is wider than that stack. 4K Blu-ray
@@ -1083,6 +1085,10 @@ def run_simulation_battery():
     last_passed, last_failed = run_1080p_last_resort(conn, movies, tv)
     passed_tests += last_passed
     failed_tests += last_failed
+
+    sd_passed, sd_failed = run_720p_last_resort(conn, movies, tv)
+    passed_tests += sd_passed
+    failed_tests += sd_failed
 
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
@@ -3556,6 +3562,7 @@ def run_1080p_last_resort(conn, movies, tv):
     failed = 0
     hevc = "1080p Compact HEVC Last Resort"
     avc = "1080p Compact AVC Last Resort"
+    sd = "720p Compact Last Resort"
     tiers = (
         "1080p Compact HEVC Tier 1",
         "1080p Compact HEVC Tier 2",
@@ -3602,7 +3609,7 @@ def run_1080p_last_resort(conn, movies, tv):
         ("The.Mongoose.2026.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir", 3155),
     )
     for title, exact in hevc_cases:
-        check(title, exact, (hevc,), tiers + (avc,))
+        check(title, exact, (hevc,), tiers + (avc, sd))
 
     avc_cases = (
         ("Cam.2018.1080p.NF.WEB-DL.DDP5.1.H.264-POWER", 3127),
@@ -3615,7 +3622,7 @@ def run_1080p_last_resort(conn, movies, tv):
         ("The.Stig.Helmer.Story.2011.SWEDiSH.1080p.BluRay.x264-SHUNPO", 3000),
     )
     for title, exact in avc_cases:
-        check(title, exact, (avc,), tiers + (hevc,))
+        check(title, exact, (avc,), tiers + (hevc, sd))
 
     # Existing 1080p ladder scores do not pick up another 3000.
     ladder = (
@@ -3627,14 +3634,14 @@ def run_1080p_last_resort(conn, movies, tv):
         ("Movie.2024.1080p.BluRay.x265-RARBG", M_HD4, "1080p Compact HEVC Tier 4"),
     )
     for title, exact, tier in ladder:
-        check(title, exact, (tier,), (hevc, avc))
+        check(title, exact, (tier,), (hevc, avc, sd))
 
     # A tier group's AVC release is the generic last resort, not that HEVC tier.
-    check("Movie.2024.1080p.BluRay.x264-PSA", 3000, (avc,), tiers + (hevc,))
-    check("Movie.2024.1080p.BluRay.x264-Ralphy", 3000, (avc,), tiers + (hevc,))
+    check("Movie.2024.1080p.BluRay.x264-PSA", 3000, (avc,), tiers + (hevc, sd))
+    check("Movie.2024.1080p.BluRay.x264-Ralphy", 3000, (avc,), tiers + (hevc, sd))
     # Both codecs: HEVC wins, and an elite group still stays on its tier only.
-    check("Movie.2024.1080p.BluRay.x265.x264-POIASD", 3000, (hevc,), (avc,) + tiers)
-    check("Movie.2024.1080p.BluRay.x265.x264-Ralphy", M_HD1, ("1080p Compact HEVC Tier 1",), (hevc, avc))
+    check("Movie.2024.1080p.BluRay.x265.x264-POIASD", 3000, (hevc,), (avc, sd) + tiers)
+    check("Movie.2024.1080p.BluRay.x265.x264-Ralphy", M_HD1, ("1080p Compact HEVC Tier 1",), (hevc, avc, sd))
 
     # Guards. These must not clear 3000 by way of either new format.
     blocked = (
@@ -3645,8 +3652,6 @@ def run_1080p_last_resort(conn, movies, tv):
         ("The.Mongoose.2026.2160p.AMZN.WEB-DL.DDP5.1.DV.HDR10+.H.265-ZAX", hevc),
         ("Drishyam.2.2021.2160p.AMZN.WEB-DL.DDP5.1.H.265-WADU", hevc),
         ("Movie.2024.2160p.BluRay.x264-HONE", avc),
-        ("Movie.2024.720p.BluRay.x265-POIASD", hevc),
-        ("Movie.2024.720p.BluRay.x264-NAPTiME", avc),
         ("Movie.2024.1080p.HDTV.x265-POIASD", hevc),
         ("Movie.2024.1080p.HDTV.x264-NAPTiME", avc),
         ("Movie.2024.1080p.BluRay.REMUX.x265-POIASD", hevc),
@@ -3662,7 +3667,7 @@ def run_1080p_last_resort(conn, movies, tv):
         got = names(matched)
         expect(
             f"blocked {title}",
-            banned not in got and hevc not in got and avc not in got and not passed_cutoff and score < 3000,
+            banned not in got and hevc not in got and avc not in got and sd not in got and not passed_cutoff and score < 3000,
             f"score {score} pass {passed_cutoff} matched {matched}",
         )
 
@@ -3708,11 +3713,188 @@ def run_1080p_last_resort(conn, movies, tv):
     )
     expect(
         "TV scoring ignores the movie last resort",
-        hevc not in names(tv_matched) and avc not in names(tv_matched),
+        hevc not in names(tv_matched) and avc not in names(tv_matched) and sd not in names(tv_matched),
         f"score {tv_score} matched {tv_matched}",
     )
 
     print(f"1080p last resort: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_720p_last_resort(conn, movies, tv):
+    """720p is its own rank under every 1080p quality.
+
+    Bluray-1080p, WEBDL-1080p, and WEBRip-1080p already share one group, so
+    720p mirrors that as one group below it. The format scores 3000, the
+    same as a bare 1080p last resort. Extras can exceed that gap, which is
+    why the quality rank, not the score, keeps 720p from winning.
+    """
+    print("\n=== 720P LAST RESORT ===")
+    passed = 0
+    failed = 0
+    sd = "720p Compact Last Resort"
+    hevc = "1080p Compact HEVC Last Resort"
+    avc = "1080p Compact AVC Last Resort"
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    def names(matched):
+        return [name for name, _score in matched]
+
+    def check(title, exact, present, absent=()):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        missing = [fmt for fmt in present if fmt not in got]
+        extra = [fmt for fmt in absent if fmt in got]
+        ok = score == exact and passed_cutoff == (exact >= 3000) and not missing and not extra
+        expect(
+            title,
+            ok,
+            f"score {score} expected {exact} missing {missing} unexpected {extra} matched {matched}",
+        )
+
+    for title in (
+        "Movie.2024.720p.BluRay.x265-NAPTiME",
+        "Movie.2024.720p.BluRay.x265-POIASD",
+        "Movie.2024.720p.WEB-DL.H.265-NeoNoir",
+        "Movie.2024.720p.WEBRip.HEVC-POWER",
+        "Movie.2024.720p.BluRay.x264-NAPTiME",
+        "Movie.2024.720p.BluRay.H.264-SHUNPO",
+        "Movie.2024.720p.WEB-DL.H264-WoKE",
+        "Movie.2024.720p.WEBRip.x264-RARBG",
+        "Movie.2024.720p.WEB.x265-POIASD",
+    ):
+        check(title, 3000, (sd,), (hevc, avc))
+
+    # A name that is 1080p or 2160p does not take the 720p format.
+    for title in (
+        "Movie.2024.1080p.BluRay.x265-POIASD",
+        "Movie.2024.1080p.WEB-DL.x264-NAPTiME",
+        "Movie.2024.2160p.BluRay.x265-POIASD",
+        "Movie.2024.2160p.WEB-DL.x264-NAPTiME",
+        "Movie.2024.720p.1080p.BluRay.x265-NAPTiME",
+        "Movie.2024.1080p.720p.WEB-DL.x264-SHUNPO",
+    ):
+        score, _min_s, _until, _passed_cutoff, matched = evaluate_release(conn, title, movies)
+        expect(f"not 720p {title}", sd not in names(matched), f"score {score} matched {matched}")
+
+    for title in (
+        "Movie.2024.720p.BluRay.x265-YTS",
+        "Movie.2024.720p.WEBRip.x264-MeGusta",
+        "Movie.2024.720p.BluRay.x265-YIFY",
+        "Movie.2024.720p.WEB-DL.H.264-GalaxyRG",
+    ):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        expect(
+            f"banned micro {title}",
+            sd not in got and not passed_cutoff and score < 3000 and "Banned Micro Encodes" in got,
+            f"score {score} pass {passed_cutoff} matched {matched}",
+        )
+
+    for title in (
+        "Movie.2024.720p.HDTV.x265-NAPTiME",
+        "Movie.2024.720p.BluRay.REMUX.x265-NAPTiME",
+        "Movie.2024.720p.WEB-DL.AV1-NAPTiME",
+        "Movie.2024.480p.BluRay.x265-NAPTiME",
+        "Movie.2024.German.DL.720p.BluRay.x265-FuN",
+    ):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        expect(
+            f"blocked {title}",
+            sd not in names(matched) and not passed_cutoff and score < 3000,
+            f"score {score} pass {passed_cutoff} matched {matched}",
+        )
+
+    truehd_score, _min_s, _until, truehd_ok, truehd_matched = evaluate_release(
+        conn, "Movie.2024.720p.BluRay.TrueHD.x265-NAPTiME", movies
+    )
+    expect(
+        "720p TrueHD still misses the minimum",
+        not truehd_ok and truehd_score < 3000 and "TrueHD" in names(truehd_matched),
+        f"score {truehd_score} matched {truehd_matched}",
+    )
+
+    # DV + HDR on a 720p name scores above a bare 1080p last resort. The
+    # quality rank is what keeps that 720p from winning.
+    tagged = evaluate_release(conn, "Movie.2024.720p.BluRay.DV.HDR.x265-NAPTiME", movies)
+    bare_hd = evaluate_release(conn, "Movie.2024.1080p.BluRay.x264-NAPTiME", movies)
+    extras = conn.execute(
+        """
+        SELECT COALESCE(SUM(score), 0) FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ? AND score > 0 AND score < 3000
+        """,
+        (movies,),
+    ).fetchone()[0]
+    ranks = dict(conn.execute(
+        """
+        SELECT quality_group_name, position FROM quality_profile_qualities
+        WHERE quality_profile_name = ? AND enabled = 1
+        """,
+        (movies,),
+    ).fetchall())
+    expect(
+        "Tagged 720p outscores a bare 1080p on custom formats alone",
+        tagged[0] > bare_hd[0] and tagged[0] >= 3000 and bare_hd[0] == 3000 and extras > 1000,
+        f"720p {tagged[0]} 1080p {bare_hd[0]} extras {extras} matched {tagged[4]}",
+    )
+    expect(
+        "720p rank is below the whole 1080p rank",
+        ranks.get("2160p", 99) < ranks.get("1080p Fallback", 99) < ranks.get("720p Fallback", -1),
+        f"ranks {ranks}",
+    )
+    shared = conn.execute(
+        """
+        SELECT COUNT(*) FROM quality_group_members a
+        JOIN quality_group_members b
+          ON b.quality_profile_name = a.quality_profile_name
+         AND b.quality_name = a.quality_name
+         AND b.quality_group_name != a.quality_group_name
+        WHERE a.quality_profile_name = ?
+          AND a.quality_group_name = '720p Fallback'
+        """,
+        (movies,),
+    ).fetchone()[0]
+    expect("720p qualities are not also 1080p qualities", shared == 0, f"shared {shared}")
+    hd_audio = conn.execute(
+        """
+        SELECT score FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ? AND custom_format_name = 'x265 (HD)'
+        """,
+        (movies,),
+    ).fetchone()
+    expect("Movie profile does not score x265 (HD)", hd_audio is None, f"score {hd_audio}")
+    tv_rows = conn.execute(
+        """
+        SELECT COUNT(*) FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ? AND custom_format_name = ?
+        """,
+        (tv, sd),
+    ).fetchone()[0]
+    tv_qualities = conn.execute(
+        """
+        SELECT COUNT(*) FROM quality_group_members
+        WHERE quality_profile_name = ? AND quality_name LIKE '%720p%'
+        """,
+        (tv,),
+    ).fetchone()[0]
+    expect("TV does not score or enable 720p", tv_rows == 0 and tv_qualities == 0, f"scores {tv_rows} qualities {tv_qualities}")
+    size = conn.execute(
+        """
+        SELECT COUNT(*) FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-720p', 'WEBDL-720p', 'WEBRip-720p')
+          AND min_size = 0 AND preferred_size = 1990 AND max_size = 0
+        """
+    ).fetchone()[0]
+    expect("720p size stays min 0, preferred 1990, max 0", size == 3, f"rows {size}")
+
+    print(f"720p last resort: {passed} passed, {failed} failed")
     return passed, failed
 
 
