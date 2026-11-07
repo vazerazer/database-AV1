@@ -1,7 +1,7 @@
 {
   "name": "HEVC Compact Database",
   "version": "2.1.0",
-  "description": "Compact 4K HEVC profiles for Radarr and Sonarr. Movies prefer the shared elite Blu-ray score (hallowed, BHDStudio, HONE and the rest of that list), then a smaller disc, then FLUX/Kitsune/CMRG, then PSA, then a micro. Untouched 4K WEB-DL such as BYNDR or NTb scores 0 and does not clear the minimum, so the next grab is 1080p: elite, circle, streaming WEB, PSA, then a micro. Inside a class, Dolby Vision is +1000, HDR is +500, HDR10+ is +600, Dolby Digital + is +125, and Dolby Digital is +115. 4K Blu-ray without HDR is rejected, and so is Dolby Vision with no HDR fallback. TrueHD and DTS-HD are rejected for direct play. Radarr size limits are off (min 0, preferred 1999, max unlimited), so a long movie is not rejected for its bitrate.",
+  "description": "Compact 4K HEVC profiles for Radarr and Sonarr. Movies prefer the shared elite Blu-ray score (hallowed, BHDStudio, HONE and the rest of that list), then a smaller disc, then FLUX/Kitsune/CMRG, then PSA. A 4K micro and an untouched 4K WEB-DL such as BYNDR or NTb score 0 and do not clear the minimum, so the next grab is 1080p: elite, circle, streaming WEB, PSA, then a micro. Inside a class, Dolby Vision is +1000, HDR is +500, HDR10+ is +600, Dolby Digital + is +125, and Dolby Digital is +115. 4K Blu-ray without HDR is rejected, and so is Dolby Vision with no HDR fallback. TrueHD and DTS-HD are rejected for direct play. Radarr max size stays unlimited. Preferred size is 130 MB/min at 2160p and 18 MB/min at 1080p, so a long movie is not rejected for its bitrate.",
   "arr_types": [
     "radarr",
     "sonarr"
