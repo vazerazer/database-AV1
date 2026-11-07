@@ -8,7 +8,10 @@ smaller disc such as QxR, then compact streaming WEB, then PSA. A 4K
 micro (RARBG, UTR, iVy, Joy, t0paz, POF) scores 0 and misses the minimum,
 the same way an untouched 4K WEB-DL such as BYNDR or NTb does. The next
 grab is 1080p: elite HEVC, then the circle, then FLUX/Kitsune/CMRG, then
-PSA, then a micro that still clears 3000. Inside a class, Dolby Vision is +1000, HDR is +500, and
+PSA, then a micro that still clears 3000. An unrecognized 1080p HEVC
+Blu-ray, WEB-DL, or WEBRip scores that same 3000, and so does any 1080p
+AVC from those sources. Neither stacks on a 1080p tier that already
+matched, and neither matches 2160p. Inside a class, Dolby Vision is +1000, HDR is +500, and
 HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
 500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
 +25, and AAC is +10. The 4K class gap is wider than that stack. 4K Blu-ray
@@ -1076,6 +1079,10 @@ def run_simulation_battery():
     empty_passed, empty_failed = run_empty_assigned_format_guard(conn, movies, tv)
     passed_tests += empty_passed
     failed_tests += empty_failed
+
+    last_passed, last_failed = run_1080p_last_resort(conn, movies, tv)
+    passed_tests += last_passed
+    failed_tests += last_failed
 
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
@@ -3531,6 +3538,181 @@ def run_empty_assigned_format_guard(conn, movies, tv):
     expect("Movie minimum and cutoff stay 3000 / 41600", gates == (3000, 41600), f"{gates}")
 
     print(f"Empty assigned formats: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_1080p_last_resort(conn, movies, tv):
+    """Unrecognized 1080p HEVC and any 1080p AVC clear min 3000.
+
+    The sixteen released movies in the radarr4k search failed only because
+    their usable 1080p release scored under 3000. Nine are HEVC from groups
+    outside the compact ladder. Seven are AVC. Both new formats score 3000,
+    the same band as 1080p Tier 4. They do not stack on Tier 1-4 or 1080p
+    streaming, and they do not match 2160p, so a 4K micro or untouched 4K
+    WEB that already scores 0 stays under the minimum.
+    """
+    print("\n=== 1080P LAST RESORT ===")
+    passed = 0
+    failed = 0
+    hevc = "1080p Compact HEVC Last Resort"
+    avc = "1080p Compact AVC Last Resort"
+    tiers = (
+        "1080p Compact HEVC Tier 1",
+        "1080p Compact HEVC Tier 2",
+        "1080p Compact Streaming WEB-DL",
+        "1080p Compact HEVC Tier 3",
+        "1080p Compact HEVC Tier 4",
+    )
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    def names(matched):
+        return [name for name, _score in matched]
+
+    def check(title, exact, present, absent=(), profile=movies):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, profile)
+        got = names(matched)
+        ok = score == exact and passed_cutoff == (exact >= 3000)
+        missing = [fmt for fmt in present if fmt not in got]
+        extra = [fmt for fmt in absent if fmt in got]
+        if missing or extra:
+            ok = False
+        expect(
+            title,
+            ok,
+            f"score {score} expected {exact} missing {missing} unexpected {extra} matched {matched}",
+        )
+
+    # Extras on these titles are what Radarr already scored. +3000 clears 3000.
+    hevc_cases = (
+        ("The.Perks.of.Being.a.Wallflower.2012.1080p.BluRay.10bit.DD5.1.With.Commentary.x265-POIASD", 3145),
+        ("Riders.of.Justice.2020.1080p.ZEE5.WEB-DL.MULTi.AAC2.0.H.265-TR", 3010),
+        ("En.kongelig.affaere.2012.DANiSH.1080p.WEB-DL.H.265.DDP5.1-CiNEMiX", 3125),
+        ("The.Party.1968.1080p.BDRip.DTS.x265.10bit-MarkII", 3030),
+        ("Drishyam.2.2021.1080p.AMZN.WEB-DL.DDP5.1.H.265-PMi-XDMovies", 3127),
+        ("Runner 2026 1080p WEBRip 10Bit DDP5 1 x265-NeoNoir", 3155),
+        ("Colony.2026.1080p.WEBRip.DUAL.DD5.1.10bits.x265-Rapta", 3115),
+        ("Forgotten.Island.2026.1080p.MA.WEBRip.10bit.DDP5.1.x265-NeoNoir", 3155),
+        ("The.Mongoose.2026.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir", 3155),
+    )
+    for title, exact in hevc_cases:
+        check(title, exact, (hevc,), tiers + (avc,))
+
+    avc_cases = (
+        ("Cam.2018.1080p.NF.WEB-DL.DDP5.1.H.264-POWER", 3127),
+        ("Cam.2018.1080p.WEBRip.x264-RARBG", 3000),
+        ("Sallskapsresan.II.Snowroller.1985.SWEDiSH.1080p.BluRay.x264-NAPTiME", 3000),
+        ("Den.Ofrivillige.Golfaren.1991.SWEDiSH.1080p.BluRay.x264-NAPTiME", 3000),
+        ("Sallskapsresan.1980.iNTERNAL.SWEDiSH.1080p.BluRay.x264-NAPTiME", 3000),
+        ("Swedes.at.Sea.1988.SWEDiSH.1080p.iT.WEB-DL.AAC.2.0.H264-WoKE", 3020),
+        ("Halsoresan.1999.SWEDiSH.1080p.BluRay.x264-NAPTiME", 3000),
+        ("The.Stig.Helmer.Story.2011.SWEDiSH.1080p.BluRay.x264-SHUNPO", 3000),
+    )
+    for title, exact in avc_cases:
+        check(title, exact, (avc,), tiers + (hevc,))
+
+    # Existing 1080p ladder scores do not pick up another 3000.
+    ladder = (
+        ("Movie.2024.1080p.BluRay.x265-Ralphy", M_HD1, "1080p Compact HEVC Tier 1"),
+        ("Movie.2024.1080p.BluRay.x265-TAoE", M_HD2, "1080p Compact HEVC Tier 2"),
+        ("Movie.2024.1080p.WEB-DL.H265-FLUX", M_HD_STREAM, "1080p Compact Streaming WEB-DL"),
+        ("Movie.2024.1080p.BluRay.x265-PSA", M_HD3, "1080p Compact HEVC Tier 3"),
+        ("Movie.2024.1080p.WEB-DL.x265-iVy", M_HD4, "1080p Compact HEVC Tier 4"),
+        ("Movie.2024.1080p.BluRay.x265-RARBG", M_HD4, "1080p Compact HEVC Tier 4"),
+    )
+    for title, exact, tier in ladder:
+        check(title, exact, (tier,), (hevc, avc))
+
+    # A tier group's AVC release is the generic last resort, not that HEVC tier.
+    check("Movie.2024.1080p.BluRay.x264-PSA", 3000, (avc,), tiers + (hevc,))
+    check("Movie.2024.1080p.BluRay.x264-Ralphy", 3000, (avc,), tiers + (hevc,))
+    # Both codecs: HEVC wins, and an elite group still stays on its tier only.
+    check("Movie.2024.1080p.BluRay.x265.x264-POIASD", 3000, (hevc,), (avc,) + tiers)
+    check("Movie.2024.1080p.BluRay.x265.x264-Ralphy", M_HD1, ("1080p Compact HEVC Tier 1",), (hevc, avc))
+
+    # Guards. These must not clear 3000 by way of either new format.
+    blocked = (
+        ("Movie.2024.2160p.BluRay.x265-POIASD", hevc),
+        ("Movie.2024.2160p.WEB-DL.H265-NTb", hevc),
+        ("Movie.2024.2160p.BluRay.HDR.x265-RARBG", hevc),
+        ("Forgotten.Island.2026.2160p.WEBRip.DDP5.1.Atmos.DV.HDR10Plus.x265.10bit-MarkII", hevc),
+        ("The.Mongoose.2026.2160p.AMZN.WEB-DL.DDP5.1.DV.HDR10+.H.265-ZAX", hevc),
+        ("Drishyam.2.2021.2160p.AMZN.WEB-DL.DDP5.1.H.265-WADU", hevc),
+        ("Movie.2024.2160p.BluRay.x264-HONE", avc),
+        ("Movie.2024.720p.BluRay.x265-POIASD", hevc),
+        ("Movie.2024.720p.BluRay.x264-NAPTiME", avc),
+        ("Movie.2024.1080p.HDTV.x265-POIASD", hevc),
+        ("Movie.2024.1080p.HDTV.x264-NAPTiME", avc),
+        ("Movie.2024.1080p.BluRay.REMUX.x265-POIASD", hevc),
+        ("Movie.2024.1080p.BluRay.REMUX.x264-NAPTiME", avc),
+        ("Movie.2024.1080p.WEB-DL.AV1-POIASD", hevc),
+        ("Movie.2024.1080p.WEB-DL.x265.AV1-POIASD", hevc),
+        ("Movie.2024.1080p.WEBRip.x264.AV1-RARBG", avc),
+        ("Vielleicht.lieber.morgen.2012.German.DL.AC3.1080p.BluRay.x265-FuN", hevc),
+        ("Movie.2024.German.DL.1080p.BluRay.x264-FuN", avc),
+    )
+    for title, banned in blocked:
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        expect(
+            f"blocked {title}",
+            banned not in got and hevc not in got and avc not in got and not passed_cutoff and score < 3000,
+            f"score {score} pass {passed_cutoff} matched {matched}",
+        )
+
+    # YTS and MeGusta stay rejected. Banned Micro Encodes is -100000, so a
+    # last-resort match still misses the minimum.
+    for title in (
+        "Movie.2024.1080p.BluRay.x265-YTS",
+        "Movie.2024.1080p.BluRay.x264-YTS",
+        "Movie.2024.1080p.WEBRip.x265-MeGusta",
+        "Movie.2024.2160p.WEB-DL.x265-YTS",
+    ):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        expect(
+            f"still rejected {title}",
+            not passed_cutoff and score < 3000 and "Banned Micro Encodes" in names(matched),
+            f"score {score} pass {passed_cutoff} matched {matched}",
+        )
+
+    # 4K extras that already sit near 1780 must not gain 3000.
+    forgotten = evaluate_release(
+        conn,
+        "Forgotten.Island.2026.2160p.WEBRip.DDP5.1.Atmos.DV.HDR10Plus.x265.10bit-MarkII",
+        movies,
+    )
+    mongoose = evaluate_release(
+        conn,
+        "The.Mongoose.2026.2160p.AMZN.WEB-DL.DDP5.1.DV.HDR10+.H.265-ZAX",
+        movies,
+    )
+    expect("Forgotten Island 4K stays 1780", forgotten[0] == 1780 and not forgotten[3], f"score {forgotten[0]}")
+    expect("Mongoose 4K stays 1757", mongoose[0] == 1757 and not mongoose[3], f"score {mongoose[0]}")
+
+    tv_rows = conn.execute(
+        """
+        SELECT COUNT(*) FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ? AND custom_format_name IN (?, ?)
+        """,
+        (tv, hevc, avc),
+    ).fetchone()[0]
+    expect("TV profile does not assign either last resort", tv_rows == 0, f"rows {tv_rows}")
+    tv_score, _, _, _, tv_matched = evaluate_release(
+        conn, "Movie.2024.1080p.BluRay.x265-POIASD", tv
+    )
+    expect(
+        "TV scoring ignores the movie last resort",
+        hevc not in names(tv_matched) and avc not in names(tv_matched),
+        f"score {tv_score} matched {tv_matched}",
+    )
+
+    print(f"1080p last resort: {passed} passed, {failed} failed")
     return passed, failed
 
 
