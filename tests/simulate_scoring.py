@@ -8,7 +8,10 @@ smaller disc such as QxR, then compact streaming WEB, then PSA. A 4K
 micro (RARBG, UTR, iVy, Joy, t0paz, POF) scores 0 and misses the minimum,
 the same way an untouched 4K WEB-DL such as BYNDR or NTb does. The next
 grab is 1080p: elite HEVC, then the circle, then FLUX/Kitsune/CMRG, then
-PSA, then a micro that still clears 3000. Inside a class, Dolby Vision is +1000, HDR is +500, and
+PSA, then a micro that still clears 3000. Named 1080p x264 groups from
+the Dumpstarr and Dictionarry union then score 3900 down to 3000, under
+HEVC Tier 3. Named 720p groups use that ladder in a quality group under
+every 1080p quality. Unlisted groups do not clear 3000. Inside a class, Dolby Vision is +1000, HDR is +500, and
 HDR10+ is +600 (our HDR format excludes HDR10+, so that is Dumpstarr's
 500+100 stack). Dolby Digital + is +125, Dolby Digital is +115, Atmos is
 +25, and AAC is +10. The 4K class gap is wider than that stack. 4K Blu-ray
@@ -1076,6 +1079,14 @@ def run_simulation_battery():
     empty_passed, empty_failed = run_empty_assigned_format_guard(conn, movies, tv)
     passed_tests += empty_passed
     failed_tests += empty_failed
+
+    last_passed, last_failed = run_curated_hd_tiers(conn, movies, tv)
+    passed_tests += last_passed
+    failed_tests += last_failed
+
+    sd_passed, sd_failed = run_curated_hd_tiers_quality_rank(conn, movies, tv)
+    passed_tests += sd_passed
+    failed_tests += sd_failed
 
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
@@ -3531,6 +3542,258 @@ def run_empty_assigned_format_guard(conn, movies, tv):
     expect("Movie minimum and cutoff stay 3000 / 41600", gates == (3000, 41600), f"{gates}")
 
     print(f"Empty assigned formats: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_curated_hd_tiers(conn, movies, tv):
+    """Named 1080p x264 and 720p groups clear 3000. Unlisted groups do not.
+
+    Tier 1 is 3900 and tier 6 is 3000. 1080p x264 requires AVC and rejects
+    HEVC, so HQMUX, Kitsune, and PTer do not add that score to an HEVC
+    release. 720p requires 720p and does not match 1080p or 2160p names.
+    """
+    print("\n=== CURATED 1080P X264 AND 720P TIERS ===")
+    passed = 0
+    failed = 0
+    x264 = {i: f"1080p x264 Tier {i}" for i in range(1, 7)}
+    sd = {i: f"720p Tier {i}" for i in range(1, 7)}
+    hevc_tiers = (
+        "1080p Compact HEVC Tier 1",
+        "1080p Compact HEVC Tier 2",
+        "1080p Compact Streaming WEB-DL",
+        "1080p Compact HEVC Tier 3",
+        "1080p Compact HEVC Tier 4",
+    )
+    scores = {1: 3900, 2: 3720, 3: 3540, 4: 3360, 5: 3180, 6: 3000}
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    def names(matched):
+        return [name for name, _score in matched]
+
+    def check(title, exact, present, absent=()):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        missing = [fmt for fmt in present if fmt not in got]
+        extra = [fmt for fmt in absent if fmt in got]
+        ok = score == exact and passed_cutoff == (exact >= 3000) and not missing and not extra
+        expect(title, ok, f"score {score} expected {exact} missing {missing} unexpected {extra} matched {matched}")
+
+    # The sixteen niche releases are unlisted. They go back under 3000.
+    unlisted = (
+        ("The.Perks.of.Being.a.Wallflower.2012.1080p.BluRay.10bit.DD5.1.With.Commentary.x265-POIASD", 145),
+        ("Riders.of.Justice.2020.1080p.ZEE5.WEB-DL.MULTi.AAC2.0.H.265-TR", 10),
+        ("En.kongelig.affaere.2012.DANiSH.1080p.WEB-DL.H.265.DDP5.1-CiNEMiX", 125),
+        ("The.Party.1968.1080p.BDRip.DTS.x265.10bit-MarkII", 30),
+        ("Drishyam.2.2021.1080p.AMZN.WEB-DL.DDP5.1.H.265-PMi-XDMovies", 127),
+        ("Runner 2026 1080p WEBRip 10Bit DDP5 1 x265-NeoNoir", 155),
+        ("Colony.2026.1080p.WEBRip.DUAL.DD5.1.10bits.x265-Rapta", 115),
+        ("Forgotten.Island.2026.1080p.MA.WEBRip.10bit.DDP5.1.x265-NeoNoir", 155),
+        ("The.Mongoose.2026.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir", 155),
+        ("Cam.2018.1080p.NF.WEB-DL.DDP5.1.H.264-POWER", 127),
+        ("Cam.2018.1080p.WEBRip.x264-RARBG", 0),
+        ("Sallskapsresan.II.Snowroller.1985.SWEDiSH.1080p.BluRay.x264-NAPTiME", 0),
+        ("Den.Ofrivillige.Golfaren.1991.SWEDiSH.1080p.BluRay.x264-NAPTiME", 0),
+        ("Sallskapsresan.1980.iNTERNAL.SWEDiSH.1080p.BluRay.x264-NAPTiME", 0),
+        ("Swedes.at.Sea.1988.SWEDiSH.1080p.iT.WEB-DL.AAC.2.0.H264-WoKE", 20),
+        ("Halsoresan.1999.SWEDiSH.1080p.BluRay.x264-NAPTiME", 0),
+        ("The.Stig.Helmer.Story.2011.SWEDiSH.1080p.BluRay.x264-SHUNPO", 0),
+    )
+    curated = list(x264.values()) + list(sd.values())
+    for title, exact in unlisted:
+        check(title, exact, (), curated)
+
+    # Named 1080p x264 groups, including promotions to the better Dumpstarr tier.
+    named_1080 = (
+        ("Movie.2024.1080p.BluRay.x264-DON", 1),
+        ("Movie.2024.1080p.BluRay.x264-CtrlHD", 1),
+        ("Movie.2024.1080p.BluRay.x264-PTer", 1),
+        ("Movie.2024.1080p.BluRay.x264-ZoroSenpai", 1),
+        ("Movie.2024.1080p.WEBRip.x264-NTb", 2),
+        ("Movie.2024.1080p.BluRay.x264-W4NK3R", 3),
+        ("Movie.2024.1080p.BluRay.x264-HONE", 3),
+        ("Movie.2024.1080p.BluRay.x264-HiFi", 2),
+        ("Movie.2024.1080p.BluRay.H.264-IDE", 4),
+        ("Movie.2024.1080p.BluRay.x264-HQMUX", 5),
+        ("Movie.2024.1080p.BluRay.x264-Kitsune", 5),
+        ("Movie.2024.1080p.WEBRip.AVC-FraMeSToR", 6),
+        ("Movie.2024.1080p.BluRay.x264-P0W4HD", 6),
+    )
+    for title, tier in named_1080:
+        check(title, scores[tier], (x264[tier],), [x264[i] for i in scores if i != tier] + list(sd.values()) + list(hevc_tiers))
+
+    # HEVC from a group that is also on an x264 tier stays on the HEVC ladder only.
+    check("Movie.2024.1080p.BluRay.x265-HONE", M_HD1, ("1080p Compact HEVC Tier 1",), curated)
+    check("Movie.2024.1080p.BluRay.x265-HQMUX", M_HD1, ("1080p Compact HEVC Tier 1",), curated)
+    check("Movie.2024.1080p.WEB-DL.H.265-Kitsune", M_HD_STREAM, ("1080p Compact Streaming WEB-DL",), curated)
+    check("Movie.2024.1080p.BluRay.x265-Ralphy", M_HD1, ("1080p Compact HEVC Tier 1",), curated)
+    check("Movie.2024.1080p.WEB-DL.x265-iVy", M_HD4, ("1080p Compact HEVC Tier 4",), curated)
+
+    # 2160p and 1080p names do not take a 720p tier. 720p names do not take an x264 tier
+    # unless the group is also on a 720p list, which these checks separate.
+    for title in (
+        "Movie.2024.2160p.BluRay.x264-DON",
+        "Movie.2024.2160p.BluRay.x265-HONE",
+        "Movie.2024.1080p.BluRay.x264-DON",
+        "Forgotten.Island.2026.2160p.WEBRip.DDP5.1.Atmos.DV.HDR10Plus.x265.10bit-MarkII",
+        "The.Mongoose.2026.2160p.AMZN.WEB-DL.DDP5.1.DV.HDR10+.H.265-ZAX",
+    ):
+        score, _min_s, _until, _ok, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        expect(f"no 720p tier {title}", all(fmt not in got for fmt in sd.values()), f"score {score} matched {matched}")
+
+    for title in (
+        "Movie.2024.720p.BluRay.x264-DON",
+        "Movie.2024.720p.BluRay.x265-DON",
+        "Movie.2024.2160p.BluRay.x264-DON",
+        "Movie.2024.1080p.720p.BluRay.x264-DON",
+    ):
+        score, _min_s, _until, _ok, matched = evaluate_release(conn, title, movies)
+        got = names(matched)
+        if "720p" in title and "1080p" not in title and "2160p" not in title:
+            expect(f"720p named {title}", sd[1] in got and score == 3900 and all(fmt not in got for fmt in x264.values()), f"score {score} matched {matched}")
+        else:
+            expect(f"not a 720p-only name {title}", sd[1] not in got, f"score {score} matched {matched}")
+
+    forgotten = evaluate_release(conn, "Forgotten.Island.2026.2160p.WEBRip.DDP5.1.Atmos.DV.HDR10Plus.x265.10bit-MarkII", movies)
+    mongoose = evaluate_release(conn, "The.Mongoose.2026.2160p.AMZN.WEB-DL.DDP5.1.DV.HDR10+.H.265-ZAX", movies)
+    expect("Forgotten Island 4K stays 1780", forgotten[0] == 1780 and not forgotten[3], f"score {forgotten[0]}")
+    expect("Mongoose 4K stays 1757", mongoose[0] == 1757 and not mongoose[3], f"score {mongoose[0]}")
+
+    for title in (
+        "Movie.2024.1080p.BluRay.x265-YTS",
+        "Movie.2024.1080p.BluRay.x264-YTS",
+        "Movie.2024.720p.BluRay.x264-YTS",
+        "Movie.2024.720p.WEBRip.x265-MeGusta",
+        "Movie.2024.2160p.WEB-DL.x265-YTS",
+    ):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        expect(
+            f"still rejected {title}",
+            not passed_cutoff and score < 3000 and "Banned Micro Encodes" in names(matched),
+            f"score {score} matched {matched}",
+        )
+
+    gone = conn.execute(
+        """
+        SELECT COUNT(*) FROM custom_formats
+        WHERE name IN ('1080p Compact HEVC Last Resort', '1080p Compact AVC Last Resort', '720p Compact Last Resort')
+        """
+    ).fetchone()[0]
+    expect("Generic last resorts are deleted", gone == 0, f"left {gone}")
+    tv_rows = conn.execute(
+        """
+        SELECT COUNT(*) FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ?
+          AND (custom_format_name LIKE '1080p x264 Tier %' OR custom_format_name LIKE '720p Tier %'
+               OR custom_format_name IN ('1080p Compact HEVC Last Resort', '1080p Compact AVC Last Resort', '720p Compact Last Resort'))
+        """,
+        (tv,),
+    ).fetchone()[0]
+    expect("TV scores none of these formats", tv_rows == 0, f"rows {tv_rows}")
+    hd_audio = conn.execute(
+        "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = 'x265 (HD)'",
+        (movies,),
+    ).fetchone()
+    expect("Movie profile does not score x265 (HD)", hd_audio is None, f"{hd_audio}")
+
+    print(f"Curated tiers: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_curated_hd_tiers_quality_rank(conn, movies, tv):
+    """720p stays a lower quality rank even when its score is higher."""
+    print("\n=== 720P QUALITY RANK ===")
+    passed = 0
+    failed = 0
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    def names(matched):
+        return [name for name, _score in matched]
+
+    tagged = evaluate_release(conn, "Movie.2024.720p.BluRay.DV.HDR.x264-DON", movies)
+    bare = evaluate_release(conn, "Movie.2024.1080p.BluRay.x264-FraMeSToR", movies)
+    expect(
+        "Tagged 720p tier 1 outscores bare 1080p x264 tier 6 on custom formats",
+        tagged[0] > bare[0] and tagged[0] >= 3000 and bare[0] == 3000 and tagged[3] and bare[3],
+        f"720p {tagged[0]} 1080p {bare[0]} 720p formats {names(tagged[4])} 1080p formats {names(bare[4])}",
+    )
+    ranks = dict(conn.execute(
+        "SELECT quality_group_name, position FROM quality_profile_qualities WHERE quality_profile_name = ? AND enabled = 1",
+        (movies,),
+    ).fetchall())
+    expect(
+        "720p rank is below the whole 1080p rank",
+        ranks.get("2160p", 99) < ranks.get("1080p Fallback", 99) < ranks.get("720p Fallback", -1),
+        f"ranks {ranks}",
+    )
+    members = conn.execute(
+        """
+        SELECT quality_group_name, quality_name FROM quality_group_members
+        WHERE quality_profile_name = ? AND quality_name LIKE '%720p%'
+        ORDER BY quality_name
+        """,
+        (movies,),
+    ).fetchall()
+    expect(
+        "720p qualities are only in 720p Fallback",
+        members == [("720p Fallback", "Bluray-720p"), ("720p Fallback", "WEBDL-720p"), ("720p Fallback", "WEBRip-720p")],
+        f"members {members}",
+    )
+    for title in (
+        "Movie.2024.720p.HDTV.x264-DON",
+        "Movie.2024.720p.BluRay.REMUX.x264-DON",
+        "Movie.2024.480p.BluRay.x264-DON",
+        "Movie.2024.1080p.WEB-DL.AV1-DON",
+        "Movie.2024.720p.BluRay.x264-NAPTiME",
+        "Movie.2024.720p.WEBRip.x265-POIASD",
+    ):
+        score, _min_s, _until, passed_cutoff, matched = evaluate_release(conn, title, movies)
+        expect(
+            f"blocked {title}",
+            not passed_cutoff and score < 3000 and "720p Tier 1" not in names(matched),
+            f"score {score} matched {matched}",
+        )
+    truehd, _a, _b, truehd_ok, truehd_matched = evaluate_release(conn, "Movie.2024.720p.BluRay.TrueHD.x265-DON", movies)
+    expect(
+        "720p TrueHD still misses the minimum",
+        not truehd_ok and truehd < 3000 and "TrueHD" in names(truehd_matched),
+        f"score {truehd} matched {truehd_matched}",
+    )
+    tv_qualities = conn.execute(
+        "SELECT COUNT(*) FROM quality_group_members WHERE quality_profile_name = ? AND quality_name LIKE '%720p%'",
+        (tv,),
+    ).fetchone()[0]
+    expect("TV does not enable 720p", tv_qualities == 0, f"rows {tv_qualities}")
+    size = conn.execute(
+        """
+        SELECT COUNT(*) FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-720p', 'WEBDL-720p', 'WEBRip-720p')
+          AND min_size = 0 AND preferred_size = 1990 AND max_size = 0
+        """
+    ).fetchone()[0]
+    expect("720p size stays min 0, preferred 1990, max 0", size == 3, f"rows {size}")
+    better = evaluate_release(conn, "Movie.2024.1080p.BluRay.x264-DON", movies)[0]
+    worse = evaluate_release(conn, "Movie.2024.1080p.BluRay.x264-FraMeSToR", movies)[0]
+    expect("Better 1080p x264 tier outscores a worse one", better == 3900 and worse == 3000 and better > worse, f"{better} {worse}")
+    better_sd = evaluate_release(conn, "Movie.2024.720p.WEBRip.x265-CtrlHD", movies)[0]
+    worse_sd = evaluate_release(conn, "Movie.2024.720p.BluRay.x264-EuReKA", movies)[0]
+    expect("Better 720p tier outscores a worse one", better_sd == 3900 and worse_sd == 3000 and better_sd > worse_sd, f"{better_sd} {worse_sd}")
+
+    print(f"720p quality rank: {passed} passed, {failed} failed")
     return passed, failed
 
 
