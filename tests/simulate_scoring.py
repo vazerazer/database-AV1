@@ -15,10 +15,13 @@ with no HDR is rejected. A Dolby Vision WEB with no HDR token misses the
 cutoff. TrueHD and the DTS-HD formats are rejected for direct play. LPCM,
 FLAC, and lossy DTS are not. CAM, hardcoded subtitles, 3D, upscales,
 extras, sing-along, audio description, and a non-HEVC codec on a tiered
-disc miss the same way. 4K quality definitions cap bitrate at 200 MB/min.
-There is no gigabyte penalty, so a long movie at a mid-size bitrate keeps
-its score. TV 2160p HEVC Compact still prefers WEB over disc. Its scores
-are unchanged. Movies Anywhere does not flip a WEB over a disc.
+disc miss the same way. Radarr quality definitions that this database
+capped are min 0, preferred 1999, max 0. Max 0 is unlimited, the same
+end state as Dumpstarr after op 367. Preferred 1999 only tie-breaks two
+releases that already share a quality and a custom format score. There
+is no gigabyte penalty, so a long movie keeps its score. TV 2160p HEVC
+Compact still prefers WEB over disc. Its scores and Sonarr size rows are
+unchanged. Movies Anywhere does not flip a WEB over a disc.
 """
 
 import sqlite3
@@ -358,10 +361,18 @@ def quality_limits(conn, quality_name, arr_type="radarr"):
     ).fetchall()
 
 def bitrate_blocked(limits, mb_per_min):
+    """Radarr rejects a release outside min/max MB/min.
+
+    Min 0 is no floor. Max 0 is unlimited, which is how Dumpstarr stores
+    an uncapped quality after op 367 and how Radarr treats a null max.
+    Preferred size is not a reject.
+    """
     if mb_per_min is None or not limits:
         return False
     for min_size, _preferred, max_size in limits:
-        if mb_per_min < min_size or mb_per_min > max_size:
+        if min_size and mb_per_min < min_size:
+            return True
+        if max_size and mb_per_min > max_size:
             return True
     return False
 
@@ -758,6 +769,7 @@ def run_simulation_battery():
     print("\n=== LIBRARY PROOF (radarr4k 2026-11-06) ===")
     bluray_limits = quality_limits(conn, "Bluray-2160p")
     web_limits = quality_limits(conn, "WEBDL-2160p")
+    hd_limits = quality_limits(conn, "Bluray-1080p")
     limit_rows = conn.execute(
         """
         SELECT quality_name, min_size, preferred_size, max_size
@@ -765,7 +777,32 @@ def run_simulation_battery():
         WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p')
         """
     ).fetchall()
+    hd_rows = conn.execute(
+        """
+        SELECT quality_name, min_size, preferred_size, max_size
+        FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-1080p', 'WEBDL-1080p', 'WEBRip-1080p', 'HDTV-1080p')
+        """
+    ).fetchall()
+    remux_rows = conn.execute(
+        """
+        SELECT quality_name, min_size, preferred_size, max_size
+        FROM radarr_quality_definitions
+        WHERE quality_name IN ('Remux-2160p', 'Remux-1080p')
+        """
+    ).fetchall()
+    untouched_rows = conn.execute(
+        """
+        SELECT quality_name, min_size, preferred_size, max_size
+        FROM radarr_quality_definitions
+        WHERE quality_name IN ('Bluray-720p', 'WEBDL-720p', 'WEBRip-720p', 'HDTV-720p')
+        """
+    ).fetchall()
+    sonarr_2160 = quality_limits(conn, "Bluray-2160p", "sonarr")
+    sonarr_1080 = quality_limits(conn, "Bluray-1080p", "sonarr")
     print("  2160p quality definitions:", limit_rows)
+    print("  1080p quality definitions:", hd_rows)
+    print("  remux quality definitions:", remux_rows)
 
     def score_of(title, size_gb=None):
         score, _min_s, _until, passed, matched = evaluate_release(conn, title, movies, size_gb=size_gb)
@@ -831,6 +868,10 @@ def run_simulation_battery():
     byndr_long_blocked = bitrate_blocked(web_limits, 160)
     long_web_blocked = bitrate_blocked(web_limits, 160)
     flux_blocked = bitrate_blocked(web_limits, 147)
+    # Above the old 1080p max of 40. Ralphy, DarQ, HONE, Tigole and TAoE
+    # fallbacks already in a library often sit here.
+    hd_large_blocked = bitrate_blocked(hd_limits, 80)
+    unlimited = lambda rows, n: len(rows) == n and all(row[1] == 0 and row[2] == 1999 and row[3] == 0 for row in rows)
     no_size_penalty = conn.execute(
         "SELECT COUNT(*) FROM custom_formats WHERE name = '2160p Bloated WEB'"
     ).fetchone()[0] == 0
@@ -842,22 +883,27 @@ def run_simulation_battery():
     oceans_would_upgrade = (oceans_hone - oceans_bhd) >= upgrade_inc and not oceans_hone_blocked
 
     proof = (
-        ("4K max size is 200 MB/min", all(row[3] == 200 for row in limit_rows) and len(limit_rows) == 4),
-        ("4K preferred size is the 130 MB/min window", all(row[2] == 130 for row in limit_rows)),
-        ("Ocean's Twelve BHDStudio is inside the cap", oceans_bhd_pass and not oceans_bhd_blocked),
-        ("Ocean's Twelve HONE replacement is inside the cap", oceans_hone_pass and not oceans_hone_blocked),
+        ("4K size is min 0, preferred 1999, max 0", unlimited(limit_rows, 4)),
+        ("1080p size is min 0, preferred 1999, max 0", unlimited(hd_rows, 4)),
+        ("Remux size is min 0, preferred 1999, max 0", unlimited(remux_rows, 2)),
+        ("720p stays min 0, preferred 1990, max 0", len(untouched_rows) == 4 and all(row[1] == 0 and row[2] == 1990 and row[3] == 0 for row in untouched_rows)),
+        ("Sonarr 2160p size stays 6 / 130 / 200", sonarr_2160 == [(6, 130, 200)]),
+        ("Sonarr 1080p size stays 2 / 10 / 30", sonarr_1080 == [(2, 10, 30)]),
+        ("Ocean's Twelve BHDStudio is not size-rejected", oceans_bhd_pass and not oceans_bhd_blocked),
+        ("Ocean's Twelve HONE replacement is not size-rejected", oceans_hone_pass and not oceans_hone_blocked),
         ("Ocean's Twelve BHDStudio scores at least the HONE replacement", oceans_bhd >= oceans_hone),
         ("Ocean's Twelve HONE does not upgrade BHDStudio", not oceans_would_upgrade),
         ("Two Towers compact disc outscores the HONE MA WEB", towers_disc > towers_web and towers_bhd > towers_web),
         ("Fellowship HONE MA WEB loses to that compact disc on score", towers_disc > fellowship_web),
-        ("230 MB/min HONE MA WEB is rejected by the bitrate cap", towers_web_blocked and fellowship_blocked),
+        ("230 MB/min HONE MA WEB is not size-rejected", (not towers_web_blocked) and (not fellowship_blocked)),
         ("HONE MA WEB score does not depend on file gigabytes", towers_web == towers_web_small),
-        ("Return of the King hallowed at 179 MB/min stays inside the cap", rotk_pass and not rotk_blocked),
-        ("A 230 MB/min HONE disc is rejected", hone_cap_blocked),
+        ("Return of the King hallowed at 179 MB/min is not size-rejected", rotk_pass and not rotk_blocked),
+        ("A 230 MB/min HONE disc is not size-rejected", not hone_cap_blocked),
+        ("An 80 MB/min 1080p encode is not size-rejected", not hd_large_blocked),
         ("PSA outscores BYNDR, and BYNDR misses the minimum", psa > byndr and psa_pass and (not byndr_pass) and byndr < 3000 and not byndr_blocked),
         ("A 36 GiB BYNDR at 160 MB/min scores the same and still misses the minimum", byndr_long == byndr and (not byndr_long_pass) and byndr_long < 3000 and not byndr_long_blocked),
         ("A 36 GiB HONE WEB at 160 MB/min is not bitrate-blocked", long_web_pass and not long_web_blocked),
-        ("A long in-cap WEB scores the same as the small copy", long_web == long_web_small and long_web_matched == long_web_small_matched),
+        ("A long WEB scores the same as the small copy", long_web == long_web_small and long_web_matched == long_web_small_matched),
         ("That long WEB stays under the compact disc and above PSA", towers_disc > long_web > psa),
         ("No gigabyte WEB custom format exists", no_size_penalty),
         ("Compact FLUX WEB beats PSA", flux > psa and flux_pass and not flux_blocked),
@@ -3067,9 +3113,26 @@ def run_dumpstarr_tiebreak_order(conn):
     ).fetchone()
     expect("min, cutoff, and upgrade increment are unchanged", gates == (3000, 41600, 1), f"{gates}")
     caps = conn.execute(
-        "SELECT COUNT(*) FROM radarr_quality_definitions WHERE quality_name IN ('Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p') AND min_size = 6 AND preferred_size = 130 AND max_size = 200"
+        """
+        SELECT COUNT(*) FROM radarr_quality_definitions
+        WHERE quality_name IN (
+            'Bluray-2160p', 'WEBDL-2160p', 'WEBRip-2160p', 'HDTV-2160p',
+            'Bluray-1080p', 'WEBDL-1080p', 'WEBRip-1080p', 'HDTV-1080p',
+            'Remux-2160p', 'Remux-1080p'
+        )
+        AND min_size = 0 AND preferred_size = 1999 AND max_size = 0
+        """
     ).fetchone()[0]
-    expect("4K bitrate cap stays 6 / 130 / 200", caps == 4, f"rows {caps}")
+    expect("Capped Radarr qualities are min 0, preferred 1999, max 0", caps == 10, f"rows {caps}")
+    untouched = conn.execute(
+        "SELECT COUNT(*) FROM radarr_quality_definitions WHERE quality_name = 'Bluray-720p' AND min_size = 0 AND preferred_size = 1990 AND max_size = 0"
+    ).fetchone()[0]
+    expect("720p Bluray stays min 0, preferred 1990, max 0", untouched == 1, f"rows {untouched}")
+    streaming = conn.execute(
+        "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = '1080p Compact Streaming WEB-DL'",
+        (movies,),
+    ).fetchone()[0]
+    expect("1080p streaming score stays 5200", streaming == 5200, f"score {streaming}")
 
     positive = conn.execute(
         "SELECT COALESCE(SUM(score), 0) FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND score > 0 AND score < 3000",

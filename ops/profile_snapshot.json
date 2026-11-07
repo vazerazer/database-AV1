@@ -4,7 +4,7 @@
     "min_score": 3000,
     "upgrade_until_score": 41600,
     "increment": 1,
-    "description": "Compact 4K movies. One elite Blu-ray score, then a smaller disc, then compact streaming WEB, then PSA, then a micro. Untouched 4K WEB-DL scores 0 and misses the minimum. 1080p then follows: elite 9600, circle 6400, streaming 5200, PSA 4100, micro 3000. Dolby Vision +1000, HDR +500, HDR10+ +600, DD+ +125, DD +115. SDR Blu-ray, DV without fallback, and HD audio miss the cutoff. Cap 200 MB/min. No gigabyte penalty.",
+    "description": "Compact 4K movies. One elite Blu-ray score, then a smaller disc, then compact streaming WEB, then PSA, then a micro. Untouched 4K WEB-DL scores 0 and misses the minimum. 1080p then follows: elite 9600, circle 6400, streaming 5200, PSA 4100, micro 3000. Dolby Vision +1000, HDR +500, HDR10+ +600, DD+ +125, DD +115. SDR Blu-ray, DV without fallback, and HD audio miss the cutoff. No bitrate cap (min 0, preferred 1999, max unlimited). No gigabyte penalty.",
     "ladder": {
       "2160p Compact Bluray Tier 1": 38400,
       "2160p Compact Bluray Tier 2": 35200,
