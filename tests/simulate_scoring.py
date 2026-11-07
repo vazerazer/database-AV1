@@ -1022,6 +1022,10 @@ def run_simulation_battery():
     passed_tests += ladder_passed
     failed_tests += ladder_failed
 
+    empty_passed, empty_failed = run_empty_assigned_format_guard(conn, movies, tv)
+    passed_tests += empty_passed
+    failed_tests += empty_failed
+
     print("\n================================================================================")
     print(f"SIMULATION SUMMARY: {passed_tests} Passed, {failed_tests} Failed")
     print("================================================================================")
@@ -3262,6 +3266,162 @@ def run_movie_fallback_ladder(conn, movies, tv):
     expect("Movie minimum and cutoff stay 3000 / 41600", gates == (3000, 41600), f"{gates}")
 
     print(f"Fallback ladder: {passed} passed, {failed} failed")
+    return passed, failed
+
+
+def run_empty_assigned_format_guard(conn, movies, tv):
+    """Empty assigned formats cannot sync.
+
+    Op 974 counted Banned Groups (Efficient) and Banned Groups (Regular)
+    among the hard rejects (18 at -100000 on movies, 19 at -10000 on TV).
+    Op 968 had already removed their last condition, RARBG. An assigned
+    format with zero conditions compiles to specifications: [] and Radarr
+    rejects it. Unassigning them drops those counts by 2. The shared
+    Banned Groups list and Banned Micro Encodes stay. Class scores do not
+    move, and Micro OK groups are not put back on a ban list.
+    """
+    print("\n=== EMPTY ASSIGNED FORMATS ===")
+    passed = 0
+    failed = 0
+
+    def expect(name, ok, detail=""):
+        nonlocal passed, failed
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+
+    movie_rejects = (
+        "3D", "AV1", "Audio Description", "Banned Groups", "Banned Groups (Efficient)",
+        "Banned Groups (Regular)", "Banned Micro Encodes", "CAM", "Extras", "Full Disc",
+        "Full Disc (Quality Match)", "Hardcoded Subtitles", "Remux", "Sing Along",
+        "Upscale", "VP9", "VVC", "x264 (2160p)",
+    )
+    tv_rejects = movie_rejects + ("Dolby Vision (Without Fallback)",)
+    empty_names = ("Banned Groups (Efficient)", "Banned Groups (Regular)")
+
+    def score_span(profile, names, score_filter=False):
+        placeholders = ",".join("?" for _ in names)
+        sql = f"""
+            SELECT COUNT(*), MIN(score), MAX(score)
+            FROM quality_profile_custom_formats
+            WHERE quality_profile_name = ?
+              AND custom_format_name IN ({placeholders})
+        """
+        params = [profile, *names]
+        if score_filter:
+            sql += " AND score = -10000"
+        return conn.execute(sql, params).fetchone()
+
+    movie_span = score_span(movies, movie_rejects)
+    tv_span = score_span(tv, tv_rejects, score_filter=True)
+    expect(
+        "Movies keeps 16 hard rejects at -100000",
+        movie_span == (16, -100000, -100000),
+        f"got {movie_span}",
+    )
+    expect(
+        "TV keeps 17 hard rejects at -10000",
+        tv_span == (17, -10000, -10000),
+        f"got {tv_span}",
+    )
+
+    still_assigned = conn.execute(
+        f"""
+        SELECT quality_profile_name, custom_format_name, arr_type, score
+        FROM quality_profile_custom_formats
+        WHERE custom_format_name IN ({",".join("?" for _ in empty_names)})
+        ORDER BY custom_format_name, quality_profile_name, arr_type
+        """,
+        empty_names,
+    ).fetchall()
+    expect(
+        "Empty profile-specific ban formats are unassigned on every profile",
+        still_assigned == [],
+        f"still assigned {still_assigned}",
+    )
+
+    empty_assigned = conn.execute("""
+        SELECT quality_profile_name, custom_format_name
+        FROM quality_profile_custom_formats qpcf
+        WHERE NOT EXISTS (
+            SELECT 1 FROM custom_format_conditions cfc
+            WHERE cfc.custom_format_name = qpcf.custom_format_name
+        )
+    """).fetchall()
+    expect(
+        "No quality profile assigns a custom format with zero conditions",
+        empty_assigned == [],
+        f"empty assignments {empty_assigned}",
+    )
+
+    definitions = conn.execute(
+        f"""
+        SELECT COUNT(*) FROM custom_formats
+        WHERE name IN ({",".join("?" for _ in empty_names)})
+        """,
+        empty_names,
+    ).fetchone()[0]
+    conditions = conn.execute(
+        f"""
+        SELECT COUNT(*) FROM custom_format_conditions
+        WHERE custom_format_name IN ({",".join("?" for _ in empty_names)})
+        """,
+        empty_names,
+    ).fetchone()[0]
+    expect("Empty ban definitions are kept", definitions == 2, f"definitions {definitions}")
+    expect("Those definitions still have zero conditions", conditions == 0, f"conditions {conditions}")
+
+    for profile, expected in ((movies, -100000), (tv, -10000)):
+        for fmt in ("Banned Groups", "Banned Micro Encodes"):
+            row = conn.execute(
+                "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = ?",
+                (profile, fmt),
+            ).fetchone()
+            got = None if row is None else row[0]
+            expect(f"{profile} still scores {fmt} at {expected}", got == expected, f"got {got}")
+
+    banned_group_conditions = conn.execute(
+        "SELECT COUNT(*) FROM custom_format_conditions WHERE custom_format_name = 'Banned Groups'"
+    ).fetchone()[0]
+    expect("Shared Banned Groups list still has its conditions", banned_group_conditions >= 50, f"count {banned_group_conditions}")
+
+    micro_ok = conn.execute(
+        "SELECT pattern FROM regular_expressions WHERE name = 'HEVC Compact Micro OK'"
+    ).fetchone()[0]
+    for token in ("RARBG", "UTR", "iVy", "Joy", "t0paz", "POF"):
+        on_ban = conn.execute(
+            """
+            SELECT COUNT(*) FROM custom_format_conditions
+            WHERE name = ? AND custom_format_name LIKE 'Banned%'
+            """,
+            (token,),
+        ).fetchone()[0]
+        expect(f"{token} stays on the Micro OK list", token in micro_ok, "missing from HEVC Compact Micro OK")
+        expect(f"{token} is not a condition on a ban format", on_ban == 0, f"ban rows {on_ban}")
+
+    unchanged = (
+        ("2160p WEB-DL HEVC", 0),
+        ("1080p Compact Streaming WEB-DL", 5200),
+        ("1080p Compact HEVC Tier 3", 4100),
+        ("1080p Compact HEVC Tier 4", 3000),
+        ("2160p Compact Bluray Tier 1", 38400),
+    )
+    for fmt, expected in unchanged:
+        row = conn.execute(
+            "SELECT score FROM quality_profile_custom_formats WHERE quality_profile_name = ? AND custom_format_name = ?",
+            (movies, fmt),
+        ).fetchone()
+        got = None if row is None else row[0]
+        expect(f"{fmt} stays {expected}", got == expected, f"got {got}")
+    gates = conn.execute(
+        "SELECT minimum_custom_format_score, upgrade_until_score FROM quality_profiles WHERE name = ?",
+        (movies,),
+    ).fetchone()
+    expect("Movie minimum and cutoff stay 3000 / 41600", gates == (3000, 41600), f"{gates}")
+
+    print(f"Empty assigned formats: {passed} passed, {failed} failed")
     return passed, failed
 
 

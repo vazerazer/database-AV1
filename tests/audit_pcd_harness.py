@@ -365,6 +365,33 @@ def run_audit(pcd_dir, schema_dir=None):
             "detail": f"Profile '{qp_name}' has {cnt} items with upgrade_until=1. Schema idx_one_upgrade_until_per_profile allows at most 1."
         })
 
+    # 5d. Assigned custom formats must have at least one condition.
+    # Profilarr syncs every format used by a selected profile. Radarr
+    # rejects a create/update whose specifications list is empty
+    # (HTTP 400: "Must contain at least one Condition"), which leaves
+    # the format Missing and any profile that scores it Modified.
+    empty_assigned = conn.execute("""
+        SELECT qpcf.quality_profile_name, qpcf.custom_format_name, qpcf.arr_type, qpcf.score
+        FROM quality_profile_custom_formats qpcf
+        WHERE NOT EXISTS (
+            SELECT 1 FROM custom_format_conditions cfc
+            WHERE cfc.custom_format_name = qpcf.custom_format_name
+        )
+        ORDER BY qpcf.custom_format_name, qpcf.quality_profile_name, qpcf.arr_type
+    """).fetchall()
+    for qp_name, cf_name, arr_type, score in empty_assigned:
+        findings.append({
+            "id": f"F-22-{qp_name}-{cf_name}-{arr_type}",
+            "severity": "BLOCKER",
+            "file": "ops/977.unassign-empty-banned-group-formats.sql",
+            "line": 1,
+            "title": f"Profile '{qp_name}' assigns empty custom format '{cf_name}'",
+            "detail": (
+                f"'{cf_name}' has zero conditions and is scored {score} ({arr_type}) on '{qp_name}'. "
+                "Radarr will not create an empty custom format, so Profilarr sync drifts."
+            )
+        })
+
     # -------------------------------------------------------------------------
     # Table Counts
     # -------------------------------------------------------------------------
