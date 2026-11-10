@@ -1,49 +1,68 @@
-# database-AV1
+# radarr-2160p-database
 
-[![PCD Audit & Simulation Battery](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/vazerazer/database-AV1/actions/workflows/ci.yml)
+[![Tests](https://github.com/vazerazer/radarr-2160p-database/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/vazerazer/radarr-2160p-database/actions/workflows/ci.yml)
 
-A custom format database and quality profile suite for Radarr and Sonarr, built to the Profilarr PCD v2 specification. The movie profile targets compact 4K that is good on a 55-inch Mini LED, a 32-inch 4K monitor, and a phone: the hallowed and BHDStudio size window, not a transparent encode and not a large WEB-DL. Scoring follows Dumpstarr's Movies 2160p direct-play weights (Dolby Vision, HDR, DD+, no HD audio, no SDR disc) without taking that profile's WEB-first ladder or its hallowed-only bonus.
+A Profilarr database with one Radarr profile, **Movies 2160p**. The profile is Dumpstarr's [Movies 2160p](https://github.com/Dumpstarr/Database) from the `stable` branch, plus a small layer. The profile name is unchanged so an existing Radarr profile of that name is updated in place.
 
-## Upstream
+Dumpstarr's scores, quality order, minimum of 1000, upgrade-until of 10000, MA Preferred, WEB tiers, and the untagged-audio penalty stay as Dumpstarr ships them. The layer only changes the three things below.
 
-Derived from [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database), then widened from tracker and forum notes on middle-size 4K HEVC (r/trackers, r/sonarr, TRaSH group requests). On those screens a soft encode shows and a phone would hide it. The target is what hallowed (~135 MB/min) and BHDStudio (~120 MB/min) already produce. HONE disc encodes in that same window share their score, so a larger HONE does not replace a smaller file from prestige alone. Public size notes put edge2020 with the large UHD groups (MainFrame, CtrlHD), so it sits one step down with QxR and TAoE. dkore stays in the mid-size circle; the same notes list it there. A larger copy from that circle shares the circle's score, so size does not jump a class. There is no bitrate cap and no gigabyte penalty: Return of the King extended hallowed is 35.2 GB and 179 MB/min, and a much larger file of the same score stays too.
+## The layer
 
-Compact streaming WEB-DLs come next. That is FLUX, Kitsune and CMRG, and a compact Apple TV, iTunes, Amazon, Netflix, Max or Disney+ release from a vetted group. A Blu-ray encode still beats those. An elite WEB, such as HONE, stays above that streaming step. PSA, PSARips, d3g and the other small encodes come after the compact WEB-DLs, and PSA is the last 4K fallback that clears the minimum. UTR, RARBG, iVy, Joy, t0paz and POF stay on the Micro OK list and are not banned, but at 4K they score 0 and miss the minimum. An untouched 4K WEB-DL such as BYNDR, NTb, XEBEC or HHWEB scores 0 the same way. Neither is grabbed, so Radarr continues at 1080p instead of importing a 4K micro. A 4K file that is already in the library is not replaced by that 1080p copy, because Radarr does not downgrade a quality group. The 1080p ladder is the same shape: elite HEVC (including Ralphy), then the circle, then FLUX/Kitsune/CMRG, then PSA, then a micro. After that, named 1080p x264 Blu-ray and WEBRip groups score 3900, 3720, 3540, 3360, 3180, and 3000. The lists are the union of Dictionarry's 1080p quality tiers and Dumpstarr's HD Blu-ray tiers, and a group that both sources rank keeps the better tier. Named 720p groups use the same scores in their own quality group under every 1080p quality, so extras cannot make a 720p release beat a 1080p one. Unlisted groups are not grabbed. A HONE Movies Anywhere WEB is not rejected for bitrate. It stays a +15 tie-break and does not outrank the disc. YTS and MeGusta stay rejected. Transparent groups stay out of the 4K classes, as do NVENC tags such as KONTRAST.
+**Audio.** DTS-HD MA, DTS-HD HRA, and DTS-X score 0 instead of -10000. Those tracks carry a playable DTS core. TrueHD and Atmos, including Dumpstarr's TrueHD-missing rule, stay at -10000 unless the release group is on the trusted list. That list is Dumpstarr's 4K and HD Blu-ray tiers, Baseline, hallowed, BHDStudio, and HONE, plus Dictionarry's 2160p, 1080p, and 720p Quality, Balanced, and Remux tiers, without the TRaSH low-quality groups (Tigole, WiKi, and the rest of that list). TrueHD from any other group stays blocked unless the name also shows DD, DD+, AC3, or E-AC3, which is the exemption Dumpstarr already had. There is no size cap on HD audio.
 
-The movie profile takes Dumpstarr's direct-play tie-breakers and not its WEB-first group ladder. The 1080p x264 and 720p fallbacks do use the Dumpstarr and Dictionarry named-group tiers. Dolby Vision is +1000 and HDR is +500. HDR10+ is +600, because our HDR format does not also match HDR10+ and Dumpstarr's two scores add up to that. Dolby Digital + is +125, Dolby Digital is +115, Atmos is +25, and AAC is +10. Special Edition is +125. Storefronts stay at or below +15, in Dumpstarr's order: Movies Anywhere, then Disney+ and iTunes, then Apple TV+ / Max / HBO Max, then Amazon, Netflix, ATV, and Hulu. TrueHD, DTS-HD MA, DTS-HD HRA and DTS-X miss the cutoff, because those tracks will not direct-play. LPCM and FLAC are not denied: Dumpstarr treats PCM as audio in the name, and does not score it below zero. A 4K Blu-ray with no HDR, HDR10, HDR10+ or Dolby Vision in the name misses the cutoff. A Dolby Vision WEB with no HDR token misses it too. WEB-DL is exempt from the SDR rule. Dumpstarr's -10000 penalty fits their tier bases near 1500. Our 4K class step is 3200 points, and the direct-play, SDR, and Dolby Vision-without-fallback penalties are -100000 so they still miss a tier base in the tens of thousands. hallowed does not get a private +600, and Movies Anywhere does not get +2000. HONE, BHDStudio, DarQ, DiscoD, dkore, HQMUX, PTer, Chivaman, Weasley, Vyndros, Ralphy and the rest of the elite regex share one score. The Elite, Circle, Small, Micro OK and streaming lists are unchanged, including edge2020 in the circle.
+**Mid-size Blu-ray.** 2160p Blu-ray encodes that are not remuxes, from 14 GB to 40 GB, from Dictionarry's 2160p Quality tiers 3 through 5 plus dkore and TAoE, score +1800. That is the same score as Dumpstarr's UHD Blu-ray tier 3. Heavy tier-1 groups and WiKi are not in it, and neither are groups Dumpstarr already tiers, so the bonus does not stack. A release outside 14-40 GB simply does not get the bonus. hallowed, BHDStudio, and MA WEB-DLs stay above it.
 
-## Profiles
+**Names Radarr parses short.** The layer fills in the group score when the name still has the group but Radarr's parsed group does not:
 
-* **Movies 2160p HEVC Compact** — mid-size Blu-ray (one score for the whole elite list), then a smaller disc (QxR, TAoE, edge2020), then compact streaming WEB, then PSA. A 4K micro (UTR, RARBG, iVy, Joy, t0paz, POF) scores 0, and so does untouched 4K WEB-DL. Neither clears 3000, so the next grab is 1080p: elite HEVC 9600, circle 6400, FLUX/Kitsune/CMRG 5200, PSA 4100, micro 3000, then named 1080p x264 tiers from 3900 down to 3000. Named 720p tiers use that same 3900–3000 ladder in a lower quality rank. Unlisted groups stay under 3000. Radarr max size stays 0, so a large file is not rejected. Preferred size is 130 MB/min for 2160p encodes and 18 MB/min for 1080p encodes. 720p stays min 0, preferred 1990, max 0, which does not reject the only file. 18 is the midpoint of the 15–20 MB/min band, about 2.1 GB for a two-hour movie, and it is only a same-score tie-break. Remux stays preferred 1999 and stays off the profile. A 230 MB/min HONE WEB is kept or skipped on score, not on size. There is no gigabyte penalty. Movies Anywhere is a storefront tie-break and does not outrank a Blu-ray. HDR disc encodes are required. HD audio is rejected.
-* **TV 2160p HEVC Compact** — the same 4K and 1080p groups, with WEB ranked above disc. That order was not restacked, and TV does not enable 720p. BHDStudio shares the top circle. FLUX, Kitsune and CMRG sit above untouched WEB-DL. Sonarr size rows stay as the earlier migrations left them: 2160p encode qualities at min 6, preferred 130, max 200, and 1080p encode qualities at min 2, preferred 10, max 30. TV does not take the movie profile's HD-audio ban or the SDR Blu-ray ban.
+- dot-joined names such as `.x265.hallowed`, `.PiRaTeS`, and `.DiscoD.HONE`, which otherwise take Group Missing
+- repost suffixes such as `.mkv-WtF-xpost`, `.mp4-nEwZ-xpost`, `-CMRG-4u7c`, and `BHDStudio_mp4`
+- HONE member names such as `- DarQ HONE)` and `-Weasley-HONE`, which otherwise hit HONE (Bad Name) even though Dumpstarr trusts DarQ, DiscoD, and Weasley
 
-AV1, remuxes, 4K x264, a 4K micro, and a 4K release with no vetted group do not clear the minimum score. A named 1080p x264 or 720p group from the Dumpstarr and Dictionarry union does, at 3000 or above. An unlisted group does not. The 720p qualities are a separate rank under the whole 1080p rank. 4K class gaps between the classes that still clear 3000 are 3200 points, wider than Dolby Vision, HDR10+, Dolby Digital +, Atmos, and a special edition together, so those weights only break ties inside a 4K class. The 1080p steps under the circle are 1200, 1100 and 1100, which is enough that Dolby Vision alone cannot reorder them. Both 1080p PSA and a 1080p micro still clear the minimum of 3000.
+Names Dumpstarr already scores, including `Kitsune[TGx]` and a trailing `HONE-`, are left alone. The fallback does not add a second copy of a score the parsed group already received.
 
-## Usage
+## What was removed
 
-Import this repository into Profilarr to manage and sync custom formats to your Arr instances:
+The database ships this profile only. Other Dumpstarr profiles, and formats or regexes Movies 2160p does not use, are not included. Naming presets are not included, so a sync does not rename the library.
 
-1. In Profilarr, navigate to **Settings** > **Databases**.
-2. Add a new database:
-   * **Repository URL:** `https://github.com/vazerazer/database-AV1`
-   * **Branch:** `v2`
-3. Select `Movies 2160p HEVC Compact` for Radarr and `TV 2160p HEVC Compact` for Sonarr, then sync.
+`Default Delay` is included (prefer usenet, 60 minutes) because that is the delay profile Dumpstarr pairs with Movies 2160p.
 
-*Note: Profilarr syncs custom format definitions and scores to the target profile. Root folder mappings, download clients, and indexers remain managed directly in the arrs.*
+## How updates flow
 
-## Repository Layout
+Profilarr compiles a database in four layers: schema, `ops/`, `tweaks/`, then local user ops. Current Profilarr always loads `tweaks/` during compile. The tweaks tab in the UI is hidden; the loader is not.
 
-* `ops/` — Versioned SQL migration scripts defining custom formats, regex patterns, and profile scores.
-* `tests/` — Automated CI test harnesses verifying schema integrity, regex behavior, and scoring boundaries.
-* `scripts/` — Upstream synchronization script (`sync_upstream.sh`).
+`ops/0.movies-2160p.sql` is Dumpstarr's Movies 2160p profile and the formats, regexes, and quality definitions it uses, and nothing else. `tweaks/1.layer.sql` is the layer above. A nightly GitHub Action pulls Dumpstarr `stable` and Dictionarry `v2`, rebuilds both files, and runs the tests. It commits and pushes only when those tests pass. A failed build or a failed test leaves the previous commit in place.
 
-## Running Tests
+If Dumpstarr renames a format or regex the layer updates, the tweak fails to compile and the job stops. `.github/upstream.json` records the Dumpstarr and Dictionarry commits the files were built from.
+
+To rebuild locally:
 
 ```bash
-python3 tests/audit_pcd_harness.py .
-python3 tests/simulate_scoring.py
+./scripts/sync_upstream.sh
 ```
+
+The script clones both upstreams, writes `ops/` and `tweaks/`, and runs the tests before it commits. It does not push. Push the result yourself, or let the nightly job do that on `v2` after the tests pass.
+
+## Use it in Profilarr
+
+1. Add a database with repository `https://github.com/vazerazer/radarr-2160p-database` and branch `v2`.
+2. On radarr4k, point the quality-profile sync for **Movies 2160p** at this database. Remove radarr4k from the Dumpstarr sync for that profile so the nightly Dumpstarr pull does not write the old scores back.
+3. Sync. Profilarr matches a quality profile by name and updates the existing Radarr profile. Movies already on Movies 2160p stay on that profile. Do not delete the profile, do not rename it, and do not add a second Movies 2160p.
+
+The sync changes scores. Radarr will not move the library to another profile, but the next search can upgrade a movie whose new score beats the file on disk. That is the audio rule and the name fixes, not a library-wide re-grab. On a sample of 45 movies the new picks were the SiC DTS-HD MA WEB-DL for The Black Cauldron, the XEBEC DTS-HD MA WEB-DL for Cast Away, the W4NK3R UHD Blu-ray for Jack Reacher, and the 1080p CMRG for Cam. Supergirl stays on a HONE MA WEB-DL at the same score; a previously unparsed copy of that release ties and the larger file wins. Everything else in the sample kept its Dumpstarr pick.
+
+To apply the profile without those upgrades yet, turn upgrades off on Movies 2160p, sync, confirm the Radarr profile id is unchanged, and turn upgrades back on when the new grabs are wanted.
+
+If Default Delay is synced as well, map it onto the existing delay profile of that name. Root folders, download clients, and indexers stay in Radarr.
+
+## Tests
+
+```bash
+export PCD_SCHEMA_PATH=deps/schema/ops
+python3 tests/test_database.py
+```
+
+The schema checkout is [Dictionarry-Hub/schema](https://github.com/Dictionarry-Hub/schema) at the version in `pcd.json`. Install `regex` from `requirements.txt` first. The tests compile the database, check the name fixes, check that Dumpstarr scores stay put except where the layer fires, and rescore the saved release lists.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

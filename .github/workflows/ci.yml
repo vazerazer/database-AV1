@@ -1,57 +1,42 @@
-name: PCD Audit & Simulation Battery
+name: Tests
 
 on:
   push:
-    branches: [v2, main, stable, dev]
+    branches: [v2]
   pull_request:
-    branches: [v2, main, stable, dev]
+    branches: [v2]
   workflow_dispatch:
-  schedule:
-    # Run weekly every Sunday at 04:00 UTC
-    - cron: '0 4 * * 0'
 
 jobs:
-  audit-and-test:
-    name: PCD Schema Audit & Scoring Simulation Battery
+  test:
+    name: Compile and rescore
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout PCD Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
 
-      - name: Extract Schema Tag from pcd.json
-        id: get_schema_tag
+      - name: Schema version
+        id: schema
         run: |
-          SCHEMA_TAG=$(python3 -c "import json; m = json.load(open('pcd.json')); print(m['dependencies']['https://github.com/Dictionarry-Hub/schema'])")
-          echo "tag=${SCHEMA_TAG}" >> $GITHUB_OUTPUT
-          echo "Resolved Dictionarry schema tag: ${SCHEMA_TAG}"
+          TAG=$(python3 -c "import json; print(json.load(open('pcd.json'))['dependencies']['https://github.com/Dictionarry-Hub/schema'])")
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout Dictionarry Schema Dependency at Exact Tag
+      - name: Checkout schema
         uses: actions/checkout@v4
         with:
-          repository: 'Dictionarry-Hub/schema'
-          ref: ${{ steps.get_schema_tag.outputs.tag }}
-          path: 'deps/schema'
+          repository: Dictionarry-Hub/schema
+          ref: ${{ steps.schema.outputs.tag }}
+          path: deps/schema
 
-      - name: Step 1 - Run PCD SQLite Schema & Foreign Key Audit Harness
+      - name: Run tests
         env:
           PCD_SCHEMA_PATH: deps/schema/ops
-        run: |
-          python3 tests/audit_pcd_harness.py .
-
-      - name: Step 2 - Run Full Scoring Simulation & Upgrade Increment Battery
-        env:
-          PCD_SCHEMA_PATH: deps/schema/ops
-        run: |
-          python3 tests/simulate_scoring.py
-
+        run: python3 tests/test_database.py

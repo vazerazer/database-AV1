@@ -1,10 +1,9 @@
 {
-  "name": "HEVC Compact Database",
-  "version": "2.1.0",
-  "description": "Compact 4K HEVC profiles for Radarr and Sonarr. Movies prefer the shared elite Blu-ray score (hallowed, BHDStudio, HONE and the rest of that list), then a smaller disc, then FLUX/Kitsune/CMRG, then PSA. A 4K micro and an untouched 4K WEB-DL such as BYNDR or NTb score 0 and do not clear the minimum, so the next grab is 1080p: elite, circle, streaming WEB, PSA, then a micro. Named 1080p x264 groups, the union of Dictionarry and Dumpstarr, then score 3900 down to 3000. Named 720p groups use that ladder in a quality group below every 1080p quality. Unlisted groups are not grabbed. Inside a class, Dolby Vision is +1000, HDR is +500, HDR10+ is +600, Dolby Digital + is +125, and Dolby Digital is +115. 4K Blu-ray without HDR is rejected, and so is Dolby Vision with no HDR fallback. TrueHD and DTS-HD are rejected for direct play. Radarr max size stays unlimited. Preferred size is 130 MB/min at 2160p and 18 MB/min at 1080p, so a long movie is not rejected for its bitrate.",
+  "name": "radarr-2160p-database",
+  "version": "1.0.0",
+  "description": "Radarr profile Movies 2160p, taken from Dumpstarr and kept under that name. DTS-HD is allowed because the core track plays. TrueHD stays blocked except for trusted tiered groups, unless the name also shows a DD or DD+ track. A 14-40 GB Blu-ray encode from the mid-size groups scores with Dumpstarr's UHD tier 3, below hallowed and BHDStudio. Release names Radarr mis-parses still receive the group score. Minimum score 1000, upgrade until 10000.",
   "arr_types": [
-    "radarr",
-    "sonarr"
+    "radarr"
   ],
   "dependencies": {
     "https://github.com/Dictionarry-Hub/schema": "1.1.0"
@@ -15,19 +14,16 @@
     }
   ],
   "license": "MIT",
-  "repository": "https://github.com/vazerazer/database-AV1",
+  "repository": "https://github.com/vazerazer/radarr-2160p-database",
   "links": {
-    "homepage": "https://github.com/vazerazer/database-AV1"
+    "homepage": "https://github.com/vazerazer/radarr-2160p-database"
   },
   "profilarr": {
     "minimum_version": "2.0.0"
   },
   "tags": [
-    "hevc",
-    "x265",
+    "radarr",
     "2160p",
-    "compact",
-    "hdr",
-    "dolby-vision"
+    "dumpstarr"
   ]
 }

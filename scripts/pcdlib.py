@@ -1,0 +1,815 @@
+"""Compile, prune, and layer a Profilarr PCD.
+
+Profilarr replays schema, then ops/, then tweaks/, then local user ops.
+This repo keeps Dumpstarr's Movies 2160p profile as one base operation and
+puts the local layer in tweaks/, which current Profilarr always compiles
+(the tweaks tab is hidden, the loader is not).
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import sqlite3
+from typing import Iterable
+
+PROFILE_NAME = "Movies 2160p"
+DATABASE_NAME = "radarr-2160p-database"
+
+DUMPSTARR_REPO = "https://github.com/Dumpstarr/Database"
+DUMPSTARR_BRANCH = "stable"
+DICTIONARRY_REPO = "https://github.com/Dictionarry-Hub/database"
+DICTIONARRY_BRANCH = "v2"
+
+# Dictionarry 2160p Quality tiers that are encodes, not the heavy transparent
+# tier and not groups Dumpstarr already scores as UHD Blu-ray.
+MID_TIER_FORMATS = (
+    "2160p Quality Tier 3",
+    "2160p Quality Tier 4",
+    "2160p Quality Tier 5",
+)
+MID_TIER_EXTRA = ("dkore", "TAoE")
+MID_TIER_EXCLUDE = {"wiki", "reborn", "sa89", "solar"}
+MID_MIN_BYTES = 14 * 1024 * 1024 * 1024
+MID_MAX_BYTES = 40 * 1024 * 1024 * 1024
+
+BASELINE_TAIL_GROUPS = (
+    "DarQ",
+    "DiscoD",
+    "PiRaTeS",
+    "SuccessfulCrab",
+    "Vyndros",
+    "Weasley",
+)
+HONE_FAMILY = ("DarQ", "DiscoD", "Weasley")
+
+
+def sql_quote(value) -> str:
+    if value is None:
+        return "NULL"
+    if isinstance(value, int) and not isinstance(value, bool):
+        return str(value)
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def op_order(filename: str) -> int:
+    match = re.match(r"^(\d+)\.", filename)
+    return int(match.group(1)) if match else 10**9
+
+
+def connect() -> sqlite3.Connection:
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON;")
+
+    def lookup(table: str, name: str):
+        row = conn.execute(f"SELECT id FROM {table} WHERE name = ?", (name,)).fetchone()
+        if row is None:
+            raise sqlite3.OperationalError(f"{table} not found: {name}")
+        return row[0]
+
+    conn.create_function("qp", 1, lambda name: lookup("quality_profiles", name))
+    conn.create_function("cf", 1, lambda name: lookup("custom_formats", name))
+    conn.create_function("dp", 1, lambda name: lookup("delay_profiles", name))
+    conn.create_function("tag", 1, lambda name: lookup("tags", name))
+    return conn
+
+
+def sql_files(directory: str) -> list[str]:
+    if not directory or not os.path.isdir(directory):
+        return []
+    names = [name for name in os.listdir(directory) if name.endswith(".sql")]
+    return sorted(names, key=lambda name: (op_order(name), name))
+
+
+def execute_dir(conn: sqlite3.Connection, directory: str) -> None:
+    for name in sql_files(directory):
+        path = os.path.join(directory, name)
+        with open(path, encoding="utf-8") as handle:
+            try:
+                conn.executescript(handle.read())
+            except sqlite3.Error as exc:
+                raise sqlite3.Error(f"{path}: {exc}") from exc
+
+
+def compile_layers(schema_dir: str, *layer_dirs: str) -> sqlite3.Connection:
+    conn = connect()
+    execute_dir(conn, schema_dir)
+    for layer in layer_dirs:
+        execute_dir(conn, layer)
+    return conn
+
+
+def _split_alts(pattern: str) -> list[str] | None:
+    """Return top-level alternatives inside ^(...)$ , or None."""
+    if not (pattern.startswith("^(") and pattern.endswith(")$")):
+        return None
+    inner = pattern[2:-2]
+    parts: list[str] = []
+    buf: list[str] = []
+    depth = 0
+    escaped = False
+    for char in inner:
+        if escaped:
+            buf.append(char)
+            escaped = False
+            continue
+        if char == "\\":
+            buf.append(char)
+            escaped = True
+            continue
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        if char == "|" and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(char)
+    parts.append("".join(buf))
+    return [part for part in parts if part]
+
+
+_DICT_PREFIX = "(?<=^|[\\s.-])"
+
+
+def pattern_tokens(pattern: str, name: str) -> list[str]:
+    """Pieces that can sit inside ^(?:a|b)$.
+
+    Dumpstarr stores ^(?:Group|Group)$. Dictionarry stores a single group
+    as (?<=^|[\\s.-])Group\\b, and a few of those groups are themselves
+    small regexes (de[42], CM(a)?R(io)?G).
+    """
+    alts = _split_alts(pattern)
+    if alts:
+        return alts
+    if pattern.startswith(_DICT_PREFIX) and pattern.endswith("\\b"):
+        return [pattern[len(_DICT_PREFIX) : -2]]
+    raise ValueError(f"{name} is not a group pattern: {pattern[:80]}")
+
+
+def group_tokens(conn: sqlite3.Connection, regex_names: Iterable[str]) -> list[str]:
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for name in regex_names:
+        row = conn.execute(
+            "SELECT pattern FROM regular_expressions WHERE name = ?", (name,)
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"regular expression not found: {name}")
+        for alt in pattern_tokens(row["pattern"], name):
+            key = alt.lower()
+            if key not in seen:
+                seen.add(key)
+                tokens.append(alt)
+    return tokens
+
+
+def regex_names_for(conn: sqlite3.Connection, custom_format: str, arr_types: tuple[str, ...]) -> list[str]:
+    rows = conn.execute(
+        """
+        SELECT re.name
+        FROM custom_format_conditions c
+        JOIN condition_patterns cp
+          ON cp.custom_format_name = c.custom_format_name
+         AND cp.condition_name = c.name
+        JOIN regular_expressions re ON re.name = cp.regular_expression_name
+        WHERE c.custom_format_name = ?
+          AND c.type = 'release_group'
+          AND c.arr_type IN ({})
+        ORDER BY re.name
+        """.format(",".join("?" * len(arr_types))),
+        (custom_format, *arr_types),
+    ).fetchall()
+    return [row["name"] for row in rows]
+
+
+def dictionarry_group_regexes(conn: sqlite3.Connection, custom_format: str) -> list[str]:
+    return regex_names_for(conn, custom_format, ("all", "radarr"))
+
+
+def _lq_keys(conn: sqlite3.Connection) -> set[str]:
+    names = regex_names_for(conn, "LQ", ("radarr",))
+    return {token.lower() for token in group_tokens(conn, names)}
+
+
+def trusted_group_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> list[str]:
+    """Blu-ray tiers, baseline, and Dictionarry quality, balanced, and remux tiers, minus TRaSH LQ."""
+    dumpstarr_formats = (
+        "UHD Bluray Tier 01",
+        "UHD Bluray Tier 02",
+        "UHD Bluray Tier 03",
+        "HD Bluray Tier 01",
+        "HD Bluray Tier 02",
+        "HD Bluray Tier 03",
+        "Baseline Groups",
+        "hallowed",
+        "BHDStudio",
+    )
+    dictionarry_formats = (
+        "2160p Quality Tier 1",
+        "2160p Quality Tier 2",
+        "2160p Quality Tier 3",
+        "2160p Quality Tier 4",
+        "2160p Quality Tier 5",
+        "2160p Quality Tier 6",
+        "2160p Balanced Tier 1",
+        "2160p Balanced Tier 2",
+        "2160p Balanced Tier 3",
+        "HONE Blurays",
+        "1080p Quality Tier 1",
+        "1080p Quality Tier 2",
+        "1080p Quality Tier 3",
+        "1080p Quality Tier 4",
+        "1080p Quality Tier 5",
+        "1080p Quality Tier 6",
+        "1080p Balanced Tier 1",
+        "1080p Balanced Tier 2",
+        "720p Quality Tier 1",
+        "720p Quality Tier 2",
+        "720p Quality Tier 3",
+        "720p Quality Tier 4",
+        "720p Quality Tier 5",
+        "720p Quality Tier 6",
+        "720p Balanced Tier 1",
+        "Remux Tier 1",
+        "Remux Tier 2",
+        "Remux Tier 3",
+        "Remux Tier 4",
+    )
+    raw: list[str] = []
+    for custom_format in dumpstarr_formats:
+        raw.extend(
+            group_tokens(
+                dumpstarr,
+                regex_names_for(dumpstarr, custom_format, ("all", "radarr", "sonarr")),
+            )
+        )
+    for custom_format in dictionarry_formats:
+        raw.extend(group_tokens(dictionarry, dictionarry_group_regexes(dictionarry, custom_format)))
+    blocked = _lq_keys(dumpstarr)
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for token in raw:
+        key = token.lower()
+        if key in blocked or key in seen:
+            continue
+        seen.add(key)
+        tokens.append(token)
+    tokens.sort(key=lambda item: (item.lower(), item))
+    return tokens
+
+
+def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> list[str]:
+    uhd = []
+    for custom_format in ("UHD Bluray Tier 01", "UHD Bluray Tier 02", "UHD Bluray Tier 03"):
+        uhd.extend(group_tokens(dumpstarr, regex_names_for(dumpstarr, custom_format, ("all", "radarr"))))
+    already = {token.lower() for token in uhd}
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for custom_format in MID_TIER_FORMATS:
+        for token in group_tokens(dictionarry, dictionarry_group_regexes(dictionarry, custom_format)):
+            key = token.lower()
+            if key in MID_TIER_EXCLUDE or key in already or key in seen:
+                continue
+            seen.add(key)
+            tokens.append(token)
+    for extra in MID_TIER_EXTRA:
+        if extra.lower() not in seen:
+            seen.add(extra.lower())
+            tokens.append(extra)
+    tokens.sort(key=lambda item: (item.lower(), item))
+    return tokens
+
+
+def _alt(tokens: Iterable[str]) -> str:
+    ordered = sorted(set(tokens), key=lambda item: (-len(item), item.lower(), item))
+    return "|".join(ordered)
+
+
+def _tail(groups: str, family: bool) -> str:
+    prefix = f"(?:(?:{_alt(HONE_FAMILY)})[ ._-])?" if family else ""
+    return (
+        rf"(?<=[-._ \[(]){prefix}(?:{groups})"
+        r"(?:\.mkv|\.mp4|_mp4)?(?:-(?!HONE\b)[A-Za-z0-9]{2,10})?(?:-xpost)?"
+        r"(?:\[[A-Za-z0-9.]+\])?-?\)?\]?$"
+    )
+
+
+def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> str:
+    trusted = trusted_group_tokens(dumpstarr, dictionarry)
+    mid = mid_tier_tokens(dumpstarr, dictionarry)
+    t3 = group_tokens(
+        dumpstarr, regex_names_for(dumpstarr, "UHD Bluray Tier 03", ("all", "radarr"))
+    )
+    web1 = group_tokens(
+        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 01", ("radarr",))
+    )
+    web2 = group_tokens(
+        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 02", ("radarr",))
+    )
+    web3 = group_tokens(
+        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 03", ("radarr",))
+    )
+    web_any = list(dict.fromkeys([*web1, *web2, *web3]))
+    trusted_tail = list(dict.fromkeys([*t3, *BASELINE_TAIL_GROUPS, *web_any]))
+    lines = [
+        "-- Local layer for Movies 2160p. Runs after the Dumpstarr base.",
+        "-- DTS-HD is allowed (the core track plays). TrueHD stays blocked",
+        "-- except for trusted tiered groups. The 14-40 GB window is only",
+        "-- the mid-tier bonus, not a penalty and not a cap on HD audio.",
+        "UPDATE quality_profile_custom_formats",
+        "SET score = 0",
+        "WHERE quality_profile_name = 'Movies 2160p'",
+        "  AND custom_format_name = 'DTS-HD MA'",
+        "  AND arr_type = 'radarr'",
+        "  AND score = -10000;",
+        "UPDATE quality_profile_custom_formats",
+        "SET score = 0",
+        "WHERE quality_profile_name = 'Movies 2160p'",
+        "  AND custom_format_name = 'DTS-HD HRA'",
+        "  AND arr_type = 'radarr'",
+        "  AND score = -10000;",
+        "UPDATE quality_profile_custom_formats",
+        "SET score = 0",
+        "WHERE quality_profile_name = 'Movies 2160p'",
+        "  AND custom_format_name = 'DTS-X'",
+        "  AND arr_type = 'radarr'",
+        "  AND score = -10000;",
+        _insert_regex(
+            "Lite TrueHD Trusted Groups",
+            "^(" + "|".join(trusted) + ")$",
+            "Blu-ray, baseline, and Dictionarry quality/balanced/remux groups, minus TRaSH LQ.",
+        ),
+        "INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required)",
+        "VALUES ('TrueHD', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
+        "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
+        "VALUES ('TrueHD', 'Not Trusted Group', 'Lite TrueHD Trusted Groups');",
+        "INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required)",
+        "VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
+        "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
+        "VALUES ('TrueHD Missing', 'Not Trusted Group', 'Lite TrueHD Trusted Groups');",
+        _insert_regex("Lite Mid UHD Groups", "^(" + "|".join(mid) + ")$", "Mid-size 4K Blu-ray encoders."),
+        _insert_regex("Lite T3 Tail", _tail(_alt(t3), True), "Misparsed UHD tier 3 group at the end of the name."),
+        _insert_regex("Lite hallowed Tail", _tail("hallowed", False), "Misparsed hallowed group."),
+        _insert_regex("Lite BHDStudio Tail", _tail("BHDStudio", False), "Misparsed BHDStudio group."),
+        _insert_regex("Lite WEB T1 Tail", _tail(_alt(web1), True), "Misparsed WEB tier 1 group."),
+        _insert_regex("Lite WEB T2 Tail", _tail(_alt(web2), False), "Misparsed WEB tier 2 group."),
+        _insert_regex("Lite WEB Any Tail", _tail(_alt(web_any), True), "Misparsed WEB tier 1-3 group."),
+        _insert_regex("Lite Trusted Tail", _tail(_alt(trusted_tail), True), "Misparsed trusted group."),
+        _insert_regex("Lite Baseline Tail", _tail(_alt(BASELINE_TAIL_GROUPS), False), "Misparsed baseline group."),
+        _insert_regex(
+            "Lite HONE Family",
+            r"(?<=[-._ \[(])(?:"
+            + _alt(HONE_FAMILY)
+            + r")[ ._-]HONE(?:\.mkv|\.mp4|_mp4)?(?:-(?!HONE\b)[A-Za-z0-9]{2,10})?(?:-xpost)?(?:\[[A-Za-z0-9.]+\])?-?\)?\]?$",
+            "HONE member names Dumpstarr already trusts.",
+        ),
+    ]
+    lines.extend(_format_mid())
+    lines.extend(_format_name_fallbacks())
+    lines.append(
+        "UPDATE quality_profiles SET description = description || char(10) || "
+        + sql_quote(
+            "Local layer: DTS-HD scores 0, TrueHD stays blocked except for trusted groups, "
+            "and a 14-40 GB mid-size Blu-ray tier scores 1800."
+        )
+        + " WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';"
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _insert_regex(name: str, pattern: str, description: str) -> str:
+    return (
+        "INSERT INTO regular_expressions (name, pattern, description) VALUES ("
+        f"{sql_quote(name)}, {sql_quote(pattern)}, {sql_quote(description)});"
+    )
+
+
+def _format_mid() -> list[str]:
+    return [
+        "INSERT INTO custom_formats (name, description) VALUES ('Lite UHD Mid Tier',",
+        sql_quote(
+            "2160p Blu-ray encode, not a remux, 14-40 GB, from Dictionarry T3-T5 "
+            "groups that Dumpstarr does not already tier, plus dkore and TAoE."
+        )
+        + ");",
+        _cond("Lite UHD Mid Tier", "2160p", "resolution", 0, 1),
+        "INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ('Lite UHD Mid Tier', '2160p', '2160p');",
+        _cond("Lite UHD Mid Tier", "Bluray", "source", 0, 1),
+        "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite UHD Mid Tier', 'Bluray', 'bluray');",
+        _cond("Lite UHD Mid Tier", "Not Remux", "release_title", 1, 1),
+        _pat("Lite UHD Mid Tier", "Not Remux", "Remux"),
+        _cond("Lite UHD Mid Tier", "14-40 GB", "size", 0, 1),
+        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ('Lite UHD Mid Tier', '14-40 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
+        _cond("Lite UHD Mid Tier", "Mid Groups", "release_group", 0, 1),
+        _pat("Lite UHD Mid Tier", "Mid Groups", "Lite Mid UHD Groups"),
+        _score("Lite UHD Mid Tier", 1800),
+    ]
+
+
+def _format_name_fallbacks() -> list[str]:
+    out = [
+        "INSERT INTO custom_formats (name, description) VALUES ('Lite UHD Tier 03 (Name Fallback)',",
+        sql_quote("UHD Blu-ray tier 3 when the group is only visible at the end of the name.") + ");",
+        _cond("Lite UHD Tier 03 (Name Fallback)", "2160p", "resolution", 0, 1),
+        "INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ('Lite UHD Tier 03 (Name Fallback)', '2160p', '2160p');",
+        _cond("Lite UHD Tier 03 (Name Fallback)", "Bluray", "source", 0, 1),
+        "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite UHD Tier 03 (Name Fallback)', 'Bluray', 'bluray');",
+        _cond("Lite UHD Tier 03 (Name Fallback)", "Not Remux", "release_title", 1, 1),
+        _pat("Lite UHD Tier 03 (Name Fallback)", "Not Remux", "Remux"),
+        _cond("Lite UHD Tier 03 (Name Fallback)", "T3 tail", "release_title", 0, 1),
+        _pat("Lite UHD Tier 03 (Name Fallback)", "T3 tail", "Lite T3 Tail"),
+        _cond("Lite UHD Tier 03 (Name Fallback)", "Not T3 group", "release_group", 1, 1),
+        _pat("Lite UHD Tier 03 (Name Fallback)", "Not T3 group", "TRaSH UHD Bluray Tier 03"),
+        _score("Lite UHD Tier 03 (Name Fallback)", 1800),
+        "INSERT INTO custom_formats (name, description) VALUES ('Lite hallowed (Name Fallback)',",
+        sql_quote("hallowed bonus when the group is only visible at the end of the name.") + ");",
+        _cond("Lite hallowed (Name Fallback)", "tail", "release_title", 0, 1),
+        _pat("Lite hallowed (Name Fallback)", "tail", "Lite hallowed Tail"),
+        _cond("Lite hallowed (Name Fallback)", "Not hallowed", "release_group", 1, 1),
+        _pat("Lite hallowed (Name Fallback)", "Not hallowed", "hallowed"),
+        _score("Lite hallowed (Name Fallback)", 600),
+        "INSERT INTO custom_formats (name, description) VALUES ('Lite BHDStudio (Name Fallback)',",
+        sql_quote("BHDStudio bonus when the group is only visible at the end of the name.") + ");",
+        _cond("Lite BHDStudio (Name Fallback)", "tail", "release_title", 0, 1),
+        _pat("Lite BHDStudio (Name Fallback)", "tail", "Lite BHDStudio Tail"),
+        _cond("Lite BHDStudio (Name Fallback)", "Not BHDStudio", "release_group", 1, 1),
+        _pat("Lite BHDStudio (Name Fallback)", "Not BHDStudio", "BHDStudio"),
+        _score("Lite BHDStudio (Name Fallback)", 550),
+        "INSERT INTO custom_formats (name, description) VALUES ('Lite Baseline (Name Fallback)',",
+        sql_quote("Baseline bonus for DarQ, DiscoD, PiRaTeS, SuccessfulCrab, Vyndros, and Weasley when the group was not parsed.") + ");",
+        _cond("Lite Baseline (Name Fallback)", "tail", "release_title", 0, 1),
+        _pat("Lite Baseline (Name Fallback)", "tail", "Lite Baseline Tail"),
+        _cond("Lite Baseline (Name Fallback)", "Not baseline", "release_group", 1, 1),
+        _pat("Lite Baseline (Name Fallback)", "Not baseline", "Dumpstarr Baseline Groups"),
+        _score("Lite Baseline (Name Fallback)", 500),
+    ]
+    out.extend(_web_fallback("Lite WEB Tier 01 (Name Fallback)", "Lite WEB T1 Tail", "TRaSH WEB Tier 01 (Radarr)", "Not T1", 1500))
+    out.extend(_web_fallback("Lite WEB Tier 02 (Name Fallback)", "Lite WEB T2 Tail", "TRaSH WEB Tier 02 (Radarr)", "Not T2", 1450))
+    out.extend(
+        [
+            "INSERT INTO custom_formats (name, description) VALUES ('Lite MA Preferred (Name Fallback)',",
+            sql_quote("MA Preferred when the WEB group is only visible at the end of the name.") + ");",
+            _cond("Lite MA Preferred (Name Fallback)", "DD+", "release_title", 0, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "DD+", "Dolby Digital +"),
+            _cond("Lite MA Preferred (Name Fallback)", "HDR", "release_title", 0, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "HDR", "HDR"),
+            _cond("Lite MA Preferred (Name Fallback)", "MA", "release_title", 0, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "MA", "Movies Anywhere"),
+            _cond("Lite MA Preferred (Name Fallback)", "WEB-DL", "source", 0, 1),
+            "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite MA Preferred (Name Fallback)', 'WEB-DL', 'web_dl');",
+            _cond("Lite MA Preferred (Name Fallback)", "tail", "release_title", 0, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "tail", "Lite WEB Any Tail"),
+            _cond("Lite MA Preferred (Name Fallback)", "Not T1", "release_group", 1, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "Not T1", "TRaSH WEB Tier 01 (Radarr)"),
+            _cond("Lite MA Preferred (Name Fallback)", "Not T2", "release_group", 1, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "Not T2", "TRaSH WEB Tier 02 (Radarr)"),
+            _cond("Lite MA Preferred (Name Fallback)", "Not T3", "release_group", 1, 1),
+            _pat("Lite MA Preferred (Name Fallback)", "Not T3", "TRaSH WEB Tier 03 (Radarr)"),
+            _score("Lite MA Preferred (Name Fallback)", 2000),
+            "INSERT INTO custom_formats (name, description) VALUES ('Lite Group Missing Offset',",
+            sql_quote("Cancels Group Missing when the name ends in a group Dumpstarr already scores.") + ");",
+            _cond("Lite Group Missing Offset", "Group missing", "release_group", 1, 1),
+            _pat("Lite Group Missing Offset", "Group missing", "Release Group Missing"),
+            _cond("Lite Group Missing Offset", "tail", "release_title", 0, 1),
+            _pat("Lite Group Missing Offset", "tail", "Lite Trusted Tail"),
+            _score("Lite Group Missing Offset", 10000),
+            "INSERT INTO custom_formats (name, description) VALUES ('Lite HONE Family Offset',",
+            sql_quote("Cancels HONE (Bad Name) for DarQ, DiscoD, and Weasley HONE names.") + ");",
+            _cond("Lite HONE Family Offset", "HONE title", "release_title", 0, 1),
+            _pat("Lite HONE Family Offset", "HONE title", "HONE Release Title"),
+            _cond("Lite HONE Family Offset", "Not HONE group", "release_group", 1, 1),
+            _pat("Lite HONE Family Offset", "Not HONE group", "HONE"),
+            _cond("Lite HONE Family Offset", "family", "release_title", 0, 1),
+            _pat("Lite HONE Family Offset", "family", "Lite HONE Family"),
+            _score("Lite HONE Family Offset", 10000),
+        ]
+    )
+    return out
+
+
+def _web_fallback(name: str, tail_regex: str, not_regex: str, not_name: str, score: int) -> list[str]:
+    return [
+        f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(name)}, {sql_quote('WEB tier when the group is only visible at the end of the name.')});",
+        _cond(name, "WEB-DL", "source", 0, 0),
+        f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(name)}, 'WEB-DL', 'web_dl');",
+        _cond(name, "WEBRip", "source", 0, 0),
+        f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(name)}, 'WEBRip', 'webrip');",
+        _cond(name, "tail", "release_title", 0, 1),
+        _pat(name, "tail", tail_regex),
+        _cond(name, not_name, "release_group", 1, 1),
+        _pat(name, not_name, not_regex),
+        _score(name, score),
+    ]
+
+
+def _cond(custom_format: str, name: str, kind: str, negate: int, required: int) -> str:
+    return (
+        "INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ("
+        f"{sql_quote(custom_format)}, {sql_quote(name)}, {sql_quote(kind)}, 'all', {negate}, {required});"
+    )
+
+
+def _pat(custom_format: str, condition: str, regex_name: str) -> str:
+    return (
+        "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ("
+        f"{sql_quote(custom_format)}, {sql_quote(condition)}, {sql_quote(regex_name)});"
+    )
+
+
+def _score(custom_format: str, score: int) -> str:
+    return (
+        "INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ("
+        f"'Movies 2160p', {sql_quote(custom_format)}, 'radarr', {score});"
+    )
+
+
+def _insert_row(table: str, columns: list[str], row: sqlite3.Row) -> str:
+    values = ", ".join(sql_quote(row[column]) for column in columns)
+    cols = ", ".join(columns)
+    return f"INSERT INTO {table} ({cols}) VALUES ({values});"
+
+
+def export_base_sql(conn: sqlite3.Connection, dumpstarr_sha: str) -> str:
+    """Serialize the Movies 2160p closure. Other profiles and unused formats are omitted."""
+    formats = [
+        row["custom_format_name"]
+        for row in conn.execute(
+            """
+            SELECT custom_format_name FROM quality_profile_custom_formats
+            WHERE quality_profile_name = ? ORDER BY custom_format_name, arr_type
+            """,
+            (PROFILE_NAME,),
+        )
+    ]
+    if not formats:
+        raise RuntimeError(f"profile not found: {PROFILE_NAME}")
+    marks = ",".join("?" * len(formats))
+    regexes = [
+        row["regular_expression_name"]
+        for row in conn.execute(
+            f"""
+            SELECT DISTINCT cp.regular_expression_name AS regular_expression_name
+            FROM condition_patterns cp
+            WHERE cp.custom_format_name IN ({marks})
+            ORDER BY cp.regular_expression_name
+            """,
+            formats,
+        )
+    ]
+    regex_marks = ",".join("?" * len(regexes))
+    tag_names = set()
+    for row in conn.execute(
+        "SELECT tag_name FROM quality_profile_tags WHERE quality_profile_name = ?",
+        (PROFILE_NAME,),
+    ):
+        tag_names.add(row["tag_name"])
+    for row in conn.execute(
+        f"SELECT tag_name FROM custom_format_tags WHERE custom_format_name IN ({marks})",
+        formats,
+    ):
+        tag_names.add(row["tag_name"])
+    if regexes:
+        for row in conn.execute(
+            f"SELECT tag_name FROM regular_expression_tags WHERE regular_expression_name IN ({regex_marks})",
+            regexes,
+        ):
+            tag_names.add(row["tag_name"])
+
+    qualities = set()
+    for row in conn.execute(
+        """
+        SELECT quality_name FROM quality_profile_qualities
+        WHERE quality_profile_name = ? AND quality_name IS NOT NULL
+        """,
+        (PROFILE_NAME,),
+    ):
+        qualities.add(row["quality_name"])
+    for row in conn.execute(
+        "SELECT quality_name FROM quality_group_members WHERE quality_profile_name = ?",
+        (PROFILE_NAME,),
+    ):
+        qualities.add(row["quality_name"])
+
+    lines = [
+        f"-- {PROFILE_NAME} pruned from {DUMPSTARR_REPO} {DUMPSTARR_BRANCH} @ {dumpstarr_sha}.",
+        "-- Generated by scripts/sync_upstream.py. The nightly job replaces this file.",
+    ]
+    if tag_names:
+        for row in conn.execute(
+            f"SELECT name FROM tags WHERE name IN ({','.join('?' * len(tag_names))}) ORDER BY name",
+            sorted(tag_names),
+        ):
+            lines.append(_insert_row("tags", ["name"], row))
+    for row in conn.execute(
+        f"""
+        SELECT name, pattern, regex101_id, description
+        FROM regular_expressions
+        WHERE name IN ({regex_marks})
+        ORDER BY name
+        """,
+        regexes,
+    ):
+        lines.append(_insert_row("regular_expressions", ["name", "pattern", "regex101_id", "description"], row))
+    if regexes and tag_names:
+        for row in conn.execute(
+            f"""
+            SELECT regular_expression_name, tag_name FROM regular_expression_tags
+            WHERE regular_expression_name IN ({regex_marks})
+            ORDER BY regular_expression_name, tag_name
+            """,
+            regexes,
+        ):
+            if row["tag_name"] in tag_names:
+                lines.append(_insert_row("regular_expression_tags", ["regular_expression_name", "tag_name"], row))
+    for row in conn.execute(
+        f"""
+        SELECT name, description, include_in_rename FROM custom_formats
+        WHERE name IN ({marks}) ORDER BY name
+        """,
+        formats,
+    ):
+        lines.append(_insert_row("custom_formats", ["name", "description", "include_in_rename"], row))
+    for row in conn.execute(
+        f"""
+        SELECT custom_format_name, tag_name FROM custom_format_tags
+        WHERE custom_format_name IN ({marks})
+        ORDER BY custom_format_name, tag_name
+        """,
+        formats,
+    ):
+        lines.append(_insert_row("custom_format_tags", ["custom_format_name", "tag_name"], row))
+    for row in conn.execute(
+        f"""
+        SELECT custom_format_name, name, type, arr_type, negate, required
+        FROM custom_format_conditions
+        WHERE custom_format_name IN ({marks})
+        ORDER BY custom_format_name, name
+        """,
+        formats,
+    ):
+        lines.append(
+            _insert_row(
+                "custom_format_conditions",
+                ["custom_format_name", "name", "type", "arr_type", "negate", "required"],
+                row,
+            )
+        )
+    type_tables = [
+        ("condition_patterns", ["custom_format_name", "condition_name", "regular_expression_name"]),
+        ("condition_languages", ["custom_format_name", "condition_name", "language_name", "except_language"]),
+        ("condition_indexer_flags", ["custom_format_name", "condition_name", "flag"]),
+        ("condition_sources", ["custom_format_name", "condition_name", "source"]),
+        ("condition_resolutions", ["custom_format_name", "condition_name", "resolution"]),
+        ("condition_quality_modifiers", ["custom_format_name", "condition_name", "quality_modifier"]),
+        ("condition_sizes", ["custom_format_name", "condition_name", "min_bytes", "max_bytes"]),
+        ("condition_release_types", ["custom_format_name", "condition_name", "release_type"]),
+        ("condition_years", ["custom_format_name", "condition_name", "min_year", "max_year"]),
+    ]
+    for table, columns in type_tables:
+        rows = conn.execute(
+            f"""
+            SELECT {", ".join(columns)} FROM {table}
+            WHERE custom_format_name IN ({marks})
+            ORDER BY custom_format_name, condition_name
+            """,
+            formats,
+        ).fetchall()
+        for row in rows:
+            lines.append(_insert_row(table, columns, row))
+    for row in conn.execute(
+        """
+        SELECT name, preferred_protocol, usenet_delay, torrent_delay,
+               bypass_if_highest_quality, bypass_if_above_custom_format_score,
+               minimum_custom_format_score
+        FROM delay_profiles
+        WHERE name = 'Default Delay'
+        """
+    ):
+        lines.append(
+            _insert_row(
+                "delay_profiles",
+                [
+                    "name",
+                    "preferred_protocol",
+                    "usenet_delay",
+                    "torrent_delay",
+                    "bypass_if_highest_quality",
+                    "bypass_if_above_custom_format_score",
+                    "minimum_custom_format_score",
+                ],
+                row,
+            )
+        )
+    for row in conn.execute(
+        """
+        SELECT name, description, upgrades_allowed, minimum_custom_format_score,
+               upgrade_until_score, upgrade_score_increment
+        FROM quality_profiles WHERE name = ?
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(
+            _insert_row(
+                "quality_profiles",
+                [
+                    "name",
+                    "description",
+                    "upgrades_allowed",
+                    "minimum_custom_format_score",
+                    "upgrade_until_score",
+                    "upgrade_score_increment",
+                ],
+                row,
+            )
+        )
+    for row in conn.execute(
+        """
+        SELECT quality_profile_name, language_name, type
+        FROM quality_profile_languages WHERE quality_profile_name = ?
+        ORDER BY language_name
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(_insert_row("quality_profile_languages", ["quality_profile_name", "language_name", "type"], row))
+    for row in conn.execute(
+        """
+        SELECT quality_profile_name, tag_name FROM quality_profile_tags
+        WHERE quality_profile_name = ? ORDER BY tag_name
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(_insert_row("quality_profile_tags", ["quality_profile_name", "tag_name"], row))
+    for row in conn.execute(
+        "SELECT quality_profile_name, name FROM quality_groups WHERE quality_profile_name = ? ORDER BY name",
+        (PROFILE_NAME,),
+    ):
+        lines.append(_insert_row("quality_groups", ["quality_profile_name", "name"], row))
+    member_columns = ["quality_profile_name", "quality_group_name", "quality_name", "position"]
+    for row in conn.execute(
+        """
+        SELECT quality_profile_name, quality_group_name, quality_name, position
+        FROM quality_group_members WHERE quality_profile_name = ?
+        ORDER BY quality_group_name, position, quality_name
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(_insert_row("quality_group_members", member_columns, row))
+    for row in conn.execute(
+        """
+        SELECT quality_profile_name, quality_name, quality_group_name, position, enabled, upgrade_until
+        FROM quality_profile_qualities WHERE quality_profile_name = ?
+        ORDER BY position, COALESCE(quality_name, quality_group_name)
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(
+            _insert_row(
+                "quality_profile_qualities",
+                [
+                    "quality_profile_name",
+                    "quality_name",
+                    "quality_group_name",
+                    "position",
+                    "enabled",
+                    "upgrade_until",
+                ],
+                row,
+            )
+        )
+    for row in conn.execute(
+        """
+        SELECT quality_profile_name, custom_format_name, arr_type, score
+        FROM quality_profile_custom_formats WHERE quality_profile_name = ?
+        ORDER BY custom_format_name, arr_type
+        """,
+        (PROFILE_NAME,),
+    ):
+        lines.append(
+            _insert_row(
+                "quality_profile_custom_formats",
+                ["quality_profile_name", "custom_format_name", "arr_type", "score"],
+                row,
+            )
+        )
+    if qualities:
+        qmarks = ",".join("?" * len(qualities))
+        for row in conn.execute(
+            f"""
+            SELECT name, quality_name, min_size, max_size, preferred_size
+            FROM radarr_quality_definitions
+            WHERE quality_name IN ({qmarks})
+            ORDER BY name, quality_name
+            """,
+            sorted(qualities),
+        ):
+            lines.append(
+                _insert_row(
+                    "radarr_quality_definitions",
+                    ["name", "quality_name", "min_size", "max_size", "preferred_size"],
+                    row,
+                )
+            )
+    return "\n".join(lines) + "\n"
