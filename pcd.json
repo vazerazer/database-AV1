@@ -1,7 +1,7 @@
 {
   "name": "radarr-2160p-database",
   "version": "1.0.0",
-  "description": "Radarr profile Movies 2160p, taken from Dumpstarr and kept under that name. DTS-HD is allowed because the core track plays. TrueHD stays blocked except for trusted tiered groups, unless the name also shows a DD or DD+ track. A 14-40 GB Blu-ray encode from the mid-size groups scores with Dumpstarr's UHD tier 3, below hallowed and BHDStudio. Minimum score 1000, upgrade until 10000.",
+  "description": "Radarr profile Movies 2160p, taken from Dumpstarr and kept under that name. DTS-HD is allowed because the core track plays. TrueHD stays blocked except for trusted tiered groups, unless the name also shows a DD or DD+ track. A 25-60 GB Blu-ray encode from the preferred disc groups scores 4200, above compact hallowed, BHDStudio, and MA WEB-DL. Remuxes and releases outside that window get no size bonus. Minimum score 1000, upgrade until 10000.",
   "arr_types": [
     "radarr"
   ],
