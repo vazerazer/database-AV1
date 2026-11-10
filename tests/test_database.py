@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile check, name-fix checks, and the 45-movie rescore."""
+"""Compile check, audio and mid-tier checks, and the 45-movie regression."""
 
 from __future__ import annotations
 
@@ -16,13 +16,10 @@ from score import Scorer, pick  # noqa: E402
 
 FIXTURES = os.path.join(ROOT, "tests", "fixtures", "releases")
 
-# Research picks, plus one same-score tie the name fix makes eligible.
 EXPECTED_NEW = {
-    "1272.json": "Cam.2018.1080p.NF.WEB-DL.DD5.1.H264-CMRG-4u7c",
     "847.json": "The.Black.Cauldron.1985.2160p.DSNP.WEB-DL.DTS-HD.MA.5.1.DoVi.HDR.HEVC-SiC",
     "871.json": "Cast.Away.2000.2160p.WEB-DL.DTS-HD.MA.5.1.DV.HDR10+.H.265-XEBEC",
     "910.json": "Jack.Reacher.2012.2160p.UHD.BluRay.DTS-HD.MA.7.1.DV.x265-W4NK3R",
-    "963.json": "Supergirl.2026.2160p.Ykw.WEB-DL.HYBRiD.H265.DV.HDR.DDP.Atmos.5.1.ENGLISH.HONE",
 }
 
 
@@ -140,7 +137,8 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(scores["TrueHD"], -10000)
         self.assertEqual(scores["TrueHD Missing"], -10000)
         self.assertEqual(scores["No Audio"], -10000)
-        self.assertEqual(scores["Lite UHD Mid Tier"], 1800)
+        self.assertEqual(scores["UHD Bluray Mid-Size Tier"], 1800)
+        self.assertFalse(any("Name Fallback" in name or name.startswith("Lite ") for name in scores))
         for name in ("TrueHD", "TrueHD Missing", "DTS-HD MA", "DTS-HD HRA", "DTS-X"):
             sizes = self.db.execute(
                 """
@@ -155,12 +153,12 @@ class DatabaseTests(unittest.TestCase):
             SELECT 1 FROM condition_patterns
             WHERE custom_format_name = 'TrueHD'
               AND condition_name = 'Not Trusted Group'
-              AND regular_expression_name = 'Lite TrueHD Trusted Groups'
+              AND regular_expression_name = 'TrueHD Trusted Groups'
             """
         ).fetchone()
         self.assertIsNotNone(trusted)
         pattern = self.db.execute(
-            "SELECT pattern FROM regular_expressions WHERE name = 'Lite TrueHD Trusted Groups'"
+            "SELECT pattern FROM regular_expressions WHERE name = 'TrueHD Trusted Groups'"
         ).fetchone()["pattern"]
         self.assertNotIn("WiKi", pattern)
         self.assertNotIn("Tigole", pattern)
@@ -173,7 +171,7 @@ class DatabaseTests(unittest.TestCase):
         bounds = self.db.execute(
             """
             SELECT min_bytes, max_bytes FROM condition_sizes
-            WHERE custom_format_name = 'Lite UHD Mid Tier'
+            WHERE custom_format_name = 'UHD Bluray Mid-Size Tier'
             """
         ).fetchone()
         self.assertEqual(bounds["min_bytes"], 14 * 1024**3)
@@ -207,102 +205,51 @@ class DatabaseTests(unittest.TestCase):
         hallowed_score, hallowed_hits = self.scorer.score(hallowed)
         bhdstudio_score, _ = self.scorer.score(bhdstudio)
         mid_score, mid_hits = self.scorer.score(mid)
-        self.assertIn("Lite UHD Mid Tier", mid_hits)
-        self.assertNotIn("Lite UHD Mid Tier", hallowed_hits)
+        self.assertIn("UHD Bluray Mid-Size Tier", mid_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", hallowed_hits)
         self.assertGreater(hallowed_score, mid_score)
         self.assertGreater(bhdstudio_score, mid_score)
         self.assertEqual(hallowed_score - mid_score, 600)
         small_score, small_hits = self.scorer.score(too_small)
         big_score, big_hits = self.scorer.score(too_big)
-        self.assertNotIn("Lite UHD Mid Tier", small_hits)
-        self.assertNotIn("Lite UHD Mid Tier", big_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", small_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", big_hits)
         self.assertLess(small_score, mid_score)
         self.assertLess(big_score, mid_score)
         # The size window does not ban the file. It only withholds the bonus.
         self.assertGreater(big_score, -10000)
 
-    def test_name_fixes_match_radarr_group_scores(self):
-        def hits(title: str, group: str, quality="Bluray-2160p", source="bluray", resolution=2160):
-            rel = release(title, group, quality, source, resolution, 18 * 1024**3)
-            return self.scorer.score(rel)
-
-        dotted = "Movie.2020.2160p.UHD.BluRay.DDP5.1.DV.HDR.x265.hallowed"
-        hyphen = "Movie.2020.2160p.UHD.BluRay.DDP5.1.DV.HDR.x265-hallowed"
-        self.assertEqual(hits(dotted, "")[0], hits(hyphen, "hallowed")[0])
-        pirates_dot = hits(
-            "Movie.2020.2160p.WEB-DL.DDP5.1.DV.HDR.H.265.PiRaTeS",
+    def test_group_missing_and_bad_hone_stay_upstream(self):
+        dotted = release(
+            "Movie.2020.2160p.UHD.BluRay.DDP5.1.DV.HDR.x265.hallowed",
             "",
-            "WEBDL-2160p",
-            "webdl",
+            "Bluray-2160p",
+            "bluray",
             2160,
+            18 * 1024**3,
         )
-        pirates_ok = hits(
-            "Movie.2020.2160p.WEB-DL.DDP5.1.DV.HDR.H.265-PiRaTeS",
-            "PiRaTeS",
-            "WEBDL-2160p",
-            "webdl",
-            2160,
-        )
-        self.assertEqual(pirates_dot[0], pirates_ok[0])
-        self.assertIn("Lite Group Missing Offset", pirates_dot[1])
-        self.assertIn("Lite Baseline (Name Fallback)", pirates_dot[1])
-
-        hone_member = hits(
-            "Movie (2020) (2160p UHD BluRay x265 DV HDR DDP 5.1 English - DarQ HONE)",
-            "DarQ",
-        )
-        self.assertIn("Lite HONE Family Offset", hone_member[1])
-        self.assertIn("HONE (Bad Name)", hone_member[1])
-        self.assertGreater(hone_member[0], 1000)
-
-        weasley = hits(
+        member = release(
             "Movie.2020.2160p.UHD.BluRay.DV.HDR.DDP.5.1.x265-Weasley-HONE",
             "Weasley-HONE",
-        )
-        self.assertIn("Lite HONE Family Offset", weasley[1])
-        self.assertGreater(weasley[0], 1000)
-
-        cmrg = hits(
-            "Cam.2018.1080p.NF.WEB-DL.DD5.1.H264-CMRG-4u7c",
-            "CMRG-4u7c",
-            "WEBDL-1080p",
-            "webdl",
-            1080,
-        )
-        self.assertIn("Lite WEB Tier 01 (Name Fallback)", cmrg[1])
-        self.assertNotIn("WEB Tier 01", cmrg[1])
-
-        kitsune = hits(
-            "Movie.2020.2160p.WEB-DL.DDP5.1.HDR.H.265-Kitsune[TGx]",
-            "Kitsune",
-            "WEBDL-2160p",
-            "webdl",
+            "Bluray-2160p",
+            "bluray",
             2160,
+            18 * 1024**3,
         )
-        self.assertIn("WEB Tier 01", kitsune[1])
-        self.assertNotIn("Lite WEB Tier 01 (Name Fallback)", kitsune[1])
-        self.assertNotIn("Lite Group Missing Offset", kitsune[1])
-
-        hone_ok = hits(
-            "Movie.2020.2160p.UHD.BluRay.DDP5.1.DV.HDR.x265-HONE-",
-            "HONE",
-        )
-        self.assertNotIn("HONE (Bad Name)", hone_ok[1])
-        self.assertNotIn("Lite HONE Family Offset", hone_ok[1])
-        self.assertNotIn("Lite UHD Tier 03 (Name Fallback)", hone_ok[1])
-        self.assertIn("UHD Bluray Tier 03", hone_ok[1])
-
-        repost = hits(
-            "Movie.2020.UHD.BluRay.2160p.DDP.7.1.HDR.x265-BHDStudio.mp4-nEwZ-xpost",
-            "nEwZ",
-        )
-        self.assertIn("Lite BHDStudio (Name Fallback)", repost[1])
-        self.assertIn("Lite UHD Tier 03 (Name Fallback)", repost[1])
-        plain = hits(
-            "Movie.2020.UHD.BluRay.2160p.DDP.7.1.HDR.x265-BHDStudio",
-            "BHDStudio",
-        )
-        self.assertEqual(repost[0], plain[0])
+        for item in (dotted, member):
+            base_score, base_hits = self.base_scorer.score(item)
+            layer_score, layer_hits = self.scorer.score(item)
+            self.assertEqual(layer_score, base_score)
+            self.assertEqual(layer_hits, base_hits)
+        self.assertIn("Group Missing", self.scorer.score(dotted)[1])
+        self.assertIn("HONE (Bad Name)", self.scorer.score(member)[1])
+        names = [row["name"] for row in self.db.execute("SELECT name FROM custom_formats")]
+        self.assertFalse(any("Name Fallback" in name or name.startswith("Lite ") for name in names))
+        self.assertNotIn("Lite Group Missing Offset", names)
+        self.assertNotIn("Lite HONE Family Offset", names)
+        regexes = [row["name"] for row in self.db.execute("SELECT name FROM regular_expressions")]
+        self.assertNotIn("Lite HONE Family", regexes)
+        self.assertFalse(any(name.endswith(" Tail") for name in regexes))
 
     def test_untrusted_truehd_without_dd_stays_blocked(self):
         blocked = release(
@@ -358,7 +305,7 @@ class DatabaseTests(unittest.TestCase):
                 disappeared = base_set - layer_set
                 appeared = layer_set - base_set
                 self.assertTrue(disappeared <= {"TrueHD", "TrueHD Missing"}, item["title"])
-                self.assertTrue(all(hit.startswith("Lite ") for hit in appeared), item["title"])
+                self.assertTrue(appeared <= {"UHD Bluray Mid-Size Tier"}, item["title"])
                 delta = 0
                 for hit in audio & base_set & layer_set:
                     if hit.startswith("DTS"):
@@ -389,13 +336,6 @@ class DatabaseTests(unittest.TestCase):
                 self.assertNotEqual(quality.get("modifier"), "remux")
                 self.assertNotIn("TrueHD", after[2])
         self.assertEqual(changes, EXPECTED_NEW)
-        # Supergirl stays on the same HONE MA/YKW WEB-DL score. The name fix
-        # only lets a previously unparsed copy tie, and the larger file wins.
-        with open(os.path.join(FIXTURES, "963.json"), encoding="utf-8") as handle:
-            supergirl = json.load(handle)
-        chosen = pick(supergirl, self.scorer)
-        self.assertEqual(chosen[1], 5230)
-        self.assertIn("Lite Group Missing Offset", chosen[2])
 
 
 if __name__ == "__main__":
