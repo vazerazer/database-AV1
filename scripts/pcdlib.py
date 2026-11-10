@@ -32,16 +32,9 @@ MID_TIER_EXTRA = ("dkore", "TAoE")
 MID_TIER_EXCLUDE = {"wiki", "reborn", "sa89", "solar"}
 MID_MIN_BYTES = 14 * 1024 * 1024 * 1024
 MID_MAX_BYTES = 40 * 1024 * 1024 * 1024
-
-BASELINE_TAIL_GROUPS = (
-    "DarQ",
-    "DiscoD",
-    "PiRaTeS",
-    "SuccessfulCrab",
-    "Vyndros",
-    "Weasley",
-)
-HONE_FAMILY = ("DarQ", "DiscoD", "Weasley")
+MID_TIER_NAME = "UHD Bluray Mid-Size Tier"
+TRUSTED_REGEX = "TrueHD Trusted Groups"
+MID_REGEX = "UHD Mid-Size Groups"
 
 
 def sql_quote(value) -> str:
@@ -283,42 +276,15 @@ def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
     return tokens
 
 
-def _alt(tokens: Iterable[str]) -> str:
-    ordered = sorted(set(tokens), key=lambda item: (-len(item), item.lower(), item))
-    return "|".join(ordered)
-
-
-def _tail(groups: str, family: bool) -> str:
-    prefix = f"(?:(?:{_alt(HONE_FAMILY)})[ ._-])?" if family else ""
-    return (
-        rf"(?<=[-._ \[(]){prefix}(?:{groups})"
-        r"(?:\.mkv|\.mp4|_mp4)?(?:-(?!HONE\b)[A-Za-z0-9]{2,10})?(?:-xpost)?"
-        r"(?:\[[A-Za-z0-9.]+\])?-?\)?\]?$"
-    )
-
-
 def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> str:
     trusted = trusted_group_tokens(dumpstarr, dictionarry)
     mid = mid_tier_tokens(dumpstarr, dictionarry)
-    t3 = group_tokens(
-        dumpstarr, regex_names_for(dumpstarr, "UHD Bluray Tier 03", ("all", "radarr"))
-    )
-    web1 = group_tokens(
-        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 01", ("radarr",))
-    )
-    web2 = group_tokens(
-        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 02", ("radarr",))
-    )
-    web3 = group_tokens(
-        dumpstarr, regex_names_for(dumpstarr, "WEB Tier 03", ("radarr",))
-    )
-    web_any = list(dict.fromkeys([*web1, *web2, *web3]))
-    trusted_tail = list(dict.fromkeys([*t3, *BASELINE_TAIL_GROUPS, *web_any]))
     lines = [
         "-- Local layer for Movies 2160p. Runs after the Dumpstarr base.",
         "-- DTS-HD is allowed (the core track plays). TrueHD stays blocked",
         "-- except for trusted tiered groups. The 14-40 GB window is only",
         "-- the mid-tier bonus, not a penalty and not a cap on HD audio.",
+        "-- Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
         "UPDATE quality_profile_custom_formats",
         "SET score = 0",
         "WHERE quality_profile_name = 'Movies 2160p'",
@@ -338,37 +304,21 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "  AND arr_type = 'radarr'",
         "  AND score = -10000;",
         _insert_regex(
-            "Lite TrueHD Trusted Groups",
+            TRUSTED_REGEX,
             "^(" + "|".join(trusted) + ")$",
             "Blu-ray, baseline, and Dictionarry quality/balanced/remux groups, minus TRaSH LQ.",
         ),
         "INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required)",
         "VALUES ('TrueHD', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
         "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
-        "VALUES ('TrueHD', 'Not Trusted Group', 'Lite TrueHD Trusted Groups');",
+        f"VALUES ('TrueHD', 'Not Trusted Group', {sql_quote(TRUSTED_REGEX)});",
         "INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required)",
         "VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
         "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
-        "VALUES ('TrueHD Missing', 'Not Trusted Group', 'Lite TrueHD Trusted Groups');",
-        _insert_regex("Lite Mid UHD Groups", "^(" + "|".join(mid) + ")$", "Mid-size 4K Blu-ray encoders."),
-        _insert_regex("Lite T3 Tail", _tail(_alt(t3), True), "Misparsed UHD tier 3 group at the end of the name."),
-        _insert_regex("Lite hallowed Tail", _tail("hallowed", False), "Misparsed hallowed group."),
-        _insert_regex("Lite BHDStudio Tail", _tail("BHDStudio", False), "Misparsed BHDStudio group."),
-        _insert_regex("Lite WEB T1 Tail", _tail(_alt(web1), True), "Misparsed WEB tier 1 group."),
-        _insert_regex("Lite WEB T2 Tail", _tail(_alt(web2), False), "Misparsed WEB tier 2 group."),
-        _insert_regex("Lite WEB Any Tail", _tail(_alt(web_any), True), "Misparsed WEB tier 1-3 group."),
-        _insert_regex("Lite Trusted Tail", _tail(_alt(trusted_tail), True), "Misparsed trusted group."),
-        _insert_regex("Lite Baseline Tail", _tail(_alt(BASELINE_TAIL_GROUPS), False), "Misparsed baseline group."),
-        _insert_regex(
-            "Lite HONE Family",
-            r"(?<=[-._ \[(])(?:"
-            + _alt(HONE_FAMILY)
-            + r")[ ._-]HONE(?:\.mkv|\.mp4|_mp4)?(?:-(?!HONE\b)[A-Za-z0-9]{2,10})?(?:-xpost)?(?:\[[A-Za-z0-9.]+\])?-?\)?\]?$",
-            "HONE member names Dumpstarr already trusts.",
-        ),
+        f"VALUES ('TrueHD Missing', 'Not Trusted Group', {sql_quote(TRUSTED_REGEX)});",
+        _insert_regex(MID_REGEX, "^(" + "|".join(mid) + ")$", "Mid-size 4K Blu-ray encoders."),
     ]
     lines.extend(_format_mid())
-    lines.extend(_format_name_fallbacks())
     lines.append(
         "UPDATE quality_profiles SET description = description || char(10) || "
         + sql_quote(
@@ -389,119 +339,23 @@ def _insert_regex(name: str, pattern: str, description: str) -> str:
 
 def _format_mid() -> list[str]:
     return [
-        "INSERT INTO custom_formats (name, description) VALUES ('Lite UHD Mid Tier',",
+        f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(MID_TIER_NAME)},",
         sql_quote(
             "2160p Blu-ray encode, not a remux, 14-40 GB, from Dictionarry T3-T5 "
             "groups that Dumpstarr does not already tier, plus dkore and TAoE."
         )
         + ");",
-        _cond("Lite UHD Mid Tier", "2160p", "resolution", 0, 1),
-        "INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ('Lite UHD Mid Tier', '2160p', '2160p');",
-        _cond("Lite UHD Mid Tier", "Bluray", "source", 0, 1),
-        "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite UHD Mid Tier', 'Bluray', 'bluray');",
-        _cond("Lite UHD Mid Tier", "Not Remux", "release_title", 1, 1),
-        _pat("Lite UHD Mid Tier", "Not Remux", "Remux"),
-        _cond("Lite UHD Mid Tier", "14-40 GB", "size", 0, 1),
-        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ('Lite UHD Mid Tier', '14-40 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
-        _cond("Lite UHD Mid Tier", "Mid Groups", "release_group", 0, 1),
-        _pat("Lite UHD Mid Tier", "Mid Groups", "Lite Mid UHD Groups"),
-        _score("Lite UHD Mid Tier", 1800),
-    ]
-
-
-def _format_name_fallbacks() -> list[str]:
-    out = [
-        "INSERT INTO custom_formats (name, description) VALUES ('Lite UHD Tier 03 (Name Fallback)',",
-        sql_quote("UHD Blu-ray tier 3 when the group is only visible at the end of the name.") + ");",
-        _cond("Lite UHD Tier 03 (Name Fallback)", "2160p", "resolution", 0, 1),
-        "INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ('Lite UHD Tier 03 (Name Fallback)', '2160p', '2160p');",
-        _cond("Lite UHD Tier 03 (Name Fallback)", "Bluray", "source", 0, 1),
-        "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite UHD Tier 03 (Name Fallback)', 'Bluray', 'bluray');",
-        _cond("Lite UHD Tier 03 (Name Fallback)", "Not Remux", "release_title", 1, 1),
-        _pat("Lite UHD Tier 03 (Name Fallback)", "Not Remux", "Remux"),
-        _cond("Lite UHD Tier 03 (Name Fallback)", "T3 tail", "release_title", 0, 1),
-        _pat("Lite UHD Tier 03 (Name Fallback)", "T3 tail", "Lite T3 Tail"),
-        _cond("Lite UHD Tier 03 (Name Fallback)", "Not T3 group", "release_group", 1, 1),
-        _pat("Lite UHD Tier 03 (Name Fallback)", "Not T3 group", "TRaSH UHD Bluray Tier 03"),
-        _score("Lite UHD Tier 03 (Name Fallback)", 1800),
-        "INSERT INTO custom_formats (name, description) VALUES ('Lite hallowed (Name Fallback)',",
-        sql_quote("hallowed bonus when the group is only visible at the end of the name.") + ");",
-        _cond("Lite hallowed (Name Fallback)", "tail", "release_title", 0, 1),
-        _pat("Lite hallowed (Name Fallback)", "tail", "Lite hallowed Tail"),
-        _cond("Lite hallowed (Name Fallback)", "Not hallowed", "release_group", 1, 1),
-        _pat("Lite hallowed (Name Fallback)", "Not hallowed", "hallowed"),
-        _score("Lite hallowed (Name Fallback)", 600),
-        "INSERT INTO custom_formats (name, description) VALUES ('Lite BHDStudio (Name Fallback)',",
-        sql_quote("BHDStudio bonus when the group is only visible at the end of the name.") + ");",
-        _cond("Lite BHDStudio (Name Fallback)", "tail", "release_title", 0, 1),
-        _pat("Lite BHDStudio (Name Fallback)", "tail", "Lite BHDStudio Tail"),
-        _cond("Lite BHDStudio (Name Fallback)", "Not BHDStudio", "release_group", 1, 1),
-        _pat("Lite BHDStudio (Name Fallback)", "Not BHDStudio", "BHDStudio"),
-        _score("Lite BHDStudio (Name Fallback)", 550),
-        "INSERT INTO custom_formats (name, description) VALUES ('Lite Baseline (Name Fallback)',",
-        sql_quote("Baseline bonus for DarQ, DiscoD, PiRaTeS, SuccessfulCrab, Vyndros, and Weasley when the group was not parsed.") + ");",
-        _cond("Lite Baseline (Name Fallback)", "tail", "release_title", 0, 1),
-        _pat("Lite Baseline (Name Fallback)", "tail", "Lite Baseline Tail"),
-        _cond("Lite Baseline (Name Fallback)", "Not baseline", "release_group", 1, 1),
-        _pat("Lite Baseline (Name Fallback)", "Not baseline", "Dumpstarr Baseline Groups"),
-        _score("Lite Baseline (Name Fallback)", 500),
-    ]
-    out.extend(_web_fallback("Lite WEB Tier 01 (Name Fallback)", "Lite WEB T1 Tail", "TRaSH WEB Tier 01 (Radarr)", "Not T1", 1500))
-    out.extend(_web_fallback("Lite WEB Tier 02 (Name Fallback)", "Lite WEB T2 Tail", "TRaSH WEB Tier 02 (Radarr)", "Not T2", 1450))
-    out.extend(
-        [
-            "INSERT INTO custom_formats (name, description) VALUES ('Lite MA Preferred (Name Fallback)',",
-            sql_quote("MA Preferred when the WEB group is only visible at the end of the name.") + ");",
-            _cond("Lite MA Preferred (Name Fallback)", "DD+", "release_title", 0, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "DD+", "Dolby Digital +"),
-            _cond("Lite MA Preferred (Name Fallback)", "HDR", "release_title", 0, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "HDR", "HDR"),
-            _cond("Lite MA Preferred (Name Fallback)", "MA", "release_title", 0, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "MA", "Movies Anywhere"),
-            _cond("Lite MA Preferred (Name Fallback)", "WEB-DL", "source", 0, 1),
-            "INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('Lite MA Preferred (Name Fallback)', 'WEB-DL', 'web_dl');",
-            _cond("Lite MA Preferred (Name Fallback)", "tail", "release_title", 0, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "tail", "Lite WEB Any Tail"),
-            _cond("Lite MA Preferred (Name Fallback)", "Not T1", "release_group", 1, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "Not T1", "TRaSH WEB Tier 01 (Radarr)"),
-            _cond("Lite MA Preferred (Name Fallback)", "Not T2", "release_group", 1, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "Not T2", "TRaSH WEB Tier 02 (Radarr)"),
-            _cond("Lite MA Preferred (Name Fallback)", "Not T3", "release_group", 1, 1),
-            _pat("Lite MA Preferred (Name Fallback)", "Not T3", "TRaSH WEB Tier 03 (Radarr)"),
-            _score("Lite MA Preferred (Name Fallback)", 2000),
-            "INSERT INTO custom_formats (name, description) VALUES ('Lite Group Missing Offset',",
-            sql_quote("Cancels Group Missing when the name ends in a group Dumpstarr already scores.") + ");",
-            _cond("Lite Group Missing Offset", "Group missing", "release_group", 1, 1),
-            _pat("Lite Group Missing Offset", "Group missing", "Release Group Missing"),
-            _cond("Lite Group Missing Offset", "tail", "release_title", 0, 1),
-            _pat("Lite Group Missing Offset", "tail", "Lite Trusted Tail"),
-            _score("Lite Group Missing Offset", 10000),
-            "INSERT INTO custom_formats (name, description) VALUES ('Lite HONE Family Offset',",
-            sql_quote("Cancels HONE (Bad Name) for DarQ, DiscoD, and Weasley HONE names.") + ");",
-            _cond("Lite HONE Family Offset", "HONE title", "release_title", 0, 1),
-            _pat("Lite HONE Family Offset", "HONE title", "HONE Release Title"),
-            _cond("Lite HONE Family Offset", "Not HONE group", "release_group", 1, 1),
-            _pat("Lite HONE Family Offset", "Not HONE group", "HONE"),
-            _cond("Lite HONE Family Offset", "family", "release_title", 0, 1),
-            _pat("Lite HONE Family Offset", "family", "Lite HONE Family"),
-            _score("Lite HONE Family Offset", 10000),
-        ]
-    )
-    return out
-
-
-def _web_fallback(name: str, tail_regex: str, not_regex: str, not_name: str, score: int) -> list[str]:
-    return [
-        f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(name)}, {sql_quote('WEB tier when the group is only visible at the end of the name.')});",
-        _cond(name, "WEB-DL", "source", 0, 0),
-        f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(name)}, 'WEB-DL', 'web_dl');",
-        _cond(name, "WEBRip", "source", 0, 0),
-        f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(name)}, 'WEBRip', 'webrip');",
-        _cond(name, "tail", "release_title", 0, 1),
-        _pat(name, "tail", tail_regex),
-        _cond(name, not_name, "release_group", 1, 1),
-        _pat(name, not_name, not_regex),
-        _score(name, score),
+        _cond(MID_TIER_NAME, "2160p", "resolution", 0, 1),
+        f"INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ({sql_quote(MID_TIER_NAME)}, '2160p', '2160p');",
+        _cond(MID_TIER_NAME, "Bluray", "source", 0, 1),
+        f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(MID_TIER_NAME)}, 'Bluray', 'bluray');",
+        _cond(MID_TIER_NAME, "Not Remux", "release_title", 1, 1),
+        _pat(MID_TIER_NAME, "Not Remux", "Remux"),
+        _cond(MID_TIER_NAME, "14-40 GB", "size", 0, 1),
+        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, '14-40 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
+        _cond(MID_TIER_NAME, "Mid Groups", "release_group", 0, 1),
+        _pat(MID_TIER_NAME, "Mid Groups", MID_REGEX),
+        _score(MID_TIER_NAME, 1800),
     ]
 
 
