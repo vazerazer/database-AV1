@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile check, audio and mid-tier checks, and the 45-movie regression."""
+"""Compile check, audio and preferred-size checks, and the 45-movie regression."""
 
 from __future__ import annotations
 
@@ -17,9 +17,22 @@ from score import Scorer, pick  # noqa: E402
 FIXTURES = os.path.join(ROOT, "tests", "fixtures", "releases")
 
 EXPECTED_NEW = {
+    "1212.json": "Thor.Love.and.Thunder.2022.REPACK.2160p.UHD.BluRay.TrueHD.7.1.DoVi.HDR10.x265-DON",
+    "1282.json": "The.Substance.2024.2160p.BluRay.DTS-HD.MA.5.1.DV.HDR10.x265-MainFrame",
+    "1328.json": "The.Dark.Knight.2008.2160p.UHD.BluRay.DTS-HD.MA.5.1.DV.x265-W4NK3R",
+    "1349.json": "The.Odyssey.2026.2160p.UHD.BluRay.DTS-HD.MA.5.1.HDR.x265-TRUNKS",
+    "572.json": "Predator.Badlands.2025.REPACK.2160p.UHD.BluRay.TrueHD.7.1.Atmos.DV.HDR10P.x265-RandomBytes",
+    "644.json": "Sisu.Road.to.Revenge.2025.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.x265-j3rico",
+    "838.json": "Fury.2014.2160p.UHD.BluRay.HDR.DoVi.TrueHD.7.1.Atmos.x265-SPHD",
     "847.json": "The.Black.Cauldron.1985.2160p.DSNP.WEB-DL.DTS-HD.MA.5.1.DoVi.HDR.HEVC-SiC",
     "871.json": "Cast.Away.2000.2160p.WEB-DL.DTS-HD.MA.5.1.DV.HDR10+.H.265-XEBEC",
     "910.json": "Jack.Reacher.2012.2160p.UHD.BluRay.DTS-HD.MA.7.1.DV.x265-W4NK3R",
+    "919.json": "Moana.2026.2160p.UHD.BluRay.TrueHD.7.1.Atmos.DV.HDR10P.x265-RandomBytes",
+    "927.json": "Mutiny.2026.2160p.UHD.BluRay.TrueHD.Atmos.7.1.HDR10P.x265-TRUNKS",
+    "951.json": "Disclosure.Day.2026.2160p.UHD.BluRay.TrueHD.7.1.Atmos.DV.HDR10P.x265-RandomBytes",
+    "954.json": "Toy.Story.5.2026.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.x265-TRUNKS",
+    "959.json": "The.Furious.2026.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR10P.x265-j3rico",
+    "963.json": "Supergirl.2026.2160p.UHD.BluRay.HDR10+.DoVi.TrueHD 7.1.Atmos.x265-SPHD",
 }
 
 
@@ -137,7 +150,17 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(scores["TrueHD"], -10000)
         self.assertEqual(scores["TrueHD Missing"], -10000)
         self.assertEqual(scores["No Audio"], -10000)
-        self.assertEqual(scores["UHD Bluray Mid-Size Tier"], 1800)
+        self.assertEqual(scores["UHD Bluray Mid-Size Tier"], 4200)
+        self.assertEqual(scores["hallowed"], 600)
+        self.assertEqual(scores["BHDStudio"], 550)
+        self.assertEqual(scores["MA Preferred"], 2000)
+        self.assertEqual(scores["UHD Bluray Tier 01"], 1900)
+        self.assertEqual(scores["UHD Bluray Tier 02"], 1850)
+        self.assertEqual(scores["UHD Bluray Tier 03"], 1800)
+        self.assertEqual(scores["HD Bluray Tier 01"], 1700)
+        self.assertEqual(scores["HD Bluray Tier 02"], 1650)
+        self.assertEqual(scores["HD Bluray Tier 03"], 1600)
+        self.assertEqual(scores["WEB Tier 01"], 1500)
         self.assertFalse(any("Name Fallback" in name or name.startswith("Lite ") for name in scores))
         for name in ("TrueHD", "TrueHD Missing", "DTS-HD MA", "DTS-HD HRA", "DTS-X"):
             sizes = self.db.execute(
@@ -167,57 +190,254 @@ class DatabaseTests(unittest.TestCase):
         self.assertIn("HONE", pattern)
         self.assertNotIn("BYNDR", pattern)
 
-    def test_mid_tier_window_and_rank(self):
+    def test_preferred_size_window_and_groups(self):
         bounds = self.db.execute(
             """
             SELECT min_bytes, max_bytes FROM condition_sizes
             WHERE custom_format_name = 'UHD Bluray Mid-Size Tier'
             """
         ).fetchone()
-        self.assertEqual(bounds["min_bytes"], 14 * 1024**3)
-        self.assertEqual(bounds["max_bytes"], 40 * 1024**3)
-        hallowed = release(
-            "Movie.2020.2160p.UHD.BluRay.DDP5.1.Atmos.DV.HDR.x265-hallowed",
+        # Radarr's size floor is exclusive and the ceiling is inclusive.
+        self.assertEqual(bounds["min_bytes"], 25 * 1024**3)
+        self.assertEqual(bounds["max_bytes"], 60 * 1024**3)
+        preferred = self.db.execute(
+            "SELECT pattern FROM regular_expressions WHERE name = 'UHD Mid-Size Groups'"
+        ).fetchone()["pattern"]
+        trusted = self.db.execute(
+            "SELECT pattern FROM regular_expressions WHERE name = 'TrueHD Trusted Groups'"
+        ).fetchone()["pattern"]
+        preferred_groups = {part.lower() for part in preferred[2:-2].split("|")}
+        trusted_groups = {part.lower() for part in trusted[2:-2].split("|")}
+        for group in ("w4nk3r", "sphd", "trunks", "ctrlhd"):
+            self.assertIn(group, preferred_groups)
+            self.assertIn(group, trusted_groups)
+        self.assertNotIn("hallowed", preferred_groups)
+        self.assertNotIn("bhdstudio", preferred_groups)
+        self.assertNotIn("wiki", preferred_groups)
+
+        def sized(group, gib):
+            return release(
+                f"The.Dark.Knight.2008.2160p.UHD.BluRay.DDP7.1.Atmos.DV.HDR.x265-{group}",
+                group,
+                "Bluray-2160p",
+                "bluray",
+                2160,
+                gib * 1024**3,
+            )
+
+        inside, inside_hits = self.scorer.score(sized("TRUNKS", 30))
+        below, below_hits = self.scorer.score(sized("TRUNKS", 20))
+        above, above_hits = self.scorer.score(sized("TRUNKS", 70))
+        floor, floor_hits = self.scorer.score(sized("W4NK3R", 25))
+        ceiling, ceiling_hits = self.scorer.score(sized("W4NK3R", 60))
+        self.assertIn("UHD Bluray Mid-Size Tier", inside_hits)
+        self.assertIn("UHD Bluray Mid-Size Tier", ceiling_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", below_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", above_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", floor_hits)
+        self.assertGreater(inside, below)
+        self.assertGreater(inside, above)
+        # Outside the window the file is still allowed. The bonus is withheld.
+        self.assertGreater(above, 1000)
+        self.assertGreater(below, 1000)
+
+    def test_quality_disc_beats_compact_hallowed(self):
+        def disc(group, gib):
+            return release(
+                f"The.Dark.Knight.2008.2160p.UHD.BluRay.DDP7.1.Atmos.DV.HDR.x265-{group}",
+                group,
+                "Bluray-2160p",
+                "bluray",
+                2160,
+                gib * 1024**3,
+            )
+
+        hallowed = disc("hallowed", 20)
+        bhdstudio = disc("BHDStudio", 20)
+        w4nk3r = disc("W4NK3R", 37)
+        sphd = disc("SPHD", 40)
+        trunks = disc("TRUNKS", 43)
+        ctrlhd = disc("CtrlHD", 45)
+        compact_w4nk3r = disc("W4NK3R", 20)
+        hallowed_score, hallowed_hits = self.scorer.score(hallowed)
+        bhdstudio_score, bhdstudio_hits = self.scorer.score(bhdstudio)
+        w4nk3r_score, w4nk3r_hits = self.scorer.score(w4nk3r)
+        sphd_score, sphd_hits = self.scorer.score(sphd)
+        trunks_score, trunks_hits = self.scorer.score(trunks)
+        ctrlhd_score, ctrlhd_hits = self.scorer.score(ctrlhd)
+        compact_score, compact_hits = self.scorer.score(compact_w4nk3r)
+        for hits in (w4nk3r_hits, sphd_hits, trunks_hits, ctrlhd_hits):
+            self.assertIn("UHD Bluray Mid-Size Tier", hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", hallowed_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", bhdstudio_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", compact_hits)
+        self.assertGreater(w4nk3r_score, hallowed_score)
+        self.assertGreater(sphd_score, hallowed_score)
+        self.assertGreater(trunks_score, hallowed_score)
+        self.assertGreater(ctrlhd_score, hallowed_score)
+        self.assertGreater(w4nk3r_score, bhdstudio_score)
+        self.assertGreater(sphd_score, bhdstudio_score)
+        self.assertGreater(trunks_score, bhdstudio_score)
+        # Dumpstarr's tier order still applies inside the window.
+        self.assertGreater(w4nk3r_score, sphd_score)
+        self.assertGreater(sphd_score, trunks_score)
+        # A compact tier-1 encode stays under hallowed. The bonus is the size window.
+        self.assertGreater(hallowed_score, compact_score)
+        self.assertGreater(hallowed_score, 1000)
+        self.assertGreater(bhdstudio_score, 1000)
+        chosen = pick(
+            [hallowed, bhdstudio, compact_w4nk3r, w4nk3r, sphd, trunks, ctrlhd],
+            self.scorer,
+        )
+        self.assertEqual(chosen[0]["releaseGroup"], "CtrlHD")
+        fallback = pick([hallowed, bhdstudio, compact_w4nk3r], self.scorer)
+        self.assertEqual(fallback[0]["releaseGroup"], "hallowed")
+
+    def test_ma_webdl_loses_to_preferred_disc(self):
+        disc = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.DTS-HD.MA.7.1.DV.HDR.x265-TRUNKS",
+            "TRUNKS",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            43 * 1024**3,
+        )
+        ma = release(
+            "The.Dark.Knight.2008.2160p.MA.iT.WEB-DL.DDP5.1.Atmos.DV.HDR.HDR10+.H.265-FLUX",
+            "FLUX",
+            "WEBDL-2160p",
+            "webdl",
+            2160,
+            22 * 1024**3,
+        )
+        disc_score, disc_hits = self.scorer.score(disc)
+        ma_score, ma_hits = self.scorer.score(ma)
+        self.assertIn("UHD Bluray Mid-Size Tier", disc_hits)
+        self.assertIn("DTS-HD MA", disc_hits)
+        self.assertNotIn("TrueHD", disc_hits)
+        self.assertIn("MA Preferred", ma_hits)
+        self.assertIn("WEB Tier 01", ma_hits)
+        self.assertGreater(disc_score, ma_score)
+        self.assertGreater(disc_score, 1000)
+        chosen = pick([ma, disc], self.scorer)
+        self.assertEqual(chosen[0]["releaseGroup"], "TRUNKS")
+
+    def test_untrusted_truehd_big_encode_stays_rejected(self):
+        blocked = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.x265-SomeGroup",
+            "SomeGroup",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            50 * 1024**3,
+        )
+        trusted = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.TrueHD.Atmos.7.1.DV.HDR.x265-W4NK3R",
+            "W4NK3R",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            40 * 1024**3,
+        )
+        blocked_score, blocked_hits = self.scorer.score(blocked)
+        trusted_score, trusted_hits = self.scorer.score(trusted)
+        self.assertIn("TrueHD", blocked_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", blocked_hits)
+        self.assertLess(blocked_score, 1000)
+        self.assertIsNone(pick([blocked], self.scorer))
+        self.assertNotIn("TrueHD", trusted_hits)
+        self.assertIn("UHD Bluray Mid-Size Tier", trusted_hits)
+        self.assertGreater(trusted_score, 1000)
+
+    def test_remux_and_oversize_lose_to_window_encode(self):
+        encode = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.DDP7.1.Atmos.DV.HDR.x265-SPHD",
+            "SPHD",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            45 * 1024**3,
+        )
+        oversize = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.DDP7.1.Atmos.DV.HDR.x265-W4NK3R",
+            "W4NK3R",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            75 * 1024**3,
+        )
+        remux_quality = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.REMUX.HEVC.DV.HDR.DDP7.1.Atmos-SPHD",
+            "SPHD",
+            "Remux-2160p",
+            "bluray",
+            2160,
+            75 * 1024**3,
+        )
+        remux_title = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.REMUX.HEVC.DV.HDR.DDP7.1.Atmos-W4NK3R",
+            "W4NK3R",
+            "Bluray-2160p",
+            "bluray",
+            2160,
+            75 * 1024**3,
+        )
+        encode_score, encode_hits = self.scorer.score(encode)
+        oversize_score, oversize_hits = self.scorer.score(oversize)
+        remux_score, remux_hits = self.scorer.score(remux_title)
+        self.assertIn("UHD Bluray Mid-Size Tier", encode_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", oversize_hits)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", remux_hits)
+        self.assertNotIn("UHD Bluray Tier 01", remux_hits)
+        self.assertGreater(encode_score, oversize_score)
+        self.assertGreater(encode_score, remux_score)
+        self.assertIsNone(self.scorer.ranks.get("Remux-2160p"))
+        # No penalty: a lone oversize encode is still grabable.
+        self.assertGreater(oversize_score, 1000)
+        chosen = pick([remux_quality, remux_title, oversize, encode], self.scorer)
+        self.assertEqual(chosen[0]["title"], encode["title"])
+        self.assertGreater(chosen[1], oversize_score)
+
+    def test_fallback_tiers_when_no_2160p(self):
+        bluray_1080 = release(
+            "The.Dark.Knight.2008.1080p.BluRay.DDP.5.1.x264-hallowed",
+            "hallowed",
+            "Bluray-1080p",
+            "bluray",
+            1080,
+            8 * 1024**3,
+        )
+        bluray_720 = release(
+            "The.Dark.Knight.2008.720p.BluRay.DD.5.1.x264-hallowed",
+            "hallowed",
+            "Bluray-720p",
+            "bluray",
+            720,
+            4 * 1024**3,
+        )
+        uhd = release(
+            "The.Dark.Knight.2008.2160p.UHD.BluRay.DDP7.1.Atmos.DV.HDR.x265-hallowed",
             "hallowed",
             "Bluray-2160p",
             "bluray",
             2160,
             20 * 1024**3,
         )
-        bhdstudio = release(
-            "Movie.2020.2160p.UHD.BluRay.DDP5.1.Atmos.DV.HDR.x265-BHDStudio",
-            "BHDStudio",
-            "Bluray-2160p",
-            "bluray",
-            2160,
-            20 * 1024**3,
-        )
-        mid = release(
-            "Movie.2020.2160p.UHD.BluRay.DDP5.1.Atmos.DV.HDR.x265-j3rico",
-            "j3rico",
-            "Bluray-2160p",
-            "bluray",
-            2160,
-            20 * 1024**3,
-        )
-        too_small = dict(mid, size=10 * 1024**3, title=mid["title"] + ".small")
-        too_big = dict(mid, size=50 * 1024**3, title=mid["title"] + ".big")
-        hallowed_score, hallowed_hits = self.scorer.score(hallowed)
-        bhdstudio_score, _ = self.scorer.score(bhdstudio)
-        mid_score, mid_hits = self.scorer.score(mid)
-        self.assertIn("UHD Bluray Mid-Size Tier", mid_hits)
-        self.assertNotIn("UHD Bluray Mid-Size Tier", hallowed_hits)
-        self.assertGreater(hallowed_score, mid_score)
-        self.assertGreater(bhdstudio_score, mid_score)
-        self.assertEqual(hallowed_score - mid_score, 600)
-        small_score, small_hits = self.scorer.score(too_small)
-        big_score, big_hits = self.scorer.score(too_big)
-        self.assertNotIn("UHD Bluray Mid-Size Tier", small_hits)
-        self.assertNotIn("UHD Bluray Mid-Size Tier", big_hits)
-        self.assertLess(small_score, mid_score)
-        self.assertLess(big_score, mid_score)
-        # The size window does not ban the file. It only withholds the bonus.
-        self.assertGreater(big_score, -10000)
+        score_1080, hits_1080 = self.scorer.score(bluray_1080)
+        score_720, hits_720 = self.scorer.score(bluray_720)
+        self.assertIn("HD Bluray Tier 03", hits_1080)
+        self.assertIn("hallowed", hits_1080)
+        self.assertIn("HD Bluray Tier 03", hits_720)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", hits_1080)
+        self.assertNotIn("UHD Bluray Mid-Size Tier", hits_720)
+        self.assertGreaterEqual(score_1080, 1000)
+        self.assertGreaterEqual(score_720, 1000)
+        only_hd = pick([bluray_720, bluray_1080], self.scorer)
+        self.assertEqual(only_hd[0]["quality"]["quality"]["name"], "Bluray-1080p")
+        only_720 = pick([bluray_720], self.scorer)
+        self.assertEqual(only_720[0]["quality"]["quality"]["name"], "Bluray-720p")
+        with_uhd = pick([bluray_720, bluray_1080, uhd], self.scorer)
+        self.assertEqual(with_uhd[0]["quality"]["quality"]["name"], "Bluray-2160p")
 
     def test_group_missing_and_bad_hone_stay_upstream(self):
         dotted = release(

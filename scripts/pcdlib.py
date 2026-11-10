@@ -22,16 +22,19 @@ DICTIONARRY_REPO = "https://github.com/Dictionarry-Hub/database"
 DICTIONARRY_BRANCH = "v2"
 
 # Dictionarry 2160p Quality tiers that are encodes, not the heavy transparent
-# tier and not groups Dumpstarr already scores as UHD Blu-ray.
+# tier. Dumpstarr's own UHD tiers are included too, except the compact
+# hallowed and BHDStudio groups, which stay the fallback outside this window.
 MID_TIER_FORMATS = (
     "2160p Quality Tier 3",
     "2160p Quality Tier 4",
     "2160p Quality Tier 5",
 )
 MID_TIER_EXTRA = ("dkore", "TAoE")
-MID_TIER_EXCLUDE = {"wiki", "reborn", "sa89", "solar"}
-MID_MIN_BYTES = 14 * 1024 * 1024 * 1024
-MID_MAX_BYTES = 40 * 1024 * 1024 * 1024
+MID_TIER_EXCLUDE = {"hallowed", "bhdstudio", "wiki", "reborn", "sa89", "solar"}
+# Radarr treats the minimum as exclusive and the maximum as inclusive.
+MID_MIN_BYTES = 25 * 1024 * 1024 * 1024
+MID_MAX_BYTES = 60 * 1024 * 1024 * 1024
+MID_TIER_SCORE = 4200
 MID_TIER_NAME = "UHD Bluray Mid-Size Tier"
 TRUSTED_REGEX = "TrueHD Trusted Groups"
 MID_REGEX = "UHD Mid-Size Groups"
@@ -255,23 +258,34 @@ def trusted_group_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Con
 
 
 def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> list[str]:
-    uhd = []
-    for custom_format in ("UHD Bluray Tier 01", "UHD Bluray Tier 02", "UHD Bluray Tier 03"):
-        uhd.extend(group_tokens(dumpstarr, regex_names_for(dumpstarr, custom_format, ("all", "radarr"))))
-    already = {token.lower() for token in uhd}
+    """Groups that earn the 25-60 GB bonus.
+
+    Dumpstarr UHD tiers are included so a large W4NK3R, CtrlHD, or SPHD
+    encode outranks a compact hallowed release. hallowed and BHDStudio
+    themselves are left out: they stay the acceptable compact fallback.
+    Dictionarry tiers 3-5 fill in groups Dumpstarr does not tier, such as
+    TRUNKS. The bonus stacks on top of an existing UHD tier score.
+    """
     tokens: list[str] = []
     seen: set[str] = set()
+
+    def add(token: str) -> None:
+        key = token.lower()
+        if key in MID_TIER_EXCLUDE or key in seen:
+            return
+        seen.add(key)
+        tokens.append(token)
+
+    for custom_format in ("UHD Bluray Tier 01", "UHD Bluray Tier 02", "UHD Bluray Tier 03"):
+        for token in group_tokens(
+            dumpstarr, regex_names_for(dumpstarr, custom_format, ("all", "radarr"))
+        ):
+            add(token)
     for custom_format in MID_TIER_FORMATS:
         for token in group_tokens(dictionarry, dictionarry_group_regexes(dictionarry, custom_format)):
-            key = token.lower()
-            if key in MID_TIER_EXCLUDE or key in already or key in seen:
-                continue
-            seen.add(key)
-            tokens.append(token)
+            add(token)
     for extra in MID_TIER_EXTRA:
-        if extra.lower() not in seen:
-            seen.add(extra.lower())
-            tokens.append(extra)
+        add(extra)
     tokens.sort(key=lambda item: (item.lower(), item))
     return tokens
 
@@ -282,9 +296,10 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
     lines = [
         "-- Local layer for Movies 2160p. Runs after the Dumpstarr base.",
         "-- DTS-HD is allowed (the core track plays). TrueHD stays blocked",
-        "-- except for trusted tiered groups. The 14-40 GB window is only",
-        "-- the mid-tier bonus, not a penalty and not a cap on HD audio.",
-        "-- Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
+        "-- except for trusted tiered groups. The 25-60 GB window is only",
+        "-- a bonus for preferred disc groups, not a penalty and not a cap",
+        "-- on HD audio. Remuxes and releases outside the window get nothing",
+        "-- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
         "UPDATE quality_profile_custom_formats",
         "SET score = 0",
         "WHERE quality_profile_name = 'Movies 2160p'",
@@ -316,14 +331,18 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
         "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
         f"VALUES ('TrueHD Missing', 'Not Trusted Group', {sql_quote(TRUSTED_REGEX)});",
-        _insert_regex(MID_REGEX, "^(" + "|".join(mid) + ")$", "Mid-size 4K Blu-ray encoders."),
+        _insert_regex(
+            MID_REGEX,
+            "^(" + "|".join(mid) + ")$",
+            "Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.",
+        ),
     ]
     lines.extend(_format_mid())
     lines.append(
         "UPDATE quality_profiles SET description = description || char(10) || "
         + sql_quote(
             "Local layer: DTS-HD scores 0, TrueHD stays blocked except for trusted groups, "
-            "and a 14-40 GB mid-size Blu-ray tier scores 1800."
+            "and a 25-60 GB Blu-ray encode from the preferred groups scores 4200."
         )
         + " WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';"
     )
@@ -341,8 +360,9 @@ def _format_mid() -> list[str]:
     return [
         f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(MID_TIER_NAME)},",
         sql_quote(
-            "2160p Blu-ray encode, not a remux, 14-40 GB, from Dictionarry T3-T5 "
-            "groups that Dumpstarr does not already tier, plus dkore and TAoE."
+            "2160p Blu-ray encode, not a remux, above 25 GB through 60 GB, from "
+            "Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry "
+            "T3-T5 groups, dkore, and TAoE. Nothing extra below 25 GB or above 60 GB."
         )
         + ");",
         _cond(MID_TIER_NAME, "2160p", "resolution", 0, 1),
@@ -351,11 +371,11 @@ def _format_mid() -> list[str]:
         f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(MID_TIER_NAME)}, 'Bluray', 'bluray');",
         _cond(MID_TIER_NAME, "Not Remux", "release_title", 1, 1),
         _pat(MID_TIER_NAME, "Not Remux", "Remux"),
-        _cond(MID_TIER_NAME, "14-40 GB", "size", 0, 1),
-        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, '14-40 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
+        _cond(MID_TIER_NAME, "25-60 GB", "size", 0, 1),
+        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, '25-60 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
         _cond(MID_TIER_NAME, "Mid Groups", "release_group", 0, 1),
         _pat(MID_TIER_NAME, "Mid Groups", MID_REGEX),
-        _score(MID_TIER_NAME, 1800),
+        _score(MID_TIER_NAME, MID_TIER_SCORE),
     ]
 
 
