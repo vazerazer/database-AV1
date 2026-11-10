@@ -1,0 +1,12 @@
+{
+  "dumpstarr": {
+    "repository": "https://github.com/Dumpstarr/Database",
+    "branch": "stable",
+    "sha": "d1693be0c3aa1c8d505d1b44eca06b33b6e9b48b"
+  },
+  "dictionarry": {
+    "repository": "https://github.com/Dictionarry-Hub/database",
+    "branch": "v2",
+    "sha": "de8eddde482dede6b985fa3194c8c7a1a9d458ae"
+  }
+}
