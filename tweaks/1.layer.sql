@@ -1,6 +1,8 @@
 -- Local layer for Movies 2160p. Runs after the Dumpstarr base.
--- DTS-HD is allowed (the core track plays). TrueHD stays blocked
--- except for trusted tiered groups. The 25-60 GB window is only
+-- DTS-HD is allowed (the core track plays). TrueHD, including
+-- TrueHD Atmos, scores -10000 for every release group. The shared
+-- TrueHD format still skips trusted groups; TrueHD Block covers
+-- those groups on this profile only. The 25-60 GB window is only
 -- a bonus for preferred disc groups, not a penalty and not a cap
 -- on HD audio. Remuxes and releases outside the window get nothing
 -- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.
@@ -31,6 +33,21 @@ INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, 
 VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);
 INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)
 VALUES ('TrueHD Missing', 'Not Trusted Group', 'TrueHD Trusted Groups');
+INSERT INTO custom_formats (name, description) VALUES ('TrueHD Block',
+'TrueHD, including TrueHD Atmos, from a trusted release group. Movies 2160p scores this at -10000. The shared TrueHD format still skips those groups. A title that also shows DD, DD+, DTS, or FLAC does not match.');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Not DTS', 'release_title', 'all', 1, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Not DTS', 'DTS');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Not Dolby Digital', 'release_title', 'all', 1, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Not Dolby Digital', 'Dolby Digital');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Not Dolby Digital +', 'release_title', 'all', 1, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Not Dolby Digital +', 'Dolby Digital +');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Not FLAC', 'release_title', 'all', 1, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Not FLAC', 'FLAC');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'TrueHD', 'release_title', 'all', 0, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'TrueHD', 'TrueHD');
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Trusted Group', 'release_group', 'all', 0, 1);
+INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Trusted Group', 'TrueHD Trusted Groups');
+INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p', 'TrueHD Block', 'radarr', -10000);
 INSERT INTO regular_expressions (name, pattern, description) VALUES ('UHD Mid-Size Groups', '^(4KDVS|ATELiER|b0mbardiers|BakedFEL|BlzT|BSTD|BV|c0kE|Chotab|CtrlHD|D-Z0N3|DEFLATE|DEPTH|dkore|DON|EDPH|ESiR|faBR|HiDt|HONE|HQMUX|iFT|j3rico|JustWatch|Kitsune|LESTiN|MainFrame|NCmt|NTb|ORBiT|PTer|RandomBytes|RoJYA|Softboat|SPHD|SURCODE|TAoE|TDD|TnP|TRUNKS|W4NK3R|WATCHABLE|WEBDV)$', 'Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.');
 INSERT INTO custom_formats (name, description) VALUES ('UHD Bluray Mid-Size Tier',
 '2160p Blu-ray encode, not a remux, above 25 GB through 60 GB, from Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5 groups, dkore, and TAoE. Nothing extra below 25 GB or above 60 GB.');
@@ -45,4 +62,4 @@ INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', 'Mid Groups', 'release_group', 'all', 0, 1);
 INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('UHD Bluray Mid-Size Tier', 'Mid Groups', 'UHD Mid-Size Groups');
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p', 'UHD Bluray Mid-Size Tier', 'radarr', 4200);
-UPDATE quality_profiles SET description = description || char(10) || 'Local layer: DTS-HD scores 0, TrueHD stays blocked except for trusted groups, and a 25-60 GB Blu-ray encode from the preferred groups scores 4200.' WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';
+UPDATE quality_profiles SET description = description || char(10) || 'Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, and a 25-60 GB Blu-ray encode from the preferred groups scores 4200.' WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';
