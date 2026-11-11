@@ -36,6 +36,8 @@ MID_MIN_BYTES = 25 * 1024 * 1024 * 1024
 MID_MAX_BYTES = 60 * 1024 * 1024 * 1024
 MID_TIER_SCORE = 4200
 MID_TIER_NAME = "UHD Bluray Mid-Size Tier"
+TRUEHD_BLOCK = "TrueHD Block"
+TRUEHD_BLOCK_SCORE = -10000
 TRUSTED_REGEX = "TrueHD Trusted Groups"
 MID_REGEX = "UHD Mid-Size Groups"
 
@@ -295,8 +297,10 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
     mid = mid_tier_tokens(dumpstarr, dictionarry)
     lines = [
         "-- Local layer for Movies 2160p. Runs after the Dumpstarr base.",
-        "-- DTS-HD is allowed (the core track plays). TrueHD stays blocked",
-        "-- except for trusted tiered groups. The 25-60 GB window is only",
+        "-- DTS-HD is allowed (the core track plays). TrueHD, including",
+        "-- TrueHD Atmos, scores -10000 for every release group. The shared",
+        "-- TrueHD format still skips trusted groups; TrueHD Block covers",
+        "-- those groups on this profile only. The 25-60 GB window is only",
         "-- a bonus for preferred disc groups, not a penalty and not a cap",
         "-- on HD audio. Remuxes and releases outside the window get nothing",
         "-- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
@@ -331,17 +335,20 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
         "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
         f"VALUES ('TrueHD Missing', 'Not Trusted Group', {sql_quote(TRUSTED_REGEX)});",
+    ]
+    lines.extend(_format_truehd_block())
+    lines.append(
         _insert_regex(
             MID_REGEX,
             "^(" + "|".join(mid) + ")$",
             "Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.",
-        ),
-    ]
+        )
+    )
     lines.extend(_format_mid())
     lines.append(
         "UPDATE quality_profiles SET description = description || char(10) || "
         + sql_quote(
-            "Local layer: DTS-HD scores 0, TrueHD stays blocked except for trusted groups, "
+            "Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, "
             "and a 25-60 GB Blu-ray encode from the preferred groups scores 4200."
         )
         + " WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';"
@@ -354,6 +361,39 @@ def _insert_regex(name: str, pattern: str, description: str) -> str:
         "INSERT INTO regular_expressions (name, pattern, description) VALUES ("
         f"{sql_quote(name)}, {sql_quote(pattern)}, {sql_quote(description)});"
     )
+
+
+def _format_truehd_block() -> list[str]:
+    """Block trusted-group TrueHD without rewriting the shared TrueHD format.
+
+    The shared format keeps its negated trusted-group condition, so any other
+    profile that uses it is unchanged. This format matches the same audio
+    rules (TrueHD present, and no DD, DD+, DTS, or FLAC) only when the group
+    is trusted, and it is scored on Movies 2160p alone. Untrusted TrueHD stays
+    on the original -10000 and does not take a second penalty.
+    """
+    return [
+        f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(TRUEHD_BLOCK)},",
+        sql_quote(
+            "TrueHD, including TrueHD Atmos, from a trusted release group. "
+            "Movies 2160p scores this at -10000. The shared TrueHD format still "
+            "skips those groups. A title that also shows DD, DD+, DTS, or FLAC does not match."
+        )
+        + ");",
+        _cond(TRUEHD_BLOCK, "Not DTS", "release_title", 1, 1),
+        _pat(TRUEHD_BLOCK, "Not DTS", "DTS"),
+        _cond(TRUEHD_BLOCK, "Not Dolby Digital", "release_title", 1, 1),
+        _pat(TRUEHD_BLOCK, "Not Dolby Digital", "Dolby Digital"),
+        _cond(TRUEHD_BLOCK, "Not Dolby Digital +", "release_title", 1, 1),
+        _pat(TRUEHD_BLOCK, "Not Dolby Digital +", "Dolby Digital +"),
+        _cond(TRUEHD_BLOCK, "Not FLAC", "release_title", 1, 1),
+        _pat(TRUEHD_BLOCK, "Not FLAC", "FLAC"),
+        _cond(TRUEHD_BLOCK, "TrueHD", "release_title", 0, 1),
+        _pat(TRUEHD_BLOCK, "TrueHD", "TrueHD"),
+        _cond(TRUEHD_BLOCK, "Trusted Group", "release_group", 0, 1),
+        _pat(TRUEHD_BLOCK, "Trusted Group", TRUSTED_REGEX),
+        _score(TRUEHD_BLOCK, TRUEHD_BLOCK_SCORE),
+    ]
 
 
 def _format_mid() -> list[str]:
