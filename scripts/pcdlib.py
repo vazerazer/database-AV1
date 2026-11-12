@@ -29,11 +29,14 @@ MID_TIER_FORMATS = (
     "2160p Quality Tier 4",
     "2160p Quality Tier 5",
 )
-MID_TIER_EXTRA = ("dkore", "TAoE")
+MID_TIER_EXTRA = ("dkore", "TAoE", "ZAX")
 MID_TIER_EXCLUDE = {"hallowed", "bhdstudio", "wiki", "reborn", "sa89", "solar"}
 # Radarr treats the minimum as exclusive and the maximum as inclusive.
-MID_MIN_BYTES = 25 * 1024 * 1024 * 1024
-MID_MAX_BYTES = 60 * 1024 * 1024 * 1024
+MID_MIN_GB = 20
+MID_MAX_GB = 60
+MID_MIN_BYTES = MID_MIN_GB * 1024 * 1024 * 1024
+MID_MAX_BYTES = MID_MAX_GB * 1024 * 1024 * 1024
+MID_SIZE_LABEL = f"{MID_MIN_GB}-{MID_MAX_GB} GB"
 MID_TIER_SCORE = 4200
 MID_TIER_NAME = "UHD Bluray Mid-Size Tier"
 TRUEHD_BLOCK = "TrueHD Block"
@@ -260,7 +263,7 @@ def trusted_group_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Con
 
 
 def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> list[str]:
-    """Groups that earn the 25-60 GB bonus.
+    """Groups that earn the 20-60 GB bonus.
 
     Dumpstarr UHD tiers are included so a large W4NK3R, CtrlHD, or SPHD
     encode outranks a compact hallowed release. hallowed and BHDStudio
@@ -300,7 +303,7 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "-- DTS-HD is allowed (the core track plays). TrueHD, including",
         "-- TrueHD Atmos, scores -10000 for every release group. The shared",
         "-- TrueHD format still skips trusted groups; TrueHD Block covers",
-        "-- those groups on this profile only. The 25-60 GB window is only",
+        f"-- those groups on this profile only. The {MID_SIZE_LABEL} window is only",
         "-- a bonus for preferred disc groups, not a penalty and not a cap",
         "-- on HD audio. Remuxes and releases outside the window get nothing",
         "-- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
@@ -341,7 +344,7 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         _insert_regex(
             MID_REGEX,
             "^(" + "|".join(mid) + ")$",
-            "Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.",
+            f"Disc groups preferred at {MID_SIZE_LABEL}: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, TAoE, and ZAX.",
         )
     )
     lines.extend(_format_mid())
@@ -349,7 +352,7 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "UPDATE quality_profiles SET description = description || char(10) || "
         + sql_quote(
             "Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, "
-            "and a 25-60 GB Blu-ray encode from the preferred groups scores 4200."
+            f"and a {MID_SIZE_LABEL} Blu-ray encode from the preferred groups scores 4200."
         )
         + " WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';"
     )
@@ -400,9 +403,9 @@ def _format_mid() -> list[str]:
     return [
         f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(MID_TIER_NAME)},",
         sql_quote(
-            "2160p Blu-ray encode, not a remux, above 25 GB through 60 GB, from "
+            f"2160p Blu-ray encode, not a remux, above {MID_MIN_GB} GB through {MID_MAX_GB} GB, from "
             "Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry "
-            "T3-T5 groups, dkore, and TAoE. Nothing extra below 25 GB or above 60 GB."
+            f"T3-T5 groups, dkore, TAoE, and ZAX. Nothing extra below {MID_MIN_GB} GB or above {MID_MAX_GB} GB."
         )
         + ");",
         _cond(MID_TIER_NAME, "2160p", "resolution", 0, 1),
@@ -411,8 +414,8 @@ def _format_mid() -> list[str]:
         f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(MID_TIER_NAME)}, 'Bluray', 'bluray');",
         _cond(MID_TIER_NAME, "Not Remux", "release_title", 1, 1),
         _pat(MID_TIER_NAME, "Not Remux", "Remux"),
-        _cond(MID_TIER_NAME, "25-60 GB", "size", 0, 1),
-        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, '25-60 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
+        _cond(MID_TIER_NAME, MID_SIZE_LABEL, "size", 0, 1),
+        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, {sql_quote(MID_SIZE_LABEL)}, {MID_MIN_BYTES}, {MID_MAX_BYTES});",
         _cond(MID_TIER_NAME, "Mid Groups", "release_group", 0, 1),
         _pat(MID_TIER_NAME, "Mid Groups", MID_REGEX),
         _score(MID_TIER_NAME, MID_TIER_SCORE),

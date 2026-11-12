@@ -2,7 +2,7 @@
 -- DTS-HD is allowed (the core track plays). TrueHD, including
 -- TrueHD Atmos, scores -10000 for every release group. The shared
 -- TrueHD format still skips trusted groups; TrueHD Block covers
--- those groups on this profile only. The 25-60 GB window is only
+-- those groups on this profile only. The 20-60 GB window is only
 -- a bonus for preferred disc groups, not a penalty and not a cap
 -- on HD audio. Remuxes and releases outside the window get nothing
 -- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.
@@ -48,18 +48,18 @@ INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expr
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('TrueHD Block', 'Trusted Group', 'release_group', 'all', 0, 1);
 INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('TrueHD Block', 'Trusted Group', 'TrueHD Trusted Groups');
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p', 'TrueHD Block', 'radarr', -10000);
-INSERT INTO regular_expressions (name, pattern, description) VALUES ('UHD Mid-Size Groups', '^(4KDVS|ATELiER|b0mbardiers|BakedFEL|BlzT|BSTD|BV|c0kE|Chotab|CtrlHD|D-Z0N3|DEFLATE|DEPTH|dkore|DON|EDPH|ESiR|faBR|HiDt|HONE|HQMUX|iFT|j3rico|JustWatch|Kitsune|LESTiN|MainFrame|NCmt|NTb|ORBiT|PTer|RandomBytes|RoJYA|Softboat|SPHD|SURCODE|TAoE|TDD|TnP|TRUNKS|W4NK3R|WATCHABLE|WEBDV)$', 'Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.');
+INSERT INTO regular_expressions (name, pattern, description) VALUES ('UHD Mid-Size Groups', '^(4KDVS|ATELiER|b0mbardiers|BakedFEL|BlzT|BSTD|BV|c0kE|Chotab|CtrlHD|D-Z0N3|DEFLATE|DEPTH|dkore|DON|EDPH|ESiR|faBR|HiDt|HONE|HQMUX|iFT|j3rico|JustWatch|Kitsune|LESTiN|MainFrame|NCmt|NTb|ORBiT|PTer|RandomBytes|RoJYA|Softboat|SPHD|SURCODE|TAoE|TDD|TnP|TRUNKS|W4NK3R|WATCHABLE|WEBDV|ZAX)$', 'Disc groups preferred at 20-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, TAoE, and ZAX.');
 INSERT INTO custom_formats (name, description) VALUES ('UHD Bluray Mid-Size Tier',
-'2160p Blu-ray encode, not a remux, above 25 GB through 60 GB, from Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5 groups, dkore, and TAoE. Nothing extra below 25 GB or above 60 GB.');
+'2160p Blu-ray encode, not a remux, above 20 GB through 60 GB, from Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5 groups, dkore, TAoE, and ZAX. Nothing extra below 20 GB or above 60 GB.');
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', '2160p', 'resolution', 'all', 0, 1);
 INSERT INTO condition_resolutions (custom_format_name, condition_name, resolution) VALUES ('UHD Bluray Mid-Size Tier', '2160p', '2160p');
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', 'Bluray', 'source', 'all', 0, 1);
 INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ('UHD Bluray Mid-Size Tier', 'Bluray', 'bluray');
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', 'Not Remux', 'release_title', 'all', 1, 1);
 INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('UHD Bluray Mid-Size Tier', 'Not Remux', 'Remux');
-INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', '25-60 GB', 'size', 'all', 0, 1);
-INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ('UHD Bluray Mid-Size Tier', '25-60 GB', 26843545600, 64424509440);
+INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', '20-60 GB', 'size', 'all', 0, 1);
+INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ('UHD Bluray Mid-Size Tier', '20-60 GB', 21474836480, 64424509440);
 INSERT INTO custom_format_conditions (custom_format_name, name, type, arr_type, negate, required) VALUES ('UHD Bluray Mid-Size Tier', 'Mid Groups', 'release_group', 'all', 0, 1);
 INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name) VALUES ('UHD Bluray Mid-Size Tier', 'Mid Groups', 'UHD Mid-Size Groups');
 INSERT INTO quality_profile_custom_formats (quality_profile_name, custom_format_name, arr_type, score) VALUES ('Movies 2160p', 'UHD Bluray Mid-Size Tier', 'radarr', 4200);
-UPDATE quality_profiles SET description = description || char(10) || 'Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, and a 25-60 GB Blu-ray encode from the preferred groups scores 4200.' WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';
+UPDATE quality_profiles SET description = description || char(10) || 'Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, and a 20-60 GB Blu-ray encode from the preferred groups scores 4200.' WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';
