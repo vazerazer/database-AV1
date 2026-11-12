@@ -17,13 +17,17 @@ from score import Scorer, pick  # noqa: E402
 FIXTURES = os.path.join(ROOT, "tests", "fixtures", "releases")
 
 EXPECTED_NEW = {
+    "1260.json": "Prisoners 2013 1080p BluRay DTS x264-DON",
     "1282.json": "The.Substance.2024.2160p.BluRay.DTS-HD.MA.5.1.DV.HDR10.x265-MainFrame",
-    "1328.json": "The Dark Knight (2008) IMAX (2160p UHD BluRay x265 DV HDR DDP 5.1 English - Weasley HONE).mkv-xpost",
+    "1328.json": "The.Dark.Knight.2008.2160p.UHD.BluRay.DTS-HD.MA.5.1.DV.x265-W4NK3R",
     "1349.json": "The.Odyssey.2026.2160p.UHD.BluRay.DTS-HD.MA.5.1.HDR.x265-TRUNKS",
+    "789.json": "Blue.Valentine.2010.1080p.BluRay.DTS.x264-CtrlHD",
     "838.json": "Fury.2014.2160p.UHD.BluRay.x265.DV.HDR.DDP.7.1.English.DiscoD-HONE",
     "847.json": "The.Black.Cauldron.1985.2160p.DSNP.WEB-DL.DTS-HD.MA.5.1.DoVi.HDR.HEVC-SiC",
     "871.json": "Cast.Away.2000.2160p.WEB-DL.DTS-HD.MA.5.1.DV.HDR10+.H.265-XEBEC",
+    "890.json": "Melancholia.2011.REPACK2.1080p.BluRay.DTS.x264-DON",
     "910.json": "Jack.Reacher.2012.2160p.UHD.BluRay.DTS-HD.MA.7.1.DV.x265-W4NK3R",
+    "926.json": "A.Royal.Affair.2012.720p.BluRay.DTS.x264-TayTO",
 }
 
 
@@ -81,7 +85,7 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(row["upgrade_until_score"], 10000)
         description = self.db.execute("SELECT description FROM quality_profiles").fetchone()["description"]
         self.assertIn("Local layer:", description)
-        self.assertIn("DTS-HD scores 0", description)
+        self.assertIn("score the same as DD+", description)
 
     def test_only_referenced_formats_and_regexes_remain(self):
         empty_profiles = self.db.execute(
@@ -135,9 +139,11 @@ class DatabaseTests(unittest.TestCase):
                 (PROFILE_NAME,),
             )
         }
-        self.assertEqual(scores["DTS-HD MA"], 0)
-        self.assertEqual(scores["DTS-HD HRA"], 0)
-        self.assertEqual(scores["DTS-X"], 0)
+        dd_plus = scores["Dolby Digital +"]
+        self.assertEqual(scores["DTS-HD MA"], dd_plus)
+        self.assertEqual(scores["DTS-HD HRA"], dd_plus)
+        self.assertEqual(scores["DTS-X"], dd_plus)
+        self.assertEqual(scores["DTS"], dd_plus)
         self.assertEqual(scores["TrueHD"], -10000)
         self.assertEqual(scores["TrueHD Missing"], -10000)
         self.assertEqual(scores["No Audio"], -10000)
@@ -153,7 +159,7 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(scores["HD Bluray Tier 03"], 1600)
         self.assertEqual(scores["WEB Tier 01"], 1500)
         self.assertFalse(any("Name Fallback" in name or name.startswith("Lite ") for name in scores))
-        for name in ("TrueHD", "TrueHD Missing", "DTS-HD MA", "DTS-HD HRA", "DTS-X"):
+        for name in ("TrueHD", "TrueHD Missing", "DTS", "DTS-HD MA", "DTS-HD HRA", "DTS-X"):
             sizes = self.db.execute(
                 """
                 SELECT COUNT(*) FROM condition_sizes
@@ -180,6 +186,44 @@ class DatabaseTests(unittest.TestCase):
         self.assertIn("BHDStudio", pattern)
         self.assertIn("HONE", pattern)
         self.assertNotIn("BYNDR", pattern)
+
+    def test_dts_scores_match_dolby_digital_plus(self):
+        """DTS-HD and plain DTS score the same as DD+. TrueHD stays -10000."""
+        dd_plus = self.scorer.scores["Dolby Digital +"]
+        for name in ("DTS-HD MA", "DTS-HD HRA", "DTS-X", "DTS"):
+            self.assertEqual(self.scorer.scores[name], dd_plus, name)
+        self.assertEqual(self.scorer.scores["TrueHD"], -10000)
+        self.assertEqual(self.scorer.scores["TrueHD Block"], -10000)
+        self.assertEqual(self.scorer.scores["TrueHD Missing"], -10000)
+
+        def titled(audio):
+            return release(
+                f"The.Dark.Knight.2008.2160p.UHD.BluRay.{audio}.5.1.DV.HDR.x265-W4NK3R",
+                "W4NK3R",
+                "Bluray-2160p",
+                "bluray",
+                2160,
+                30 * 1024**3,
+            )
+
+        ma_score, ma_hits = self.scorer.score(titled("DTS-HD.MA"))
+        hra_score, hra_hits = self.scorer.score(titled("DTS-HD.HRA"))
+        dtsx_score, dtsx_hits = self.scorer.score(titled("DTS-X"))
+        plain_score, plain_hits = self.scorer.score(titled("DTS"))
+        dd_score, dd_hits = self.scorer.score(titled("DDP"))
+        self.assertIn("DTS-HD MA", ma_hits)
+        self.assertIn("DTS-HD HRA", hra_hits)
+        self.assertIn("DTS-X", dtsx_hits)
+        self.assertIn("DTS", plain_hits)
+        self.assertNotIn("DTS", ma_hits)
+        self.assertNotIn("DTS-HD MA", plain_hits)
+        self.assertIn("Dolby Digital +", dd_hits)
+        self.assertNotIn("TrueHD", ma_hits)
+        self.assertNotIn("TrueHD Block", dd_hits)
+        self.assertEqual(ma_score, dd_score)
+        self.assertEqual(hra_score, dd_score)
+        self.assertEqual(dtsx_score, dd_score)
+        self.assertEqual(plain_score, dd_score)
 
     def test_preferred_size_window_and_groups(self):
         bounds = self.db.execute(
@@ -426,7 +470,7 @@ class DatabaseTests(unittest.TestCase):
         )
         dts_score, dts_hits = self.scorer.score(dts)
         hallowed_score, hallowed_hits = self.scorer.score(hallowed)
-        self.assertEqual(dts_score, 7605, dts_hits)
+        self.assertEqual(dts_score, 7730, dts_hits)
         self.assertIn("DTS-HD MA", dts_hits)
         self.assertIn("UHD Bluray Mid-Size Tier", dts_hits)
         self.assertIn("UHD Bluray Tier 01", dts_hits)
@@ -438,7 +482,7 @@ class DatabaseTests(unittest.TestCase):
             30 * gib,
         )
         dtsx_score, dtsx_hits = self.scorer.score(dtsx)
-        self.assertEqual(dtsx_score, 7610, dtsx_hits)
+        self.assertEqual(dtsx_score, 7735, dtsx_hits)
         self.assertIn("DTS-X", dtsx_hits)
         self.assertNotIn("TrueHD Block", dtsx_hits)
         self.assertEqual(hallowed_score, 4055, hallowed_hits)
@@ -720,17 +764,17 @@ class DatabaseTests(unittest.TestCase):
                 layer_score, layer_hits = self.scorer.score(item)
                 base_set = set(base_hits)
                 layer_set = set(layer_hits)
-                audio = {"DTS-HD MA", "DTS-HD HRA", "DTS-X", "TrueHD", "TrueHD Missing"}
+                audio = {"DTS", "DTS-HD MA", "DTS-HD HRA", "DTS-X", "TrueHD", "TrueHD Missing"}
                 disappeared = base_set - layer_set
                 appeared = layer_set - base_set
                 self.assertTrue(disappeared <= {"TrueHD", "TrueHD Missing"}, item["title"])
                 self.assertTrue(
-                    appeared <= {"UHD Bluray Mid-Size Tier", "TrueHD Block"}, item["title"]
+                    appeared <= {"UHD Bluray Mid-Size Tier", "TrueHD Block", "DTS"}, item["title"]
                 )
                 delta = 0
                 for hit in audio & base_set & layer_set:
                     if hit.startswith("DTS"):
-                        delta += 10000
+                        delta += self.scorer.scores[hit] - self.base_scorer.scores[hit]
                 for hit in disappeared:
                     delta += 10000
                 for hit in appeared:

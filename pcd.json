@@ -1,7 +1,7 @@
 {
   "name": "radarr-2160p-database",
   "version": "1.0.0",
-  "description": "Radarr profile Movies 2160p, taken from Dumpstarr and kept under that name. DTS-HD is allowed because the core track plays. TrueHD, including TrueHD Atmos, scores -10000 for every release group. Trusted groups are blocked by TrueHD Block on this profile only; the shared TrueHD format is unchanged. A title that also shows DD or DD+ is still exempt. A 20-60 GB Blu-ray encode from the preferred disc groups, including ZAX, scores 4200, above compact hallowed, BHDStudio, and MA WEB-DL. ZAX is not a trusted group. Remuxes and releases outside that window get no size bonus. Minimum score 1000, upgrade until 10000.",
+  "description": "Radarr profile Movies 2160p, taken from Dumpstarr and kept under that name. DTS-HD MA, DTS-HD HRA, DTS-X, and plain DTS score the same as Dolby Digital +. TrueHD, including TrueHD Atmos, scores -10000 for every release group. Trusted groups are blocked by TrueHD Block on this profile only; the shared TrueHD format is unchanged. A title that also shows DD or DD+ is still exempt. A 20-60 GB Blu-ray encode from the preferred disc groups, including ZAX, scores 4200, above compact hallowed, BHDStudio, and MA WEB-DL. ZAX is not a trusted group. Remuxes and releases outside that window get no size bonus. Minimum score 1000, upgrade until 10000.",
   "arr_types": [
     "radarr"
   ],
