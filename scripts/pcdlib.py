@@ -29,13 +29,22 @@ MID_TIER_FORMATS = (
     "2160p Quality Tier 4",
     "2160p Quality Tier 5",
 )
-MID_TIER_EXTRA = ("dkore", "TAoE")
+MID_TIER_EXTRA = ("dkore", "TAoE", "ZAX")
 MID_TIER_EXCLUDE = {"hallowed", "bhdstudio", "wiki", "reborn", "sa89", "solar"}
 # Radarr treats the minimum as exclusive and the maximum as inclusive.
-MID_MIN_BYTES = 25 * 1024 * 1024 * 1024
-MID_MAX_BYTES = 60 * 1024 * 1024 * 1024
+MID_MIN_GB = 20
+MID_MAX_GB = 60
+MID_MIN_BYTES = MID_MIN_GB * 1024 * 1024 * 1024
+MID_MAX_BYTES = MID_MAX_GB * 1024 * 1024 * 1024
+MID_SIZE_LABEL = f"{MID_MIN_GB}-{MID_MAX_GB} GB"
 MID_TIER_SCORE = 4200
 MID_TIER_NAME = "UHD Bluray Mid-Size Tier"
+# These are the DTS formats Movies 2160p already scores. Plain DTS is copied
+# from Dumpstarr when this profile does not score it. Each is set to the
+# current Dolby Digital + score. TrueHD is left at -10000.
+DTS_SCORE_FORMATS = ("DTS-HD MA", "DTS-HD HRA", "DTS-X")
+PLAIN_DTS = "DTS"
+DDPLUS = "Dolby Digital +"
 TRUEHD_BLOCK = "TrueHD Block"
 TRUEHD_BLOCK_SCORE = -10000
 TRUSTED_REGEX = "TrueHD Trusted Groups"
@@ -260,7 +269,7 @@ def trusted_group_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Con
 
 
 def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> list[str]:
-    """Groups that earn the 25-60 GB bonus.
+    """Groups that earn the 20-60 GB bonus.
 
     Dumpstarr UHD tiers are included so a large W4NK3R, CtrlHD, or SPHD
     encode outranks a compact hallowed release. hallowed and BHDStudio
@@ -292,36 +301,38 @@ def mid_tier_tokens(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
     return tokens
 
 
+def profile_score(conn: sqlite3.Connection, name: str) -> int | None:
+    row = conn.execute(
+        """
+        SELECT score FROM quality_profile_custom_formats
+        WHERE quality_profile_name = ? AND custom_format_name = ? AND arr_type = 'radarr'
+        """,
+        (PROFILE_NAME, name),
+    ).fetchone()
+    return None if row is None else row["score"]
+
+
 def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connection) -> str:
     trusted = trusted_group_tokens(dumpstarr, dictionarry)
     mid = mid_tier_tokens(dumpstarr, dictionarry)
+    dd_plus = profile_score(dumpstarr, DDPLUS)
+    if dd_plus is None:
+        raise RuntimeError(f"{DDPLUS} is not scored on {PROFILE_NAME}")
     lines = [
         "-- Local layer for Movies 2160p. Runs after the Dumpstarr base.",
-        "-- DTS-HD is allowed (the core track plays). TrueHD, including",
-        "-- TrueHD Atmos, scores -10000 for every release group. The shared",
-        "-- TrueHD format still skips trusted groups; TrueHD Block covers",
-        "-- those groups on this profile only. The 25-60 GB window is only",
-        "-- a bonus for preferred disc groups, not a penalty and not a cap",
-        "-- on HD audio. Remuxes and releases outside the window get nothing",
-        "-- extra. Group Missing and HONE (Bad Name) are left as Dumpstarr ships them.",
-        "UPDATE quality_profile_custom_formats",
-        "SET score = 0",
-        "WHERE quality_profile_name = 'Movies 2160p'",
-        "  AND custom_format_name = 'DTS-HD MA'",
-        "  AND arr_type = 'radarr'",
-        "  AND score = -10000;",
-        "UPDATE quality_profile_custom_formats",
-        "SET score = 0",
-        "WHERE quality_profile_name = 'Movies 2160p'",
-        "  AND custom_format_name = 'DTS-HD HRA'",
-        "  AND arr_type = 'radarr'",
-        "  AND score = -10000;",
-        "UPDATE quality_profile_custom_formats",
-        "SET score = 0",
-        "WHERE quality_profile_name = 'Movies 2160p'",
-        "  AND custom_format_name = 'DTS-X'",
-        "  AND arr_type = 'radarr'",
-        "  AND score = -10000;",
+        "-- DTS-HD MA, DTS-HD HRA, DTS-X, and plain DTS score the same as DD+.",
+        "-- TrueHD, including TrueHD Atmos, scores -10000 for every release",
+        "-- group. The shared TrueHD format still skips trusted groups; TrueHD",
+        f"-- Block covers those groups on this profile only. The {MID_SIZE_LABEL}",
+        "-- window is only a bonus for preferred disc groups, not a penalty",
+        "-- and not a cap on HD audio. Remuxes and releases outside the window",
+        "-- get nothing extra. Group Missing and HONE (Bad Name) are left as",
+        "-- Dumpstarr ships them.",
+    ]
+    for name in DTS_SCORE_FORMATS:
+        lines.extend(_set_audio_score(name, dd_plus))
+    lines.extend(_plain_dts(dumpstarr, dd_plus))
+    lines.extend([
         _insert_regex(
             TRUSTED_REGEX,
             "^(" + "|".join(trusted) + ")$",
@@ -335,25 +346,102 @@ def build_layer_sql(dumpstarr: sqlite3.Connection, dictionarry: sqlite3.Connecti
         "VALUES ('TrueHD Missing', 'Not Trusted Group', 'release_group', 'all', 1, 1);",
         "INSERT INTO condition_patterns (custom_format_name, condition_name, regular_expression_name)",
         f"VALUES ('TrueHD Missing', 'Not Trusted Group', {sql_quote(TRUSTED_REGEX)});",
-    ]
+    ])
     lines.extend(_format_truehd_block())
     lines.append(
         _insert_regex(
             MID_REGEX,
             "^(" + "|".join(mid) + ")$",
-            "Disc groups preferred at 25-60 GB: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, and TAoE.",
+            f"Disc groups preferred at {MID_SIZE_LABEL}: Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry T3-T5, dkore, TAoE, and ZAX.",
         )
     )
     lines.extend(_format_mid())
     lines.append(
         "UPDATE quality_profiles SET description = description || char(10) || "
         + sql_quote(
-            "Local layer: DTS-HD scores 0, TrueHD scores -10000 for every group, "
-            "and a 25-60 GB Blu-ray encode from the preferred groups scores 4200."
+            "Local layer: DTS-HD MA, DTS-HD HRA, DTS-X, and DTS score the same as DD+, "
+            "TrueHD scores -10000 for every group, "
+            f"and a {MID_SIZE_LABEL} Blu-ray encode from the preferred groups scores 4200."
         )
         + " WHERE name = 'Movies 2160p' AND description NOT LIKE '%Local layer:%';"
     )
     return "\n".join(lines) + "\n"
+
+
+def _set_audio_score(name: str, score: int) -> list[str]:
+    """Replace Dumpstarr's -10000 audio penalty with the DD+ score."""
+    return [
+        "UPDATE quality_profile_custom_formats",
+        f"SET score = {score}",
+        "WHERE quality_profile_name = 'Movies 2160p'",
+        f"  AND custom_format_name = {sql_quote(name)}",
+        "  AND arr_type = 'radarr'",
+        "  AND score = -10000;",
+    ]
+
+
+def _plain_dts(dumpstarr: sqlite3.Connection, dd_plus: int) -> list[str]:
+    """Score plain DTS the same as DD+ when this profile scores it lower, or not at all.
+
+    Movies 2160p does not include Dumpstarr's DTS format, so a plain DTS release
+    currently gets no audio score. The format is copied, with its negations, so
+    a DTS-HD or DTS-X title does not take this score as well.
+    """
+    current = profile_score(dumpstarr, PLAIN_DTS)
+    if current is None:
+        return _copy_release_title_format(dumpstarr, PLAIN_DTS) + [_score(PLAIN_DTS, dd_plus)]
+    if current < dd_plus:
+        return [
+            "UPDATE quality_profile_custom_formats",
+            f"SET score = {dd_plus}",
+            "WHERE quality_profile_name = 'Movies 2160p'",
+            f"  AND custom_format_name = {sql_quote(PLAIN_DTS)}",
+            "  AND arr_type = 'radarr'",
+            f"  AND score = {current};",
+        ]
+    return []
+
+
+def _copy_release_title_format(conn: sqlite3.Connection, name: str) -> list[str]:
+    row = conn.execute(
+        "SELECT description FROM custom_formats WHERE name = ?",
+        (name,),
+    ).fetchone()
+    if row is None:
+        raise RuntimeError(f"custom format not found: {name}")
+    lines = [
+        f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(name)},",
+        sql_quote(row["description"] or "") + ");",
+    ]
+    conditions = conn.execute(
+        """
+        SELECT name, type, arr_type, negate, required
+        FROM custom_format_conditions
+        WHERE custom_format_name = ?
+        ORDER BY name
+        """,
+        (name,),
+    ).fetchall()
+    if not conditions:
+        raise RuntimeError(f"custom format has no conditions: {name}")
+    for cond in conditions:
+        if cond["type"] != "release_title" or cond["arr_type"] != "all":
+            raise RuntimeError(
+                f"{name} condition {cond['name']} is {cond['type']}/{cond['arr_type']}"
+            )
+        lines.append(_cond(name, cond["name"], cond["type"], cond["negate"], cond["required"]))
+        patterns = conn.execute(
+            """
+            SELECT regular_expression_name FROM condition_patterns
+            WHERE custom_format_name = ? AND condition_name = ?
+            ORDER BY regular_expression_name
+            """,
+            (name, cond["name"]),
+        ).fetchall()
+        if len(patterns) != 1:
+            raise RuntimeError(f"{name} condition {cond['name']} has {len(patterns)} patterns")
+        lines.append(_pat(name, cond["name"], patterns[0]["regular_expression_name"]))
+    return lines
 
 
 def _insert_regex(name: str, pattern: str, description: str) -> str:
@@ -400,9 +488,9 @@ def _format_mid() -> list[str]:
     return [
         f"INSERT INTO custom_formats (name, description) VALUES ({sql_quote(MID_TIER_NAME)},",
         sql_quote(
-            "2160p Blu-ray encode, not a remux, above 25 GB through 60 GB, from "
+            f"2160p Blu-ray encode, not a remux, above {MID_MIN_GB} GB through {MID_MAX_GB} GB, from "
             "Dumpstarr UHD tiers except hallowed and BHDStudio, plus Dictionarry "
-            "T3-T5 groups, dkore, and TAoE. Nothing extra below 25 GB or above 60 GB."
+            f"T3-T5 groups, dkore, TAoE, and ZAX. Nothing extra below {MID_MIN_GB} GB or above {MID_MAX_GB} GB."
         )
         + ");",
         _cond(MID_TIER_NAME, "2160p", "resolution", 0, 1),
@@ -411,8 +499,8 @@ def _format_mid() -> list[str]:
         f"INSERT INTO condition_sources (custom_format_name, condition_name, source) VALUES ({sql_quote(MID_TIER_NAME)}, 'Bluray', 'bluray');",
         _cond(MID_TIER_NAME, "Not Remux", "release_title", 1, 1),
         _pat(MID_TIER_NAME, "Not Remux", "Remux"),
-        _cond(MID_TIER_NAME, "25-60 GB", "size", 0, 1),
-        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, '25-60 GB', {MID_MIN_BYTES}, {MID_MAX_BYTES});",
+        _cond(MID_TIER_NAME, MID_SIZE_LABEL, "size", 0, 1),
+        f"INSERT INTO condition_sizes (custom_format_name, condition_name, min_bytes, max_bytes) VALUES ({sql_quote(MID_TIER_NAME)}, {sql_quote(MID_SIZE_LABEL)}, {MID_MIN_BYTES}, {MID_MAX_BYTES});",
         _cond(MID_TIER_NAME, "Mid Groups", "release_group", 0, 1),
         _pat(MID_TIER_NAME, "Mid Groups", MID_REGEX),
         _score(MID_TIER_NAME, MID_TIER_SCORE),
