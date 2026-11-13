@@ -11,7 +11,7 @@ import unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
-from pcdlib import DATABASE_NAME, PROFILE_NAME, compile_layers  # noqa: E402
+from pcdlib import DATABASE_NAME, PROFILE_NAME, TRASH_PROFILE_NAME, compile_layers  # noqa: E402
 from score import Scorer, pick  # noqa: E402
 
 FIXTURES = os.path.join(ROOT, "tests", "fixtures", "releases")
@@ -76,14 +76,21 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(manifest["repository"], f"https://github.com/vazerazer/{DATABASE_NAME}")
         self.assertEqual(manifest["arr_types"], ["radarr"])
         self.assertIn("https://github.com/Dictionarry-Hub/schema", manifest["dependencies"])
-        profiles = [row["name"] for row in self.db.execute("SELECT name FROM quality_profiles")]
-        self.assertEqual(profiles, [PROFILE_NAME])
+        profiles = [row["name"] for row in self.db.execute("SELECT name FROM quality_profiles ORDER BY name")]
+        self.assertEqual(profiles, [PROFILE_NAME, TRASH_PROFILE_NAME])
         row = self.db.execute(
-            "SELECT minimum_custom_format_score, upgrade_until_score FROM quality_profiles"
+            """
+            SELECT minimum_custom_format_score, upgrade_until_score FROM quality_profiles
+            WHERE name = ?
+            """,
+            (PROFILE_NAME,),
         ).fetchone()
         self.assertEqual(row["minimum_custom_format_score"], 1000)
         self.assertEqual(row["upgrade_until_score"], 10000)
-        description = self.db.execute("SELECT description FROM quality_profiles").fetchone()["description"]
+        description = self.db.execute(
+            "SELECT description FROM quality_profiles WHERE name = ?",
+            (PROFILE_NAME,),
+        ).fetchone()["description"]
         self.assertIn("Local layer:", description)
         self.assertIn("score the same as DD+", description)
 
@@ -93,10 +100,9 @@ class DatabaseTests(unittest.TestCase):
             SELECT name FROM custom_formats cf
             WHERE NOT EXISTS (
                 SELECT 1 FROM quality_profile_custom_formats q
-                WHERE q.custom_format_name = cf.name AND q.quality_profile_name = ?
+                WHERE q.custom_format_name = cf.name
             )
-            """,
-            (PROFILE_NAME,),
+            """
         ).fetchall()
         self.assertEqual(empty_profiles, [])
         unused_regex = self.db.execute(
@@ -122,10 +128,14 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(empty_formats, [])
         self.assertEqual(self.db.execute("PRAGMA foreign_key_check").fetchall(), [])
         self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
-        others = self.db.execute(
-            "SELECT name FROM quality_profiles WHERE name != ?", (PROFILE_NAME,)
-        ).fetchall()
-        self.assertEqual(others, [])
+        others = [
+            row["name"]
+            for row in self.db.execute(
+                "SELECT name FROM quality_profiles WHERE name != ? ORDER BY name",
+                (PROFILE_NAME,),
+            )
+        ]
+        self.assertEqual(others, [TRASH_PROFILE_NAME])
         self.assertEqual(self.db.execute("SELECT COUNT(*) FROM sonarr_naming").fetchone()[0], 0)
 
     def test_audio_rule_and_no_size_cap(self):
@@ -801,6 +811,125 @@ class DatabaseTests(unittest.TestCase):
                 self.assertNotEqual(quality.get("modifier"), "remux")
                 self.assertFalse({"TrueHD", "TrueHD Block"} & set(after[2]), after_title)
         self.assertEqual(changes, EXPECTED_NEW)
+
+    def test_trash_remux_profile_matches_trash_scores(self):
+        """TRaSH Remux + WEB 2160p keeps TRaSH scores. Movies 2160p is unchanged."""
+        profile = TRASH_PROFILE_NAME
+        row = self.db.execute(
+            """
+            SELECT upgrades_allowed, minimum_custom_format_score, upgrade_until_score,
+                   upgrade_score_increment
+            FROM quality_profiles WHERE name = ?
+            """,
+            (profile,),
+        ).fetchone()
+        self.assertIsNotNone(row)
+        self.assertEqual(row["upgrades_allowed"], 1)
+        self.assertEqual(row["minimum_custom_format_score"], 0)
+        self.assertEqual(row["upgrade_until_score"], 10000)
+        self.assertEqual(row["upgrade_score_increment"], 1)
+        language = self.db.execute(
+            """
+            SELECT language_name, type FROM quality_profile_languages
+            WHERE quality_profile_name = ?
+            """,
+            (profile,),
+        ).fetchone()
+        self.assertEqual(tuple(language), ("Original", "must"))
+
+        scores = {
+            item["custom_format_name"]: item["score"]
+            for item in self.db.execute(
+                """
+                SELECT custom_format_name, score FROM quality_profile_custom_formats
+                WHERE quality_profile_name = ?
+                """,
+                (profile,),
+            )
+        }
+
+        def assert_score(expected, *names):
+            present = [name for name in names if name in scores]
+            self.assertEqual(present, [names[0]] if names[0] in scores else present)
+            self.assertEqual(len(present), 1, (names, present))
+            self.assertEqual(scores[present[0]], expected, present[0])
+            return present[0]
+
+        assert_score(5000, "TrueHD ATMOS")
+        assert_score(4500, "DTS X")
+        assert_score(3000, "DD+ ATMOS")
+        assert_score(1950, "Remux Tier 01")
+        assert_score(1900, "Remux Tier 02")
+        assert_score(1850, "Remux Tier 03")
+        assert_score(1700, "WEB Tier 01", "TRaSH WEB Tier 01")
+        assert_score(-10000, "BR-DISK", "TRaSH BR-DISK")
+        assert_score(-10000, "LQ", "TRaSH LQ")
+        assert_score(-10000, "LQ (Release Title)", "TRaSH LQ (Release Title)", "LQ Release Title")
+        # TRaSH audio scores, not the Movies 2160p DD+ tie or TrueHD block.
+        assert_score(2500, "TRaSH DTS-HD MA", "DTS-HD MA")
+        assert_score(2000, "TRaSH DTS-HD HRA", "DTS-HD HRA")
+        assert_score(1750, "DD+")
+        assert_score(2750, "TRaSH TrueHD", "TrueHD")
+        self.assertNotEqual(scores.get("TRaSH DTS-HD MA", scores.get("DTS-HD MA")), scores["DD+"])
+        self.assertNotIn("TrueHD Block", scores)
+        self.assertNotIn("DTS-X", scores)
+
+        enabled = self.db.execute(
+            """
+            SELECT COALESCE(quality_name, quality_group_name) AS item, upgrade_until
+            FROM quality_profile_qualities
+            WHERE quality_profile_name = ? AND enabled = 1
+            ORDER BY position
+            """,
+            (profile,),
+        ).fetchall()
+        self.assertEqual([item["item"] for item in enabled], ["Remux-2160p", "WEB 2160p"])
+        self.assertEqual(enabled[0]["upgrade_until"], 1)
+        self.assertEqual(enabled[1]["upgrade_until"], 0)
+        members = [
+            item["quality_name"]
+            for item in self.db.execute(
+                """
+                SELECT quality_name FROM quality_group_members
+                WHERE quality_profile_name = ? AND quality_group_name = 'WEB 2160p'
+                ORDER BY position, quality_name
+                """,
+                (profile,),
+            )
+        ]
+        self.assertEqual(members, ["WEBRip-2160p", "WEBDL-2160p"])
+        bluray = self.db.execute(
+            """
+            SELECT enabled FROM quality_profile_qualities
+            WHERE quality_profile_name = ? AND quality_name = 'Bluray-2160p'
+            """,
+            (profile,),
+        ).fetchone()
+        self.assertEqual(bluray["enabled"], 0)
+        movies_remux = self.db.execute(
+            """
+            SELECT enabled, upgrade_until FROM quality_profile_qualities
+            WHERE quality_profile_name = ? AND quality_name = 'Remux-2160p'
+            """,
+            (PROFILE_NAME,),
+        ).fetchone()
+        self.assertEqual(tuple(movies_remux), (0, 0))
+
+        movies = {
+            item["custom_format_name"]: item["score"]
+            for item in self.db.execute(
+                """
+                SELECT custom_format_name, score FROM quality_profile_custom_formats
+                WHERE quality_profile_name = ?
+                """,
+                (PROFILE_NAME,),
+            )
+        }
+        self.assertEqual(movies["DTS-HD MA"], movies["Dolby Digital +"])
+        self.assertEqual(movies["TrueHD"], -10000)
+        self.assertEqual(movies["TrueHD Block"], -10000)
+        for name in ("TrueHD ATMOS", "DTS X", "DD+ ATMOS", "Remux Tier 01", "DD+"):
+            self.assertNotIn(name, movies)
 
 
 if __name__ == "__main__":

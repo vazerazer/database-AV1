@@ -8,5 +8,12 @@
     "repository": "https://github.com/Dictionarry-Hub/database",
     "branch": "v2",
     "sha": "798141f8e8ebecc8b4b4ebc971c6fc37f78ae8cb"
+  },
+  "trash": {
+    "repository": "https://github.com/TRaSH-Guides/Guides",
+    "branch": "master",
+    "sha": "6986f2a94441c05cd880c5840fc0d5857c908e1d",
+    "profile": "TRaSH Remux + WEB 2160p",
+    "trash_id": "fd161a61e3ab826d3a22d53f935696dd"
   }
 }

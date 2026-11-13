@@ -14,6 +14,7 @@ import sqlite3
 from typing import Iterable
 
 PROFILE_NAME = "Movies 2160p"
+TRASH_PROFILE_NAME = "TRaSH Remux + WEB 2160p"
 DATABASE_NAME = "radarr-2160p-database"
 
 DUMPSTARR_REPO = "https://github.com/Dumpstarr/Database"

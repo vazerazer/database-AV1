@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Rebuild the pruned Movies 2160p base and the local layer from upstream.
+"""Rebuild the pruned Movies 2160p base, the local layer, and the TRaSH profile.
 
 Dumpstarr stable is the base. Dictionarry v2 supplies the tier lists the
-layer uses. The script writes ops/ and tweaks/ only. It does not run tests
-and it does not push; the workflow does that after the tests pass.
+layer uses. TRaSH Guides supplies Remux + WEB 2160p when --trash is set.
+The script writes ops/ and tweaks/ only. It does not run tests and it does
+not push; the workflow does that after the tests pass.
 """
 
 from __future__ import annotations
@@ -23,7 +24,16 @@ from pcdlib import (  # noqa: E402
     DUMPSTARR_REPO,
     build_layer_sql,
     compile_layers,
+    connect,
+    execute_dir,
     export_base_sql,
+)
+from trash_profile import (  # noqa: E402
+    PROFILE_ID,
+    TRASH_BRANCH,
+    TRASH_PROFILE_NAME,
+    TRASH_REPO,
+    build_trash_sql,
 )
 
 
@@ -37,6 +47,7 @@ def main() -> int:
     parser.add_argument("--schema", required=True, help="Dictionarry schema ops directory")
     parser.add_argument("--dumpstarr", required=True, help="Dumpstarr checkout (stable)")
     parser.add_argument("--dictionarry", required=True, help="Dictionarry checkout (v2)")
+    parser.add_argument("--trash", help="TRaSH-Guides/Guides checkout (master)")
     parser.add_argument("--check", action="store_true", help="Exit 1 if generated files differ")
     args = parser.parse_args()
 
@@ -64,8 +75,33 @@ def main() -> int:
     files = {
         os.path.join(args.repo, "ops", "0.movies-2160p.sql"): base_sql,
         os.path.join(args.repo, "tweaks", "1.layer.sql"): layer_sql,
-        os.path.join(args.repo, ".github", "upstream.json"): json.dumps(upstream, indent=2) + "\n",
     }
+    if args.trash:
+        trash_sha = git_sha(args.trash)
+        preview = connect()
+        execute_dir(preview, args.schema)
+        preview.executescript(base_sql)
+        preview.executescript(layer_sql)
+        try:
+            trash_sql = build_trash_sql(preview, args.trash, trash_sha)
+        finally:
+            preview.close()
+        files[os.path.join(args.repo, "tweaks", "2.trash-remux.sql")] = trash_sql
+        upstream["trash"] = {
+            "repository": TRASH_REPO,
+            "branch": TRASH_BRANCH,
+            "sha": trash_sha,
+            "profile": TRASH_PROFILE_NAME,
+            "trash_id": PROFILE_ID,
+        }
+    else:
+        upstream_path = os.path.join(args.repo, ".github", "upstream.json")
+        if os.path.exists(upstream_path):
+            with open(upstream_path, encoding="utf-8") as handle:
+                current_upstream = json.load(handle)
+            if "trash" in current_upstream:
+                upstream["trash"] = current_upstream["trash"]
+    files[os.path.join(args.repo, ".github", "upstream.json")] = json.dumps(upstream, indent=2) + "\n"
     changed = []
     for path, contents in files.items():
         current = ""
