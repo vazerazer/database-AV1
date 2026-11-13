@@ -7,7 +7,7 @@ on:
 
 jobs:
   sync:
-    name: Pull Dumpstarr and rebuild Movies 2160p
+    name: Pull Dumpstarr and TRaSH and rebuild profiles
     runs-on: ubuntu-latest
     permissions:
       contents: write
